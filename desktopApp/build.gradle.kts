@@ -1,3 +1,4 @@
+import io.github.kdroidfilter.nucleus.desktop.application.dsl.CompressionLevel
 import io.github.kdroidfilter.nucleus.desktop.application.dsl.TargetFormat
 import org.gradle.jvm.toolchain.JvmVendorSpec
 
@@ -41,6 +42,7 @@ nucleus.application {
 
     nativeDistributions {
         targetFormats(TargetFormat.Dmg, TargetFormat.Nsis, TargetFormat.Deb)
+        compressionLevel = CompressionLevel.Maximum
         packageName = "ScheduleIt"
         packageVersion = appVersion
         description = "Schedule and manage your tasks across desktop and mobile."
