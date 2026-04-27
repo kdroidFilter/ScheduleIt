@@ -143,6 +143,10 @@ fun MaterialScheduleHost() {
                     },
                     backgroundColor = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.fillMaxSize(),
+                    dimensions = dev.nucleus.scheduleit.ui.common.TimeGridDimensions(
+                        gridLineColor = MaterialTheme.colorScheme.outline,
+                        slotHighlight = MaterialTheme.colorScheme.outlineVariant,
+                    ),
                 )
             }
         }

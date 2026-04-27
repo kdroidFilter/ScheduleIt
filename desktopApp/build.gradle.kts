@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.nucleus.decoratedWindowJewel)
     implementation(libs.nucleus.scheduler)
     implementation(libs.nucleus.notificationCommon)
+    implementation(libs.nucleus.notificationMacos)
     implementation(libs.nucleus.coreRuntime)
     implementation(libs.nucleus.graalvmRuntime)
 }

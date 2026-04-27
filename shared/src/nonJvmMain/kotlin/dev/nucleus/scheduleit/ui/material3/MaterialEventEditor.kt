@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.nucleus.scheduleit.domain.ScheduleEvent
 import dev.nucleus.scheduleit.domain.ScheduleSettings
+import dev.nucleus.scheduleit.presentation.schedule.ErrorKey
 import dev.nucleus.scheduleit.presentation.schedule.EventEditorState
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
@@ -91,6 +92,10 @@ fun MaterialEventEditor(
                         onChange = { v ->
                             onIntent(ScheduleIntent.UpdateDraft(draft.copy(startMinute = v)))
                         },
+                        onBlocked = { atUpper ->
+                            val reason = if (atUpper) ErrorKey.InvalidRange else bounds.lowerReason
+                            onIntent(ScheduleIntent.ReportBlocked(reason))
+                        },
                     )
                     MaterialTimePicker(
                         label = stringResource(Res.string.event_field_end),
@@ -100,6 +105,10 @@ fun MaterialEventEditor(
                         stepMinutes = ScheduleViewModel.SLOT_MINUTES,
                         onChange = { v ->
                             onIntent(ScheduleIntent.UpdateDraft(draft.copy(endMinute = v)))
+                        },
+                        onBlocked = { atUpper ->
+                            val reason = if (atUpper) bounds.upperReason else ErrorKey.InvalidRange
+                            onIntent(ScheduleIntent.ReportBlocked(reason))
                         },
                     )
                 }

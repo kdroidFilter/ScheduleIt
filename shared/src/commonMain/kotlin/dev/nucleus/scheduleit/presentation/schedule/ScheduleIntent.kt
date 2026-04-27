@@ -25,4 +25,5 @@ sealed interface ScheduleIntent {
     data class RenameTemplate(val id: Long, val name: String) : ScheduleIntent
 
     data object DismissError : ScheduleIntent
+    data class ReportBlocked(val reason: ErrorKey) : ScheduleIntent
 }

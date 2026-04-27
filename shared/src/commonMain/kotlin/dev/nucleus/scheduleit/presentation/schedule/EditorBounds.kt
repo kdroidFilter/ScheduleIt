@@ -3,7 +3,12 @@ package dev.nucleus.scheduleit.presentation.schedule
 import dev.nucleus.scheduleit.domain.ScheduleEvent
 import dev.nucleus.scheduleit.domain.ScheduleSettings
 
-data class EditorBounds(val lowerMinute: Int, val upperMinute: Int)
+data class EditorBounds(
+    val lowerMinute: Int,
+    val upperMinute: Int,
+    val lowerReason: ErrorKey,
+    val upperReason: ErrorKey,
+)
 
 fun computeEditorBounds(
     draft: ScheduleEvent,
@@ -11,15 +16,17 @@ fun computeEditorBounds(
     settings: ScheduleSettings,
 ): EditorBounds {
     val others = siblings.filter { it.id != draft.id }
-    val lower = others
+    val prevEnd = others
         .filter { it.endMinute <= draft.startMinute }
         .maxOfOrNull { it.endMinute }
-        ?: settings.startMinute
-    val upper = others
+    val nextStart = others
         .filter { it.startMinute >= draft.endMinute }
         .minOfOrNull { it.startMinute }
-        ?: settings.endMinute
-    return EditorBounds(lower, upper)
+    val lower = prevEnd ?: settings.startMinute
+    val upper = nextStart ?: settings.endMinute
+    val lowerReason = if (prevEnd != null) ErrorKey.Overlap else ErrorKey.OutsideWindow
+    val upperReason = if (nextStart != null) ErrorKey.Overlap else ErrorKey.OutsideWindow
+    return EditorBounds(lower, upper, lowerReason, upperReason)
 }
 
 fun ScheduleEvent.overlapsAnyOf(others: List<ScheduleEvent>): Boolean =

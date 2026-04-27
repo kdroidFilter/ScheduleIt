@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -138,7 +139,17 @@ private fun DayColumn(
 ) {
     val density = LocalDensity.current
     val pxPerMinute = with(density) { hourHeight.toPx() / 60f }
-    Box(modifier = modifier.height(totalHeight)) {
+    Box(
+        modifier = modifier
+            .height(totalHeight)
+            .drawBehind {
+                drawRect(
+                    color = gridLineColor,
+                    topLeft = androidx.compose.ui.geometry.Offset(0f, 0f),
+                    size = androidx.compose.ui.geometry.Size(1f, this.size.height),
+                )
+            },
+    ) {
         Column(modifier = Modifier.fillMaxSize()) {
             hours.forEach { hour ->
                 Column(modifier = Modifier.fillMaxWidth().height(hourHeight)) {
@@ -185,8 +196,7 @@ private fun HoverableSlot(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
-    val baseColor = if (slotIdx == 0) gridLineColor.copy(alpha = 0.05f) else slotHighlight
-    val color = if (isHovered) gridLineColor.copy(alpha = 0.18f) else baseColor
+    val hoverBg = if (isHovered) gridLineColor.copy(alpha = 0.18f) else Color.Transparent
     val addEventLabel = stringResource(Res.string.action_add_event)
     SlotContextMenuArea(
         addEventLabel = addEventLabel,
@@ -196,10 +206,20 @@ private fun HoverableSlot(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(hourHeight / SLOT_PER_HOUR)
-                .background(color)
+                .background(hoverBg)
                 .hoverable(interactionSource)
                 .pointerHoverIcon(PointerIcon.Hand)
                 .clickable(interactionSource = interactionSource, indication = null) { onSlotClick(slotStart) },
-        )
+        ) {
+            if (slotIdx == 0) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(gridLineColor)
+                        .align(Alignment.TopStart),
+                )
+            }
+        }
     }
 }

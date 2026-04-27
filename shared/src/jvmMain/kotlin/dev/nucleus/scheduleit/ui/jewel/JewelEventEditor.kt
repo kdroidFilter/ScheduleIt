@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,7 @@ import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedDialog
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDialogTitleBar
 import dev.nucleus.scheduleit.domain.ScheduleEvent
 import dev.nucleus.scheduleit.domain.ScheduleSettings
+import dev.nucleus.scheduleit.presentation.schedule.ErrorKey
 import dev.nucleus.scheduleit.presentation.schedule.EventEditorState
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
@@ -41,8 +43,12 @@ import org.jetbrains.jewel.ui.component.OutlinedButton
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.TextArea
 import org.jetbrains.jewel.ui.component.TextField
+import androidx.compose.foundation.shape.RoundedCornerShape
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.action_cancel
+import scheduleit.shared.generated.resources.error_invalid_range
+import scheduleit.shared.generated.resources.error_outside_window
+import scheduleit.shared.generated.resources.error_overlap
 import scheduleit.shared.generated.resources.action_delete
 import scheduleit.shared.generated.resources.action_save
 import scheduleit.shared.generated.resources.event_dialog_edit_title
@@ -63,6 +69,7 @@ fun JewelEventEditor(
     editor: EventEditorState,
     settings: ScheduleSettings,
     siblings: List<ScheduleEvent>,
+    errorMessage: ErrorKey?,
     onIntent: (ScheduleIntent) -> Unit,
 ) {
     val draft = editor.draft
@@ -78,10 +85,10 @@ fun JewelEventEditor(
         title = dialogTitle,
     ) {
         JewelDialogTitleBar { _ -> Text(dialogTitle) }
+        Box(modifier = Modifier.fillMaxSize().background(JewelTheme.globalColors.panelBackground)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(JewelTheme.globalColors.panelBackground)
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
@@ -105,6 +112,10 @@ fun JewelEventEditor(
                     onChange = { v ->
                         onIntent(ScheduleIntent.UpdateDraft(draft.copy(startMinute = v)))
                     },
+                    onBlocked = { atUpper ->
+                        val reason = if (atUpper) ErrorKey.InvalidRange else bounds.lowerReason
+                        onIntent(ScheduleIntent.ReportBlocked(reason))
+                    },
                 )
                 JewelTimePicker(
                     label = stringResource(Res.string.event_field_end),
@@ -114,6 +125,10 @@ fun JewelEventEditor(
                     stepMinutes = ScheduleViewModel.SLOT_MINUTES,
                     onChange = { v ->
                         onIntent(ScheduleIntent.UpdateDraft(draft.copy(endMinute = v)))
+                    },
+                    onBlocked = { atUpper ->
+                        val reason = if (atUpper) bounds.upperReason else ErrorKey.InvalidRange
+                        onIntent(ScheduleIntent.ReportBlocked(reason))
                     },
                 )
             }
@@ -164,6 +179,43 @@ fun JewelEventEditor(
                     Text(stringResource(Res.string.action_save))
                 }
             }
+        }
+        BlockedBanner(
+            errorMessage = errorMessage,
+            onIntent = onIntent,
+            modifier = Modifier
+                .align(androidx.compose.ui.Alignment.BottomCenter)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+        )
+        }
+    }
+}
+
+@Composable
+private fun BlockedBanner(
+    errorMessage: ErrorKey?,
+    onIntent: (ScheduleIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val text: String? = when (errorMessage) {
+        ErrorKey.InvalidRange -> stringResource(Res.string.error_invalid_range)
+        ErrorKey.OutsideWindow -> stringResource(Res.string.error_outside_window)
+        ErrorKey.Overlap -> stringResource(Res.string.error_overlap)
+        else -> null
+    }
+    if (text != null) {
+        LaunchedEffect(text) {
+            kotlinx.coroutines.delay(2500L)
+            onIntent(ScheduleIntent.DismissError)
+        }
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFFC2410C))
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+        ) {
+            Text(text = text, color = Color.White)
         }
     }
 }

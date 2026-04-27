@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.nucleus.scheduleit.ui.common.TimeGrid
+import dev.nucleus.scheduleit.ui.common.TimeGridDimensions
 import dev.nucleus.scheduleit.ui.common.fullName
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -59,6 +60,10 @@ fun JewelScheduleHost() {
                 },
                 backgroundColor = JewelTheme.globalColors.panelBackground,
                 modifier = Modifier.fillMaxSize(),
+                dimensions = TimeGridDimensions(
+                    gridLineColor = JewelTheme.globalColors.borders.normal,
+                    slotHighlight = JewelTheme.globalColors.borders.disabled,
+                ),
             )
         }
     }
@@ -68,6 +73,7 @@ fun JewelScheduleHost() {
             editor = editor,
             settings = state.settings,
             siblings = state.eventsByTemplate[editor.templateId].orEmpty(),
+            errorMessage = state.errorMessage,
             onIntent = viewModel::onEvent,
         )
     }

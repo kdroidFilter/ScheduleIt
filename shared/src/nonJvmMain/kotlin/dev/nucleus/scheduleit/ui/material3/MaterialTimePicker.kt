@@ -27,6 +27,7 @@ fun MaterialTimePicker(
     stepMinutes: Int,
     onChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    onBlocked: ((atUpper: Boolean) -> Unit)? = null,
 ) {
     val hour = valueMinute / 60
     val minute = valueMinute % 60
@@ -50,11 +51,11 @@ fun MaterialTimePicker(
                     value = hour,
                     onUp = {
                         val target = (valueMinute + 60).coerceAtMost(rangeEnd)
-                        if (target != valueMinute) onChange(target)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(true)
                     },
                     onDown = {
                         val target = (valueMinute - 60).coerceAtLeast(rangeStart)
-                        if (target != valueMinute) onChange(target)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(false)
                     },
                 )
                 Text(
@@ -67,11 +68,11 @@ fun MaterialTimePicker(
                     value = minute,
                     onUp = {
                         val target = (valueMinute + stepMinutes).coerceAtMost(rangeEnd)
-                        if (target != valueMinute) onChange(target)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(true)
                     },
                     onDown = {
                         val target = (valueMinute - stepMinutes).coerceAtLeast(rangeStart)
-                        if (target != valueMinute) onChange(target)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(false)
                     },
                 )
             }

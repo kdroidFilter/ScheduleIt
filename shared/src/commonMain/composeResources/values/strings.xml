@@ -62,6 +62,9 @@
     <string name="error_overlap">This event overlaps another one.</string>
     <string name="error_invalid_backup">Could not read this backup file.</string>
 
+    <string name="notification_default_title">Event</string>
+    <string name="notification_starts_at">Starts at %1$s</string>
+
     <string name="settings_notifications_section">Notifications</string>
     <string name="settings_notifications_label">Notify when an event starts</string>
 

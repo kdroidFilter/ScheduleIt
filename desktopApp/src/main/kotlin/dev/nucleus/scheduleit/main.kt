@@ -12,15 +12,13 @@ import androidx.compose.ui.window.rememberWindowState
 import dev.nucleus.scheduleit.di.createDesktopAppGraph
 import dev.nucleus.scheduleit.ui.jewel.ScheduleItTitleBar
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
-import io.github.kdroidfilter.nucleus.core.runtime.ExecutableRuntime
 import io.github.kdroidfilter.nucleus.darkmodedetector.isSystemInDarkMode
 import io.github.kdroidfilter.nucleus.scheduler.DesktopBootReceiver
-import io.github.kdroidfilter.nucleus.scheduler.DesktopTaskScheduler
-import io.github.kdroidfilter.nucleus.scheduler.TaskRequest
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedWindow
-import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import io.github.kdroidfilter.nucleus.graalvm.GraalVmInitializer
-import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.intui.standalone.theme.IntUiTheme
 import org.jetbrains.jewel.intui.standalone.theme.darkThemeDefinition
@@ -35,16 +33,11 @@ fun main(args: Array<String>) {
         return
     }
 
-    if (!ExecutableRuntime.isDev()) {
-        DesktopTaskScheduler.enqueue(
-            TaskRequest.periodic(
-                ScheduleItTaskRegistry.EventNotificationsId,
-                ScheduleViewModel.SLOT_MINUTES.minutes,
-            ),
-        )
-    }
-
     val graph = createDesktopAppGraph()
+
+    val notificationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    notificationScope.startInAppNotificationLoop(graph.repository)
+    notificationScope.startSchedulerSync(graph.repository)
 
     application {
         val theme = if (isSystemInDarkMode()) {

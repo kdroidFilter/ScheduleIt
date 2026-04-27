@@ -7,6 +7,10 @@ import dev.nucleus.scheduleit.ui.common.formatTime
 import io.github.kdroidfilter.nucleus.notification.common.NotificationManager
 import io.github.kdroidfilter.nucleus.notification.common.notification
 import io.github.kdroidfilter.nucleus.scheduler.DesktopTask
+import org.jetbrains.compose.resources.getString
+import scheduleit.shared.generated.resources.Res
+import scheduleit.shared.generated.resources.notification_default_title
+import scheduleit.shared.generated.resources.notification_starts_at
 import io.github.kdroidfilter.nucleus.scheduler.TaskContext
 import io.github.kdroidfilter.nucleus.scheduler.TaskResult
 import kotlinx.coroutines.flow.first
@@ -40,11 +44,12 @@ class EventNotificationTask : DesktopTask {
         val windowStart = (nowMinute / slot) * slot
         val windowEnd = windowStart + slot
 
+        val defaultTitle = getString(Res.string.notification_default_title)
         events
             .filter { it.startMinute in windowStart until windowEnd }
             .forEach { event ->
-                val title = event.title.ifEmpty { "Event" }
-                val message = "Starts at ${formatTime(event.startMinute)}"
+                val title = event.title.ifEmpty { defaultTitle }
+                val message = getString(Res.string.notification_starts_at, formatTime(event.startMinute))
                 notification(title = title, message = message).send()
             }
 

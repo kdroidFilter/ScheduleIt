@@ -77,6 +77,7 @@ class ScheduleViewModel(
             is ScheduleIntent.RenameTemplate -> renameTemplate(intent.id, intent.name)
 
             ScheduleIntent.DismissError -> _state.update { it.copy(errorMessage = null) }
+            is ScheduleIntent.ReportBlocked -> _state.update { it.copy(errorMessage = intent.reason) }
         }
     }
 

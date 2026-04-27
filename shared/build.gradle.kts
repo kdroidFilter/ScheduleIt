@@ -110,3 +110,7 @@ sqldelight {
         }
     }
 }
+
+compose.resources {
+    publicResClass = true
+}

@@ -62,6 +62,9 @@
     <string name="error_overlap">אירוע זה חופף לאירוע אחר.</string>
     <string name="error_invalid_backup">לא ניתן לקרוא את קובץ הגיבוי.</string>
 
+    <string name="notification_default_title">אירוע</string>
+    <string name="notification_starts_at">מתחיל בשעה %1$s</string>
+
     <string name="settings_notifications_section">התראות</string>
     <string name="settings_notifications_label">התראה בתחילת אירוע</string>
 
