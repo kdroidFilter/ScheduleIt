@@ -71,4 +71,11 @@
     <string name="settings_data_section">נתונים</string>
     <string name="action_export">ייצוא…</string>
     <string name="action_import">ייבוא…</string>
+
+    <string name="menu_file">קובץ</string>
+    <string name="menu_view">תצוגה</string>
+    <string name="menu_window">חלון</string>
+    <string name="menu_help">עזרה</string>
+    <string name="menu_new_event">אירוע חדש</string>
+    <string name="menu_quit">צא מ-%1$s</string>
 </resources>

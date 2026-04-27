@@ -11,9 +11,14 @@ actual class DriverFactory {
         val home = System.getProperty("user.home").orEmpty()
         val dir = File(home, ".scheduleit").apply { mkdirs() }
         val path = File(dir, "scheduleit.db").absolutePath
+        val properties = Properties().apply {
+            setProperty("journal_mode", "WAL")
+            setProperty("busy_timeout", "5000")
+            setProperty("synchronous", "NORMAL")
+        }
         return JdbcSqliteDriver(
             "jdbc:sqlite:$path",
-            Properties(),
+            properties,
             ScheduleDatabase.Schema,
         )
     }

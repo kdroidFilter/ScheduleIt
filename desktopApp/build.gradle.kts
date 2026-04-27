@@ -26,9 +26,9 @@ dependencies {
     implementation(libs.nucleus.decoratedWindowJewel)
     implementation(libs.nucleus.scheduler)
     implementation(libs.nucleus.notificationCommon)
-    implementation(libs.nucleus.notificationMacos)
     implementation(libs.nucleus.coreRuntime)
     implementation(libs.nucleus.graalvmRuntime)
+    implementation(libs.nucleus.menuMacos)
 }
 
 nucleus.application {
@@ -42,6 +42,7 @@ nucleus.application {
 
         macOS {
             iconFile.set(rootProject.file("art/icon.icns"))
+            bundleID = "dev.nucleus.scheduleit"
         }
         windows {
             iconFile.set(rootProject.file("art/icon.ico"))

@@ -71,4 +71,11 @@
     <string name="settings_data_section">Données</string>
     <string name="action_export">Exporter…</string>
     <string name="action_import">Importer…</string>
+
+    <string name="menu_file">Fichier</string>
+    <string name="menu_view">Affichage</string>
+    <string name="menu_window">Fenêtre</string>
+    <string name="menu_help">Aide</string>
+    <string name="menu_new_event">Nouvel événement</string>
+    <string name="menu_quit">Quitter %1$s</string>
 </resources>

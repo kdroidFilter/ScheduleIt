@@ -71,4 +71,11 @@
     <string name="settings_data_section">Data</string>
     <string name="action_export">Export…</string>
     <string name="action_import">Import…</string>
+
+    <string name="menu_file">File</string>
+    <string name="menu_view">View</string>
+    <string name="menu_window">Window</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_new_event">New Event</string>
+    <string name="menu_quit">Quit %1$s</string>
 </resources>

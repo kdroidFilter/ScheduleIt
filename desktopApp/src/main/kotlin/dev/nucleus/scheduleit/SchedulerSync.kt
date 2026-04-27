@@ -17,7 +17,6 @@ fun CoroutineScope.startSchedulerSync(repository: ScheduleRepository): Job = lau
         .map { it.settings.notificationsEnabled }
         .distinctUntilChanged()
         .collect { enabled ->
-            if (enabled) requestMacosNotificationAuthorizationIfNeeded()
             runCatching {
                 val isScheduled = DesktopTaskScheduler.isScheduled(taskId)
                 when {
