@@ -1,23 +1,55 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop (JVM).
+# ScheduleIt
 
-* [/shared](./shared/src) is the Kotlin Multiplatform library shared across all platform applications.
-  It contains several subfolders:
-    - [commonMain](./shared/src/commonMain/kotlin) is for code that’s common for all targets.
-    - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-      For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-      the [iosMain](./shared/src/iosMain/kotlin) folder would be the right place for such calls.
+A Kotlin Multiplatform app for designing your **recurring weekly schedule** — one template per weekday, color-coded events, notes, and notifications. Targets **Android, iOS, and Desktop (JVM)** with a shared Compose Multiplatform UI.
 
-* [/androidApp](./androidApp) contains the Android application entry point (MainActivity, manifest, resources).
+![Weekly overview](art/weekly-overview-context-menu.png)
 
-* [/desktopApp](./desktopApp) contains the Desktop (JVM) application entry point (`main()`, distribution config).
+## Features
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+- **Weekly grid view** — Monday through Sunday at a glance, with a configurable visible hours window.
+- **Day templates** — every weekday has its own schedule, or share one across days with "Same as".
+- **Color-coded events** with title, time range, and free-form notes.
+- **Hover tooltips** showing event details inline.
+- **Native notifications** to remind you of upcoming events.
+- **JSON import/export** for backup and migration between devices.
+- **Single-instance** desktop app with native window decorations (Jewel + Nucleus).
 
-### Build and Run Android Application
+## Screenshots
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
+**Hover tooltips** show an event’s time and notes inline:
+
+![Hover tooltip](art/weekly-overview-tooltip.png)
+
+**Edit dialog** for changing title, time, color, and notes:
+
+![Edit event](art/edit-event-dialog.png)
+
+**Settings** to configure visible hours and per-day templates:
+
+![Settings](art/settings.png)
+
+## Project structure
+
+- [`/shared`](./shared/src) — Kotlin Multiplatform module shared across platforms.
+    - [`commonMain`](./shared/src/commonMain/kotlin) — domain, data (SQLDelight), DI (Metro), presentation, Compose UI.
+    - [`androidMain`](./shared/src/androidMain/kotlin), [`iosMain`](./shared/src/iosMain/kotlin), [`jvmMain`](./shared/src/jvmMain/kotlin) — platform-specific drivers and integrations.
+- [`/androidApp`](./androidApp) — Android entry point (`MainActivity`, manifest, resources).
+- [`/desktopApp`](./desktopApp) — Desktop (JVM) entry point (`main()`, distribution config).
+- [`/iosApp`](./iosApp/iosApp) — iOS entry point (SwiftUI host for the Compose UI).
+
+## Tech stack
+
+- **Compose Multiplatform** + **Jewel** (IntelliJ-style theming on desktop)
+- **SQLDelight** for type-safe SQL across platforms
+- **Metro** for dependency injection
+- **kotlinx.coroutines / Flow** for reactive state
+- **kotlinx.serialization** for JSON backup/restore
+
+Desktop data lives at `~/.scheduleit/scheduleit.db`.
+
+## Build and Run
+
+### Android
 
 - on macOS/Linux
   ```shell
@@ -28,10 +60,7 @@ in your IDE’s toolbar or build it directly from the terminal:
   .\gradlew.bat :androidApp:assembleDebug
   ```
 
-### Build and Run Desktop (JVM) Application
-
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
+### Desktop (JVM)
 
 - on macOS/Linux
   ```shell
@@ -42,11 +71,14 @@ in your IDE’s toolbar or run it directly from the terminal:
   .\gradlew.bat :desktopApp:run
   ```
 
-### Build and Run iOS Application
+### iOS
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+Use the run configuration from the run widget in your IDE’s toolbar, or open the [`/iosApp`](./iosApp) directory in Xcode and run it from there.
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html).
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 — see the [LICENSE](./LICENSE) file for details.
