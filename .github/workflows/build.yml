@@ -1,4 +1,4 @@
-name: Build (GraalVM Native Image)
+name: Build (GraalVM Native Image + JBR/Leyden AppX)
 
 on:
   push:
@@ -16,6 +16,8 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # GraalVM Native Image builds — Linux .deb, Windows .exe (NSIS), macOS .dmg.
+  # GraalVM does not target Windows ARM64, so AppX/MSIX is built in a separate JBR job.
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -34,7 +36,7 @@ jobs:
             artifact: linux-arm64
           - name: Windows (x64)
             os: windows-latest
-            tasks: packageGraalvmNsis packageGraalvmAppX
+            tasks: packageGraalvmNsis
             artifact: windows-x64
           - name: macOS (arm64)
             os: macos-latest
@@ -93,12 +95,101 @@ jobs:
             desktopApp/build/compose/binaries/**/*.dmg
             desktopApp/build/compose/binaries/**/*.exe
             desktopApp/build/compose/binaries/**/*.msi
-            desktopApp/build/compose/binaries/**/*.appx
+          if-no-files-found: error
+
+  # AppX/MSIX builds — JBR 25 + Project Leyden AOT cache. Built on x64 and arm64
+  # so a single .msixbundle covers both architectures for the Microsoft Store.
+  build-appx:
+    name: AppX (${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x64
+          - os: windows-11-arm
+            arch: arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve app version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          else
+            VERSION="1.0.0"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Nucleus (JBR)
+        uses: kdroidFilter/Nucleus/.github/actions/setup-nucleus@main
+        with:
+          graalvm: "false"
+          jbr-version: "25.0.2b329.66"
+          packaging-tools: "false"
+          setup-gradle: "true"
+          setup-node: "false"
+
+      - name: Build AppX (JVM + Leyden AOT cache)
+        shell: bash
+        run: |
+          ./gradlew :desktopApp:packageAppX \
+            -PappVersion=${{ steps.version.outputs.version }} \
+            -PenableAotCache=true \
+            --no-daemon --stacktrace
+
+      - name: Upload AppX
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheduleit-windows-appx-${{ matrix.arch }}
+          path: desktopApp/build/compose/binaries/**/*.appx
+          if-no-files-found: error
+
+  bundle-windows:
+    name: Windows MSIX Bundle
+    needs: build-appx
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download AppX (x64)
+        uses: actions/download-artifact@v4
+        with:
+          name: scheduleit-windows-appx-x64
+          path: artifacts/windows-x64
+
+      - name: Download AppX (arm64)
+        uses: actions/download-artifact@v4
+        with:
+          name: scheduleit-windows-appx-arm64
+          path: artifacts/windows-arm64
+
+      - name: Build MSIX bundle
+        uses: kdroidFilter/Nucleus/.github/actions/build-windows-appxbundle@main
+        with:
+          amd64-path: artifacts/windows-x64
+          arm64-path: artifacts/windows-arm64
+          output-path: artifacts/windows-bundle
+
+      - name: Upload MSIX bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheduleit-windows-bundle
+          path: artifacts/windows-bundle/**/*.msixbundle
           if-no-files-found: error
 
   release:
     name: Publish Release
-    needs: build
+    needs: [build, build-appx, bundle-windows]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
