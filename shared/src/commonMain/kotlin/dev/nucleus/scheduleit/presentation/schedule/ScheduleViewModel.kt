@@ -231,7 +231,7 @@ class ScheduleViewModel(
     }
 
     companion object {
-        const val SLOT_MINUTES = 30
+        const val SLOT_MINUTES = 15
         const val DEFAULT_COLOR = 0xFF42A5F5L
         const val BACKUP_EXTENSION = "scheduleit"
     }

@@ -19,6 +19,7 @@ import io.github.kdroidfilter.nucleus.scheduler.DesktopTaskScheduler
 import io.github.kdroidfilter.nucleus.scheduler.TaskRequest
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedWindow
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
+import io.github.kdroidfilter.nucleus.graalvm.GraalVmInitializer
 import kotlin.time.Duration.Companion.minutes
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.intui.standalone.theme.IntUiTheme
@@ -28,6 +29,7 @@ import org.jetbrains.jewel.intui.standalone.theme.lightThemeDefinition
 import org.jetbrains.jewel.ui.ComponentStyling
 
 fun main(args: Array<String>) {
+    GraalVmInitializer.initialize()
     if (DesktopBootReceiver.isSchedulerInvocation(args)) {
         DesktopBootReceiver.handle(args = args, registry = ScheduleItTaskRegistry.registry)
         return
