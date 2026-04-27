@@ -23,6 +23,7 @@ import io.github.kdroidfilter.nucleus.darkmodedetector.isSystemInDarkMode
 import io.github.kdroidfilter.nucleus.scheduler.DesktopBootReceiver
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedWindow
 import io.github.kdroidfilter.nucleus.graalvm.GraalVmInitializer
+import kotlin.system.exitProcess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,7 +39,7 @@ fun main(args: Array<String>) {
     runCatching { GraalVmInitializer.initialize() }
     if (DesktopBootReceiver.isSchedulerInvocation(args)) {
         DesktopBootReceiver.handle(args = args, registry = ScheduleItTaskRegistry.registry)
-        return
+        exitProcess(0)
     }
 
     application {
