@@ -43,6 +43,7 @@ import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleUiState
 import dev.nucleus.scheduleit.ui.common.formatHourLabel
 import dev.nucleus.scheduleit.ui.common.fullName
+import dev.nucleus.scheduleit.ui.common.localizedWeekOrder
 import org.jetbrains.compose.resources.stringResource
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.action_cancel
@@ -247,7 +248,7 @@ private fun DaysSection(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        AppDayOfWeek.entries.forEach { day ->
+        localizedWeekOrder().forEach { day ->
             DayCard(
                 day = day,
                 state = state,

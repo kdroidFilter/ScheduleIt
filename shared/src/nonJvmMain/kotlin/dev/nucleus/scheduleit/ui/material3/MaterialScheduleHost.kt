@@ -32,6 +32,7 @@ import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.nucleus.scheduleit.ui.common.TimeGrid
 import dev.nucleus.scheduleit.ui.common.fullName
+import dev.nucleus.scheduleit.ui.common.localizedWeekOrder
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import org.jetbrains.compose.resources.stringResource
 import scheduleit.shared.generated.resources.Res
@@ -49,6 +50,7 @@ fun MaterialScheduleHost() {
     val viewModel: ScheduleViewModel = metroViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
+    val visibleDays = localizedWeekOrder().filter { it in state.assignments }
 
     val invalidRangeText = stringResource(Res.string.error_invalid_range)
     val outsideWindowText = stringResource(Res.string.error_outside_window)
@@ -82,7 +84,7 @@ fun MaterialScheduleHost() {
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-            if (state.visibleDays.isEmpty()) {
+            if (visibleDays.isEmpty()) {
                 Column(
                     modifier = Modifier.fillMaxSize().padding(24.dp),
                     verticalArrangement = Arrangement.Center,
@@ -96,7 +98,7 @@ fun MaterialScheduleHost() {
                 }
             } else {
                 TimeGrid(
-                    visibleDays = state.visibleDays,
+                    visibleDays = visibleDays,
                     startMinute = state.settings.startMinute,
                     endMinute = state.settings.endMinute,
                     eventsForDay = { day ->

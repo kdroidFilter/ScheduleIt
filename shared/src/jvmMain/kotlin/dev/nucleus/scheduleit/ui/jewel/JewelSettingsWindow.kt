@@ -35,6 +35,7 @@ import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleUiState
 import dev.nucleus.scheduleit.ui.common.formatHourLabel
 import dev.nucleus.scheduleit.ui.common.fullName
+import dev.nucleus.scheduleit.ui.common.localizedWeekOrder
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.CheckboxRow
@@ -248,7 +249,7 @@ private fun DaysSection(
             stringResource(Res.string.settings_days_explanation),
             color = JewelTheme.globalColors.text.info,
         )
-        AppDayOfWeek.entries.forEach { day ->
+        localizedWeekOrder().forEach { day ->
             DayCard(day = day, state = state, templateOrder = templateOrder, onIntent = onIntent)
         }
     }

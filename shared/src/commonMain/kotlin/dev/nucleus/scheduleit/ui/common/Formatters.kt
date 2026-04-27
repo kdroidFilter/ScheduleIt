@@ -1,6 +1,8 @@
 package dev.nucleus.scheduleit.ui.common
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.intl.Locale
 import dev.nucleus.scheduleit.domain.AppDayOfWeek
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -45,6 +47,26 @@ fun AppDayOfWeek.fullName(): String = stringResource(fullNameRes())
 
 @Composable
 fun AppDayOfWeek.shortName(): String = stringResource(shortNameRes())
+
+private val HEBREW_WEEK_ORDER = listOf(
+    AppDayOfWeek.Sunday,
+    AppDayOfWeek.Monday,
+    AppDayOfWeek.Tuesday,
+    AppDayOfWeek.Wednesday,
+    AppDayOfWeek.Thursday,
+    AppDayOfWeek.Friday,
+    AppDayOfWeek.Saturday,
+)
+
+@Composable
+fun localizedWeekOrder(): List<AppDayOfWeek> {
+    val language = Locale.current.language
+    return remember(language) {
+        // In Hebrew, the week starts on Sunday and ends on Saturday (Shabbat).
+        if (language == "he" || language == "iw") HEBREW_WEEK_ORDER
+        else AppDayOfWeek.entries.toList()
+    }
+}
 
 fun formatTime(totalMinutes: Int): String {
     val hours = (totalMinutes / 60).coerceIn(0, 23)

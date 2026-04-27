@@ -16,6 +16,7 @@ import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.nucleus.scheduleit.ui.common.TimeGrid
 import dev.nucleus.scheduleit.ui.common.TimeGridDimensions
 import dev.nucleus.scheduleit.ui.common.fullName
+import dev.nucleus.scheduleit.ui.common.localizedWeekOrder
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
@@ -28,8 +29,10 @@ fun JewelScheduleHost() {
     val viewModel: ScheduleViewModel = metroViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val visibleDays = localizedWeekOrder().filter { it in state.assignments }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        if (state.visibleDays.isEmpty()) {
+        if (visibleDays.isEmpty()) {
             Column(
                 modifier = Modifier.fillMaxSize().padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -39,7 +42,7 @@ fun JewelScheduleHost() {
             }
         } else {
             TimeGrid(
-                visibleDays = state.visibleDays,
+                visibleDays = visibleDays,
                 startMinute = state.settings.startMinute,
                 endMinute = state.settings.endMinute,
                 eventsForDay = { day ->
