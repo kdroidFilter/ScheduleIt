@@ -20,6 +20,7 @@ import dev.nucleus.scheduleit.ui.jewel.ScheduleItTitleBar
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import io.github.kdroidfilter.nucleus.core.runtime.SingleInstanceManager
 import io.github.kdroidfilter.nucleus.darkmodedetector.isSystemInDarkMode
+import io.github.kdroidfilter.nucleus.notification.windows.WindowsNotificationCenter
 import io.github.kdroidfilter.nucleus.scheduler.DesktopBootReceiver
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedWindow
 import io.github.kdroidfilter.nucleus.graalvm.GraalVmInitializer
@@ -37,6 +38,7 @@ import org.jetbrains.jewel.ui.ComponentStyling
 
 fun main(args: Array<String>) {
     runCatching { GraalVmInitializer.initialize() }
+    runCatching { WindowsNotificationCenter.initialize() }
     if (DesktopBootReceiver.isSchedulerInvocation(args)) {
         DesktopBootReceiver.handle(args = args, registry = ScheduleItTaskRegistry.registry)
         exitProcess(0)
