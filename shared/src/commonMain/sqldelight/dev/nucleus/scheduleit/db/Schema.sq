@@ -1,0 +1,108 @@
+CREATE TABLE schedule_settings (
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT 1,
+    start_minute INTEGER NOT NULL,
+    end_minute INTEGER NOT NULL,
+    notifications_enabled INTEGER NOT NULL DEFAULT 0
+);
+
+INSERT OR IGNORE INTO schedule_settings(id, start_minute, end_minute, notifications_enabled) VALUES (1, 480, 1200, 0);
+
+CREATE TABLE day_template (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE day_assignment (
+    day INTEGER NOT NULL PRIMARY KEY,
+    template_id INTEGER NOT NULL REFERENCES day_template(id) ON DELETE RESTRICT
+);
+
+CREATE INDEX day_assignment_template_idx ON day_assignment(template_id);
+
+CREATE TABLE event (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    template_id INTEGER NOT NULL REFERENCES day_template(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    start_minute INTEGER NOT NULL,
+    end_minute INTEGER NOT NULL,
+    color INTEGER NOT NULL,
+    notes TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX event_template_idx ON event(template_id);
+
+selectSettings:
+SELECT start_minute, end_minute, notifications_enabled FROM schedule_settings WHERE id = 1;
+
+updateSettings:
+UPDATE schedule_settings SET start_minute = ?, end_minute = ? WHERE id = 1;
+
+updateNotificationsEnabled:
+UPDATE schedule_settings SET notifications_enabled = ? WHERE id = 1;
+
+selectAllTemplates:
+SELECT id, name FROM day_template ORDER BY id;
+
+insertTemplate:
+INSERT INTO day_template(name) VALUES (?);
+
+renameTemplate:
+UPDATE day_template SET name = ? WHERE id = ?;
+
+deleteTemplate:
+DELETE FROM day_template WHERE id = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();
+
+selectAllAssignments:
+SELECT day, template_id FROM day_assignment ORDER BY day;
+
+upsertAssignment:
+INSERT INTO day_assignment(day, template_id) VALUES (?, ?)
+ON CONFLICT(day) DO UPDATE SET template_id = excluded.template_id;
+
+deleteAssignment:
+DELETE FROM day_assignment WHERE day = ?;
+
+countAssignmentsForTemplate:
+SELECT COUNT(*) FROM day_assignment WHERE template_id = ?;
+
+selectAllEvents:
+SELECT id, template_id, title, start_minute, end_minute, color, notes
+FROM event
+ORDER BY start_minute;
+
+selectEventsForTemplate:
+SELECT id, template_id, title, start_minute, end_minute, color, notes
+FROM event
+WHERE template_id = ?
+ORDER BY start_minute;
+
+insertEvent:
+INSERT INTO event(template_id, title, start_minute, end_minute, color, notes)
+VALUES (?, ?, ?, ?, ?, ?);
+
+updateEvent:
+UPDATE event
+SET title = ?, start_minute = ?, end_minute = ?, color = ?, notes = ?
+WHERE id = ?;
+
+deleteEvent:
+DELETE FROM event WHERE id = ?;
+
+deleteAllEvents:
+DELETE FROM event;
+
+deleteAllAssignments:
+DELETE FROM day_assignment;
+
+deleteAllTemplates:
+DELETE FROM day_template;
+
+insertTemplateWithId:
+INSERT INTO day_template(id, name) VALUES (?, ?);
+
+insertEventWithId:
+INSERT INTO event(id, template_id, title, start_minute, end_minute, color, notes)
+VALUES (?, ?, ?, ?, ?, ?, ?);

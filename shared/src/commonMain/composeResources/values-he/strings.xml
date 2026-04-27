@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ScheduleIt</string>
+
+    <string name="schedule_title">לוח זמנים</string>
+    <string name="settings_title">הגדרות</string>
+
+    <string name="action_open_settings">הגדרות</string>
+    <string name="action_close">סגור</string>
+    <string name="action_back">חזור</string>
+    <string name="action_save">שמור</string>
+    <string name="action_cancel">ביטול</string>
+    <string name="action_delete">מחק</string>
+    <string name="action_add">הוסף</string>
+    <string name="action_add_event">הוסף אירוע</string>
+    <string name="action_edit">ערוך</string>
+    <string name="action_delete_event">מחק אירוע</string>
+    <string name="action_step_up">הגדל</string>
+    <string name="action_step_down">הקטן</string>
+
+    <string name="settings_hours_section">שעות גלויות</string>
+    <string name="settings_start_hour">התחלה</string>
+    <string name="settings_end_hour">סיום</string>
+    <string name="settings_hour_format">%02d:00</string>
+
+    <string name="settings_days_section">ימים</string>
+    <string name="settings_days_explanation">החלף נראות, או העתק לוח זמנים של יום אחר באמצעות &#8220;זהה ל&#8221;.</string>
+    <string name="settings_hours_range_label">%1$s — %2$s</string>
+
+    <string name="settings_link_same_as">זהה ל</string>
+    <string name="settings_link_independent">לוח זמנים עצמאי</string>
+    <string name="settings_link_hidden">מוסתר</string>
+
+    <string name="day_monday">שני</string>
+    <string name="day_tuesday">שלישי</string>
+    <string name="day_wednesday">רביעי</string>
+    <string name="day_thursday">חמישי</string>
+    <string name="day_friday">שישי</string>
+    <string name="day_saturday">שבת</string>
+    <string name="day_sunday">ראשון</string>
+
+    <string name="day_short_monday">ב&#8217;</string>
+    <string name="day_short_tuesday">ג&#8217;</string>
+    <string name="day_short_wednesday">ד&#8217;</string>
+    <string name="day_short_thursday">ה&#8217;</string>
+    <string name="day_short_friday">ו&#8217;</string>
+    <string name="day_short_saturday">ש&#8217;</string>
+    <string name="day_short_sunday">א&#8217;</string>
+
+    <string name="event_dialog_new_title">אירוע חדש</string>
+    <string name="event_dialog_edit_title">עריכת אירוע</string>
+    <string name="event_field_title">כותרת</string>
+    <string name="event_field_start">התחלה</string>
+    <string name="event_field_end">סיום</string>
+    <string name="event_field_color">צבע</string>
+    <string name="event_field_notes">הערות</string>
+    <string name="event_time_format">%02d:%02d</string>
+
+    <string name="empty_schedule_hint">אין יום גלוי. פתח את ההגדרות כדי להפעיל ימים.</string>
+    <string name="error_invalid_range">הסיום חייב להיות אחרי ההתחלה.</string>
+    <string name="error_outside_window">האירוע חייב להיכנס לטווח השעות הגלוי.</string>
+    <string name="error_overlap">אירוע זה חופף לאירוע אחר.</string>
+    <string name="error_invalid_backup">לא ניתן לקרוא את קובץ הגיבוי.</string>
+
+    <string name="settings_notifications_section">התראות</string>
+    <string name="settings_notifications_label">התראה בתחילת אירוע</string>
+
+    <string name="settings_data_section">נתונים</string>
+    <string name="action_export">ייצוא…</string>
+    <string name="action_import">ייבוא…</string>
+</resources>

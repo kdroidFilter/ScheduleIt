@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ScheduleIt</string>
+
+    <string name="schedule_title">Schedule</string>
+    <string name="settings_title">Settings</string>
+
+    <string name="action_open_settings">Settings</string>
+    <string name="action_close">Close</string>
+    <string name="action_back">Back</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_add">Add</string>
+    <string name="action_add_event">Add event</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete_event">Delete event</string>
+    <string name="action_step_up">Increase</string>
+    <string name="action_step_down">Decrease</string>
+
+    <string name="settings_hours_section">Visible hours</string>
+    <string name="settings_start_hour">Start</string>
+    <string name="settings_end_hour">End</string>
+    <string name="settings_hour_format">%02d:00</string>
+
+    <string name="settings_days_section">Days</string>
+    <string name="settings_days_explanation">Toggle visibility, or copy another day&#8217;s schedule with “Same as”.</string>
+    <string name="settings_hours_range_label">%1$s — %2$s</string>
+
+    <string name="settings_link_same_as">Same as</string>
+    <string name="settings_link_independent">Own schedule</string>
+    <string name="settings_link_hidden">Hidden</string>
+
+    <string name="day_monday">Monday</string>
+    <string name="day_tuesday">Tuesday</string>
+    <string name="day_wednesday">Wednesday</string>
+    <string name="day_thursday">Thursday</string>
+    <string name="day_friday">Friday</string>
+    <string name="day_saturday">Saturday</string>
+    <string name="day_sunday">Sunday</string>
+
+    <string name="day_short_monday">Mon</string>
+    <string name="day_short_tuesday">Tue</string>
+    <string name="day_short_wednesday">Wed</string>
+    <string name="day_short_thursday">Thu</string>
+    <string name="day_short_friday">Fri</string>
+    <string name="day_short_saturday">Sat</string>
+    <string name="day_short_sunday">Sun</string>
+
+    <string name="event_dialog_new_title">New event</string>
+    <string name="event_dialog_edit_title">Edit event</string>
+    <string name="event_field_title">Title</string>
+    <string name="event_field_start">Start</string>
+    <string name="event_field_end">End</string>
+    <string name="event_field_color">Color</string>
+    <string name="event_field_notes">Notes</string>
+    <string name="event_time_format">%02d:%02d</string>
+
+    <string name="empty_schedule_hint">No visible day. Open settings to enable days.</string>
+    <string name="error_invalid_range">End must be after start.</string>
+    <string name="error_outside_window">Event must fit in the visible hour range.</string>
+    <string name="error_overlap">This event overlaps another one.</string>
+    <string name="error_invalid_backup">Could not read this backup file.</string>
+
+    <string name="settings_notifications_section">Notifications</string>
+    <string name="settings_notifications_label">Notify when an event starts</string>
+
+    <string name="settings_data_section">Data</string>
+    <string name="action_export">Export…</string>
+    <string name="action_import">Import…</string>
+</resources>

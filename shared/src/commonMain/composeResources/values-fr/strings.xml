@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ScheduleIt</string>
+
+    <string name="schedule_title">Planning</string>
+    <string name="settings_title">Paramètres</string>
+
+    <string name="action_open_settings">Paramètres</string>
+    <string name="action_close">Fermer</string>
+    <string name="action_back">Retour</string>
+    <string name="action_save">Enregistrer</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_delete">Supprimer</string>
+    <string name="action_add">Ajouter</string>
+    <string name="action_add_event">Ajouter un événement</string>
+    <string name="action_edit">Modifier</string>
+    <string name="action_delete_event">Supprimer l&#8217;événement</string>
+    <string name="action_step_up">Augmenter</string>
+    <string name="action_step_down">Diminuer</string>
+
+    <string name="settings_hours_section">Heures visibles</string>
+    <string name="settings_start_hour">Début</string>
+    <string name="settings_end_hour">Fin</string>
+    <string name="settings_hour_format">%02d:00</string>
+
+    <string name="settings_days_section">Jours</string>
+    <string name="settings_days_explanation">Activez la visibilité ou copiez le planning d&#8217;un autre jour avec « Identique à ».</string>
+    <string name="settings_hours_range_label">%1$s — %2$s</string>
+
+    <string name="settings_link_same_as">Identique à</string>
+    <string name="settings_link_independent">Planning propre</string>
+    <string name="settings_link_hidden">Masqué</string>
+
+    <string name="day_monday">Lundi</string>
+    <string name="day_tuesday">Mardi</string>
+    <string name="day_wednesday">Mercredi</string>
+    <string name="day_thursday">Jeudi</string>
+    <string name="day_friday">Vendredi</string>
+    <string name="day_saturday">Samedi</string>
+    <string name="day_sunday">Dimanche</string>
+
+    <string name="day_short_monday">Lun</string>
+    <string name="day_short_tuesday">Mar</string>
+    <string name="day_short_wednesday">Mer</string>
+    <string name="day_short_thursday">Jeu</string>
+    <string name="day_short_friday">Ven</string>
+    <string name="day_short_saturday">Sam</string>
+    <string name="day_short_sunday">Dim</string>
+
+    <string name="event_dialog_new_title">Nouvel événement</string>
+    <string name="event_dialog_edit_title">Modifier l&#8217;événement</string>
+    <string name="event_field_title">Titre</string>
+    <string name="event_field_start">Début</string>
+    <string name="event_field_end">Fin</string>
+    <string name="event_field_color">Couleur</string>
+    <string name="event_field_notes">Notes</string>
+    <string name="event_time_format">%02d:%02d</string>
+
+    <string name="empty_schedule_hint">Aucun jour visible. Ouvrez les paramètres pour activer des jours.</string>
+    <string name="error_invalid_range">La fin doit être postérieure au début.</string>
+    <string name="error_outside_window">L&#8217;événement doit tenir dans la plage horaire visible.</string>
+    <string name="error_overlap">Cet événement en chevauche un autre.</string>
+    <string name="error_invalid_backup">Impossible de lire ce fichier de sauvegarde.</string>
+
+    <string name="settings_notifications_section">Notifications</string>
+    <string name="settings_notifications_label">Notifier au début d&#8217;un événement</string>
+
+    <string name="settings_data_section">Données</string>
+    <string name="action_export">Exporter…</string>
+    <string name="action_import">Importer…</string>
+</resources>
