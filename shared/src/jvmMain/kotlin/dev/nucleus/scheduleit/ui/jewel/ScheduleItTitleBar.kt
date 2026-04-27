@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import io.github.kdroidfilter.nucleus.core.runtime.Platform
 import io.github.kdroidfilter.nucleus.window.DecoratedWindowScope
 import io.github.kdroidfilter.nucleus.window.jewel.JewelTitleBar
 import org.jetbrains.compose.resources.stringResource
@@ -30,7 +31,10 @@ fun DecoratedWindowScope.ScheduleItTitleBar() {
     JewelTitleBar(Modifier) {
         Text(stringResource(Res.string.app_name))
 
-        Row(Modifier.align(Alignment.End)) {
+        // Place the settings button opposite the window control buttons:
+        // End on macOS (controls on the left), Start on Windows/Linux (controls on the right).
+        val settingsAlignment = if (Platform.Current == Platform.MacOS) Alignment.End else Alignment.Start
+        Row(Modifier.align(settingsAlignment)) {
             val tooltipText = stringResource(Res.string.action_open_settings)
             Tooltip({ Text(tooltipText) }) {
                 IconButton(
