@@ -44,7 +44,7 @@ nucleus.application {
     mainClass = "dev.nucleus.scheduleit.MainKt"
 
     nativeDistributions {
-        targetFormats(TargetFormat.Dmg, TargetFormat.Nsis, TargetFormat.Deb)
+        targetFormats(TargetFormat.Dmg, TargetFormat.Nsis, TargetFormat.Deb, TargetFormat.AppX)
         cleanupNativeLibs = true
         compressionLevel = CompressionLevel.Maximum
         packageName = "ScheduleIt"
@@ -72,6 +72,22 @@ nucleus.application {
             nsis {
                 multiLanguageInstaller = true
                 installerLanguages = listOf("en_US", "fr_FR", "he_IL")
+            }
+            appx {
+                applicationId = "ScheduleIt"
+                identityName = "ElieGambache.ScheduleIt"
+                displayName = "ScheduleIt"
+                publisherDisplayName = "Elie Gambache"
+                // Placeholder publisher CN — must match the code-signing certificate Subject.
+                // Replace with the real "CN=..." (and SHA1 thumbprint if applicable) before publishing.
+                publisher = "CN=Elie Gambache"
+                languages = listOf("en-US", "fr-FR", "he-IL")
+                backgroundColor = "#FFFFFF"
+                showNameOnTiles = true
+                storeLogo.set(project.file("packaging/appx/StoreLogo.png"))
+                square44x44Logo.set(project.file("packaging/appx/Square44x44Logo.png"))
+                square150x150Logo.set(project.file("packaging/appx/Square150x150Logo.png"))
+                wide310x150Logo.set(project.file("packaging/appx/Wide310x150Logo.png"))
             }
         }
         linux {

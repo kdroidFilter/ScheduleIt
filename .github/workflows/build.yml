@@ -26,16 +26,24 @@ jobs:
         include:
           - name: Linux (x64)
             os: ubuntu-latest
-            task: packageGraalvmDeb
+            tasks: packageGraalvmDeb
             artifact: linux-x64
+          - name: Linux (arm64)
+            os: ubuntu-24.04-arm
+            tasks: packageGraalvmDeb
+            artifact: linux-arm64
           - name: Windows (x64)
             os: windows-latest
-            task: packageGraalvmNsis
+            tasks: packageGraalvmNsis packageGraalvmAppX
             artifact: windows-x64
           - name: macOS (arm64)
             os: macos-latest
-            task: packageGraalvmDmg
+            tasks: packageGraalvmDmg
             artifact: macos-arm64
+          - name: macOS (x64)
+            os: macos-13
+            tasks: packageGraalvmDmg
+            artifact: macos-x64
 
     steps:
       - name: Checkout
@@ -66,7 +74,12 @@ jobs:
       - name: Build native image
         shell: bash
         run: |
-          ./gradlew :desktopApp:${{ matrix.task }} \
+          set -euo pipefail
+          GRADLE_TASKS=""
+          for task in ${{ matrix.tasks }}; do
+            GRADLE_TASKS="$GRADLE_TASKS :desktopApp:$task"
+          done
+          ./gradlew $GRADLE_TASKS \
             -PappVersion=${{ steps.version.outputs.version }} \
             -PnativeMarch=compatibility \
             --no-daemon --stacktrace
@@ -80,6 +93,7 @@ jobs:
             desktopApp/build/compose/binaries/**/*.dmg
             desktopApp/build/compose/binaries/**/*.exe
             desktopApp/build/compose/binaries/**/*.msi
+            desktopApp/build/compose/binaries/**/*.appx
           if-no-files-found: error
 
   release:
