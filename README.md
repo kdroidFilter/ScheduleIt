@@ -28,57 +28,6 @@ A Kotlin Multiplatform app for designing your **recurring weekly schedule** — 
 
 ![Settings](art/settings.png)
 
-## Project structure
-
-- [`/shared`](./shared/src) — Kotlin Multiplatform module shared across platforms.
-    - [`commonMain`](./shared/src/commonMain/kotlin) — domain, data (SQLDelight), DI (Metro), presentation, Compose UI.
-    - [`androidMain`](./shared/src/androidMain/kotlin), [`iosMain`](./shared/src/iosMain/kotlin), [`jvmMain`](./shared/src/jvmMain/kotlin) — platform-specific drivers and integrations.
-- [`/androidApp`](./androidApp) — Android entry point (`MainActivity`, manifest, resources).
-- [`/desktopApp`](./desktopApp) — Desktop (JVM) entry point (`main()`, distribution config).
-- [`/iosApp`](./iosApp/iosApp) — iOS entry point (SwiftUI host for the Compose UI).
-
-## Tech stack
-
-- **Compose Multiplatform** + **Jewel** (IntelliJ-style theming on desktop)
-- **SQLDelight** for type-safe SQL across platforms
-- **Metro** for dependency injection
-- **kotlinx.coroutines / Flow** for reactive state
-- **kotlinx.serialization** for JSON backup/restore
-
-Desktop data lives at `~/.scheduleit/scheduleit.db`.
-
-## Build and Run
-
-### Android
-
-- on macOS/Linux
-  ```shell
-  ./gradlew :androidApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :androidApp:assembleDebug
-  ```
-
-### Desktop (JVM)
-
-- on macOS/Linux
-  ```shell
-  ./gradlew :desktopApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :desktopApp:run
-  ```
-
-### iOS
-
-Use the run configuration from the run widget in your IDE’s toolbar, or open the [`/iosApp`](./iosApp) directory in Xcode and run it from there.
-
----
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html).
-
 ## License
 
 This project is licensed under the GNU General Public License v3.0 — see the [LICENSE](./LICENSE) file for details.
