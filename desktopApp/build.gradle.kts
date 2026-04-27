@@ -42,6 +42,7 @@ nucleus.application {
 
     nativeDistributions {
         targetFormats(TargetFormat.Dmg, TargetFormat.Nsis, TargetFormat.Deb)
+        cleanupNativeLibs = true
         compressionLevel = CompressionLevel.Maximum
         packageName = "ScheduleIt"
         packageVersion = appVersion
