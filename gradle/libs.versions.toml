@@ -52,6 +52,7 @@ nucleus-decoratedWindowJni = { module = "io.github.kdroidfilter:nucleus.decorate
 nucleus-decoratedWindowJewel = { module = "io.github.kdroidfilter:nucleus.decorated-window-jewel", version.ref = "nucleus" }
 nucleus-scheduler = { module = "io.github.kdroidfilter:nucleus.scheduler", version.ref = "nucleus" }
 nucleus-graalvmRuntime = { module = "io.github.kdroidfilter:nucleus.graalvm-runtime", version.ref = "nucleus" }
+nucleus-aotRuntime = { module = "io.github.kdroidfilter:nucleus.aot-runtime", version.ref = "nucleus" }
 nucleus-notificationCommon = { module = "io.github.kdroidfilter:nucleus.notification-common", version.ref = "nucleus" }
 nucleus-notificationWindows = { module = "io.github.kdroidfilter:nucleus.notification-windows", version.ref = "nucleus" }
 nucleus-notificationMacos = { module = "io.github.kdroidfilter:nucleus.notification-macos", version.ref = "nucleus" }

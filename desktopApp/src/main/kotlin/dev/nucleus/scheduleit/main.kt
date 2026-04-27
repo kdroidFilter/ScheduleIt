@@ -18,6 +18,7 @@ import androidx.compose.ui.window.rememberWindowState
 import dev.nucleus.scheduleit.di.createDesktopAppGraph
 import dev.nucleus.scheduleit.ui.jewel.ScheduleItTitleBar
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
+import io.github.kdroidfilter.nucleus.aot.runtime.AotRuntime
 import io.github.kdroidfilter.nucleus.core.runtime.SingleInstanceManager
 import io.github.kdroidfilter.nucleus.darkmodedetector.isSystemInDarkMode
 import io.github.kdroidfilter.nucleus.notification.windows.WindowsNotificationCenter
@@ -36,12 +37,20 @@ import org.jetbrains.jewel.intui.standalone.theme.default
 import org.jetbrains.jewel.intui.standalone.theme.lightThemeDefinition
 import org.jetbrains.jewel.ui.ComponentStyling
 
+private const val AOT_TRAINING_DURATION_MS = 30_000L
+
 fun main(args: Array<String>) {
     runCatching { GraalVmInitializer.initialize() }
     runCatching { WindowsNotificationCenter.initialize() }
     if (DesktopBootReceiver.isSchedulerInvocation(args)) {
         DesktopBootReceiver.handle(args = args, registry = ScheduleItTaskRegistry.registry)
         exitProcess(0)
+    }
+    if (AotRuntime.isTraining()) {
+        Thread({
+            Thread.sleep(AOT_TRAINING_DURATION_MS)
+            exitProcess(0)
+        }, "aot-training-timer").apply { isDaemon = false }.start()
     }
 
     application {

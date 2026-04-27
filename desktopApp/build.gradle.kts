@@ -19,6 +19,10 @@ val appVersion: String = (findProperty("appVersion") as String?)
     ?.takeIf { it.isNotBlank() }
     ?: "1.0.0"
 
+// Project Leyden AOT cache (JVM mode only). Enabled on demand via -PenableAotCache=true
+// to avoid running a training launch during GraalVM native-image builds.
+val aotCacheEnabled: Boolean = (findProperty("enableAotCache") as String?)?.toBoolean() ?: false
+
 dependencies {
     implementation(projects.shared)
     implementation(compose.desktop.currentOs)
@@ -37,6 +41,7 @@ dependencies {
     implementation(libs.nucleus.notificationLinux)
     implementation(libs.nucleus.coreRuntime)
     implementation(libs.nucleus.graalvmRuntime)
+    implementation(libs.nucleus.aotRuntime)
     implementation(libs.nucleus.menuMacos)
 }
 
@@ -47,6 +52,7 @@ nucleus.application {
         targetFormats(TargetFormat.Dmg, TargetFormat.Nsis, TargetFormat.Deb, TargetFormat.AppX)
         cleanupNativeLibs = true
         compressionLevel = CompressionLevel.Maximum
+        enableAotCache = aotCacheEnabled
         packageName = "ScheduleIt"
         packageVersion = appVersion
         description = "Schedule and manage your tasks across desktop and mobile."
