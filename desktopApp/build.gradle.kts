@@ -46,6 +46,7 @@ nucleus.application {
         description = "Schedule and manage your tasks across desktop and mobile."
         vendor = "Elie Gambache"
         copyright = "© 2026 Elie Gambache. Licensed under GPLv3."
+        homepage = "https://github.com/kdroidFilter/ScheduleIt"
         licenseFile.set(rootProject.file("LICENSE"))
         modules("java.sql")
 
