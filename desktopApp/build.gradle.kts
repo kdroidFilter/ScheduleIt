@@ -66,6 +66,10 @@ nucleus.application {
             upgradeUuid = "5AC22F8D-A59F-4590-9AED-590CF72774E7"
             menuGroup = "ScheduleIt"
             perUserInstall = true
+            nsis {
+                multiLanguageInstaller = true
+                installerLanguages = listOf("en_US", "fr_FR", "he_IL")
+            }
         }
         linux {
             iconFile.set(rootProject.file("art/icon.png"))
