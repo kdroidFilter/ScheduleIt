@@ -17,6 +17,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,9 +44,14 @@ import org.jetbrains.jewel.ui.component.GroupHeader
 import org.jetbrains.jewel.ui.component.OutlinedButton
 import org.jetbrains.jewel.ui.component.Text
 import scheduleit.shared.generated.resources.Res
+import scheduleit.shared.generated.resources.action_cancel
 import scheduleit.shared.generated.resources.action_close
 import scheduleit.shared.generated.resources.action_export
 import scheduleit.shared.generated.resources.action_import
+import scheduleit.shared.generated.resources.action_reset_confirm
+import scheduleit.shared.generated.resources.action_reset_database
+import scheduleit.shared.generated.resources.reset_confirm_message
+import scheduleit.shared.generated.resources.reset_confirm_title
 import scheduleit.shared.generated.resources.settings_data_section
 import scheduleit.shared.generated.resources.settings_days_explanation
 import scheduleit.shared.generated.resources.settings_days_section
@@ -137,6 +146,7 @@ private fun NotificationsSection(
 private fun DataSection(
     onIntent: (ScheduleIntent) -> Unit,
 ) {
+    var showResetConfirm by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         GroupHeader(stringResource(Res.string.settings_data_section))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -145,6 +155,54 @@ private fun DataSection(
             }
             OutlinedButton(onClick = { onIntent(ScheduleIntent.ImportData) }) {
                 Text(stringResource(Res.string.action_import))
+            }
+            OutlinedButton(onClick = { showResetConfirm = true }) {
+                Text(stringResource(Res.string.action_reset_database))
+            }
+        }
+    }
+    if (showResetConfirm) {
+        ResetConfirmDialog(
+            onConfirm = {
+                showResetConfirm = false
+                onIntent(ScheduleIntent.ResetData)
+            },
+            onCancel = { showResetConfirm = false },
+        )
+    }
+}
+
+@Composable
+private fun ResetConfirmDialog(
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    val dialogState = rememberDialogState(size = DpSize(420.dp, 200.dp))
+    val title = stringResource(Res.string.reset_confirm_title)
+    JewelDecoratedDialog(
+        onCloseRequest = onCancel,
+        state = dialogState,
+        title = title,
+    ) {
+        JewelDialogTitleBar { _ -> Text(title) }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(JewelTheme.globalColors.panelBackground)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(stringResource(Res.string.reset_confirm_message))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+            ) {
+                OutlinedButton(onClick = onCancel) {
+                    Text(stringResource(Res.string.action_cancel))
+                }
+                DefaultButton(onClick = onConfirm) {
+                    Text(stringResource(Res.string.action_reset_confirm))
+                }
             }
         }
     }

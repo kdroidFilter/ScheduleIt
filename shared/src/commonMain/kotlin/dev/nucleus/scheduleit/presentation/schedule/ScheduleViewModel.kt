@@ -71,6 +71,7 @@ class ScheduleViewModel(
             is ScheduleIntent.SetNotificationsEnabled -> setNotificationsEnabled(intent.enabled)
             ScheduleIntent.ExportData -> exportData()
             ScheduleIntent.ImportData -> importData()
+            ScheduleIntent.ResetData -> resetData()
             is ScheduleIntent.HideDay -> hideDay(intent.day)
             is ScheduleIntent.AssignDayToTemplate -> assignDay(intent.day, intent.templateId)
             is ScheduleIntent.AssignDayToNewTemplate -> assignDayToNew(intent.day)
@@ -229,6 +230,10 @@ class ScheduleViewModel(
             }
             repository.replaceAll(backup.toSnapshot())
         }
+    }
+
+    private fun resetData() {
+        viewModelScope.launch { repository.resetAll() }
     }
 
     companion object {

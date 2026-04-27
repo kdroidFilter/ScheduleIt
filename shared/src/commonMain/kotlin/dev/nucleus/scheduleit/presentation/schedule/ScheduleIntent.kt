@@ -19,6 +19,7 @@ sealed interface ScheduleIntent {
     data class SetNotificationsEnabled(val enabled: Boolean) : ScheduleIntent
     data object ExportData : ScheduleIntent
     data object ImportData : ScheduleIntent
+    data object ResetData : ScheduleIntent
     data class HideDay(val day: AppDayOfWeek) : ScheduleIntent
     data class AssignDayToTemplate(val day: AppDayOfWeek, val templateId: Long) : ScheduleIntent
     data class AssignDayToNewTemplate(val day: AppDayOfWeek) : ScheduleIntent

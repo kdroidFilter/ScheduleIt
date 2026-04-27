@@ -71,6 +71,10 @@
     <string name="settings_data_section">נתונים</string>
     <string name="action_export">ייצוא…</string>
     <string name="action_import">ייבוא…</string>
+    <string name="action_reset_database">אפס מסד נתונים</string>
+    <string name="reset_confirm_title">לאפס את מסד הנתונים?</string>
+    <string name="reset_confirm_message">כל האירועים, הימים וההגדרות יימחקו לצמיתות.</string>
+    <string name="action_reset_confirm">אפס</string>
 
     <string name="menu_file">קובץ</string>
     <string name="menu_view">תצוגה</string>

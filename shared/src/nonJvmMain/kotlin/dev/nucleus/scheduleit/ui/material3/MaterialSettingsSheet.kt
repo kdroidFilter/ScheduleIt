@@ -45,10 +45,15 @@ import dev.nucleus.scheduleit.ui.common.formatHourLabel
 import dev.nucleus.scheduleit.ui.common.fullName
 import org.jetbrains.compose.resources.stringResource
 import scheduleit.shared.generated.resources.Res
+import scheduleit.shared.generated.resources.action_cancel
 import scheduleit.shared.generated.resources.action_close
 import scheduleit.shared.generated.resources.settings_days_explanation
 import scheduleit.shared.generated.resources.action_export
 import scheduleit.shared.generated.resources.action_import
+import scheduleit.shared.generated.resources.action_reset_confirm
+import scheduleit.shared.generated.resources.action_reset_database
+import scheduleit.shared.generated.resources.reset_confirm_message
+import scheduleit.shared.generated.resources.reset_confirm_title
 import scheduleit.shared.generated.resources.settings_data_section
 import scheduleit.shared.generated.resources.settings_days_section
 import scheduleit.shared.generated.resources.settings_notifications_label
@@ -147,6 +152,7 @@ private fun NotificationsSection(
 private fun DataSection(
     onIntent: (ScheduleIntent) -> Unit,
 ) {
+    var showResetConfirm by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = stringResource(Res.string.settings_data_section),
@@ -160,6 +166,40 @@ private fun DataSection(
                 Text(stringResource(Res.string.action_import))
             }
         }
+        OutlinedButton(
+            onClick = { showResetConfirm = true },
+            colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.error,
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+        ) {
+            Text(stringResource(Res.string.action_reset_database))
+        }
+    }
+    if (showResetConfirm) {
+        AlertDialog(
+            onDismissRequest = { showResetConfirm = false },
+            title = { Text(stringResource(Res.string.reset_confirm_title)) },
+            text = { Text(stringResource(Res.string.reset_confirm_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showResetConfirm = false
+                        onIntent(ScheduleIntent.ResetData)
+                    },
+                ) {
+                    Text(
+                        stringResource(Res.string.action_reset_confirm),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetConfirm = false }) {
+                    Text(stringResource(Res.string.action_cancel))
+                }
+            },
+        )
     }
 }
 

@@ -71,6 +71,10 @@
     <string name="settings_data_section">Data</string>
     <string name="action_export">Export…</string>
     <string name="action_import">Import…</string>
+    <string name="action_reset_database">Reset database</string>
+    <string name="reset_confirm_title">Reset database?</string>
+    <string name="reset_confirm_message">All your events, days and settings will be permanently deleted.</string>
+    <string name="action_reset_confirm">Reset</string>
 
     <string name="menu_file">File</string>
     <string name="menu_view">View</string>

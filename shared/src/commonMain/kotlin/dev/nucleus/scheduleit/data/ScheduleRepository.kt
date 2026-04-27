@@ -183,6 +183,21 @@ class ScheduleRepository(
         }
     }
 
+    suspend fun resetAll() = withContext(ioDispatcher) {
+        database.transaction {
+            queries.deleteAllEvents()
+            queries.deleteAllAssignments()
+            queries.deleteAllTemplates()
+            queries.updateSettings(DEFAULT_START_MINUTE, DEFAULT_END_MINUTE)
+            queries.updateNotificationsEnabled(0L)
+            AppDayOfWeek.entries.forEach { day ->
+                queries.insertTemplate("")
+                val id = queries.lastInsertedId().executeAsOne()
+                queries.upsertAssignment(day.isoIndex.toLong(), id)
+            }
+        }
+    }
+
     suspend fun replaceAll(snapshot: ScheduleSnapshot) = withContext(ioDispatcher) {
         database.transaction {
             queries.deleteAllEvents()
@@ -213,5 +228,10 @@ class ScheduleRepository(
                 )
             }
         }
+    }
+
+    private companion object {
+        const val DEFAULT_START_MINUTE = 480L
+        const val DEFAULT_END_MINUTE = 1200L
     }
 }

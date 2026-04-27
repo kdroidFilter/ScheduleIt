@@ -71,6 +71,10 @@
     <string name="settings_data_section">Données</string>
     <string name="action_export">Exporter…</string>
     <string name="action_import">Importer…</string>
+    <string name="action_reset_database">Réinitialiser la base</string>
+    <string name="reset_confirm_title">Réinitialiser la base ?</string>
+    <string name="reset_confirm_message">Tous vos événements, jours et paramètres seront définitivement supprimés.</string>
+    <string name="action_reset_confirm">Réinitialiser</string>
 
     <string name="menu_file">Fichier</string>
     <string name="menu_view">Affichage</string>
