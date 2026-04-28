@@ -115,4 +115,24 @@
     <string name="about_version">גרסה %1$s</string>
     <string name="about_license">רישיון: %1$s</string>
     <string name="about_made_with_love">נוצר עם ♥ על ידי אליהו גמבש</string>
+
+    <string name="onboarding_skip">דלג</string>
+    <string name="onboarding_welcome_title">השבוע שלך, מאורגן אחת ולתמיד.</string>
+    <string name="onboarding_welcome_subtitle">בנה את לוח הזמנים הקבוע שלך ב-30 שניות. אנחנו נזכור אותו בשבילך.</string>
+    <string name="onboarding_welcome_cta">בוא נתחיל</string>
+    <string name="onboarding_setup_title">הימים שלך, השעות שלך.</string>
+    <string name="onboarding_setup_subtitle">בחר מה להציג. ברירות המחדל מתאימות לרוב השבועות.</string>
+    <string name="onboarding_setup_days_label">ימים גלויים</string>
+    <string name="onboarding_setup_hours_label">שעות גלויות</string>
+    <string name="onboarding_setup_hint">תוכל לשנות הכל מאוחר יותר בהגדרות.</string>
+    <string name="onboarding_setup_continue">המשך</string>
+    <string name="onboarding_drive_title">שמור על לוח הזמנים שלך.</string>
+    <string name="onboarding_drive_subtitle">אם תחליף טלפון, תוכל לשחזר בלחיצה אחת. אנחנו מגבים לתיקיית האפליקציה הפרטית שלך.</string>
+    <string name="onboarding_drive_privacy">נשמר בתיקיית Drive ייעודית לאפליקציה — אנחנו לא רואים שום דבר אחר ב-Drive שלך.</string>
+    <string name="onboarding_drive_connect_cta">התחבר ל-Google Drive</string>
+    <string name="onboarding_drive_finish_later">אולי מאוחר יותר</string>
+    <string name="onboarding_drive_connecting">ממתין לאישור שלך…</string>
+    <string name="onboarding_drive_success">מחובר. לוח הזמנים שלך מוגן.</string>
+    <string name="onboarding_drive_error">החיבור נכשל: %1$s</string>
+    <string name="onboarding_drive_open_app">פתח את ScheduleIt</string>
 </resources>

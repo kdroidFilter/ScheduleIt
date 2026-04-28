@@ -36,4 +36,6 @@ sealed interface ScheduleIntent {
 
     data object DismissError : ScheduleIntent
     data class ReportBlocked(val reason: ErrorKey) : ScheduleIntent
+
+    data object CompleteOnboarding : ScheduleIntent
 }

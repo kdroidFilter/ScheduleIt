@@ -39,6 +39,7 @@ class ScheduleRepository(
                     startMinute = it.start_minute.toInt(),
                     endMinute = it.end_minute.toInt(),
                     notificationsEnabled = it.notifications_enabled != 0L,
+                    onboardingCompleted = it.onboarding_completed != 0L,
                 )
             }
 
@@ -128,7 +129,9 @@ class ScheduleRepository(
         database.transaction {
             val existing = queries.selectAllAssignments().executeAsList()
             if (existing.isEmpty()) {
-                AppDayOfWeek.entries.forEach { day ->
+                // Mon-Fri pre-assigned; weekend stays hidden so the onboarding
+                // Default Effect matches the typical school/work week.
+                DEFAULT_VISIBLE_DAYS.forEach { day ->
                     queries.insertTemplate("")
                     val id = queries.lastInsertedId().executeAsOne()
                     queries.upsertAssignment(day.isoIndex.toLong(), id)
@@ -283,6 +286,10 @@ class ScheduleRepository(
         queries.updateNotificationsEnabled(if (enabled) 1L else 0L)
     }
 
+    suspend fun setOnboardingCompleted(completed: Boolean) = withContext(ioDispatcher) {
+        queries.updateOnboardingCompleted(if (completed) 1L else 0L)
+    }
+
     suspend fun snapshotOnce(): ScheduleSnapshot = withContext(ioDispatcher) {
         database.transactionWithResult {
             val s = queries.selectSettings().executeAsOne()
@@ -332,6 +339,7 @@ class ScheduleRepository(
                     startMinute = s.start_minute.toInt(),
                     endMinute = s.end_minute.toInt(),
                     notificationsEnabled = s.notifications_enabled != 0L,
+                    onboardingCompleted = s.onboarding_completed != 0L,
                 ),
                 templates = templates,
                 assignments = assignments,
@@ -351,7 +359,7 @@ class ScheduleRepository(
             queries.deleteAllTemplates()
             queries.updateSettings(DEFAULT_START_MINUTE, DEFAULT_END_MINUTE)
             queries.updateNotificationsEnabled(0L)
-            AppDayOfWeek.entries.forEach { day ->
+            DEFAULT_VISIBLE_DAYS.forEach { day ->
                 queries.insertTemplate("")
                 val id = queries.lastInsertedId().executeAsOne()
                 queries.upsertAssignment(day.isoIndex.toLong(), id)
@@ -419,5 +427,12 @@ class ScheduleRepository(
     private companion object {
         const val DEFAULT_START_MINUTE = 480L
         const val DEFAULT_END_MINUTE = 1200L
+        val DEFAULT_VISIBLE_DAYS = listOf(
+            AppDayOfWeek.Monday,
+            AppDayOfWeek.Tuesday,
+            AppDayOfWeek.Wednesday,
+            AppDayOfWeek.Thursday,
+            AppDayOfWeek.Friday,
+        )
     }
 }

@@ -19,6 +19,7 @@ data class ScheduleSettings(
     val startMinute: Int,
     val endMinute: Int,
     val notificationsEnabled: Boolean = false,
+    val onboardingCompleted: Boolean = false,
 ) {
     init {
         require(startMinute in 0..1440) { "startMinute out of range" }

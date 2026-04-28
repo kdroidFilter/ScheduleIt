@@ -2,10 +2,11 @@ CREATE TABLE schedule_settings (
     id INTEGER NOT NULL PRIMARY KEY DEFAULT 1,
     start_minute INTEGER NOT NULL,
     end_minute INTEGER NOT NULL,
-    notifications_enabled INTEGER NOT NULL DEFAULT 0
+    notifications_enabled INTEGER NOT NULL DEFAULT 0,
+    onboarding_completed INTEGER NOT NULL DEFAULT 0
 );
 
-INSERT OR IGNORE INTO schedule_settings(id, start_minute, end_minute, notifications_enabled) VALUES (1, 480, 1200, 0);
+INSERT OR IGNORE INTO schedule_settings(id, start_minute, end_minute, notifications_enabled, onboarding_completed) VALUES (1, 480, 1200, 0, 0);
 
 CREATE TABLE day_template (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -58,13 +59,16 @@ CREATE TABLE template_event_override (
 CREATE INDEX template_event_override_day_idx ON template_event_override(day);
 
 selectSettings:
-SELECT start_minute, end_minute, notifications_enabled FROM schedule_settings WHERE id = 1;
+SELECT start_minute, end_minute, notifications_enabled, onboarding_completed FROM schedule_settings WHERE id = 1;
 
 updateSettings:
 UPDATE schedule_settings SET start_minute = ?, end_minute = ? WHERE id = 1;
 
 updateNotificationsEnabled:
 UPDATE schedule_settings SET notifications_enabled = ? WHERE id = 1;
+
+updateOnboardingCompleted:
+UPDATE schedule_settings SET onboarding_completed = ? WHERE id = 1;
 
 selectAllTemplates:
 SELECT id, name FROM day_template ORDER BY id;

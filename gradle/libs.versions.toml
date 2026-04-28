@@ -6,26 +6,34 @@ android-targetSdk = "36"
 androidx-activity = "1.13.0"
 androidx-appcompat = "1.7.1"
 androidx-core = "1.18.0"
+androidx-splashscreen = "1.2.0"
+androidx-datastore = "1.2.1"
+playServicesAuth = "21.5.1"
+googleid = "1.1.1"
 androidx-espresso = "3.7.0"
 androidx-lifecycle = "2.10.0"
 androidx-testExt = "1.3.0"
 composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.3"
+composeUnstyled = "1.49.6"
+lucideIcons = "2.2.1"
 filekit = "0.13.0"
 intellijIcons = "253.31033.145"
 jewel = "0.35.0-261.23567.138"
 junit = "4.13.2"
 kotlin = "2.3.21"
 ktor = "3.4.3"
+ackpine = "0.22.7"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
-kotlinx-serialization = "1.7.3"
+kotlinx-serialization = "1.11.0"
 material3 = "1.10.0-alpha05"
-metro = "1.0.0-RC4"
+metro = "1.0.0"
 nucleus = "1.14.2"
 sqldelight = "2.3.2"
 
 [libraries]
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -34,15 +42,22 @@ androidx-testExt-junit = { module = "androidx.test.ext:junit", version.ref = "an
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-espresso" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splashscreen" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
 compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
+compose-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeMultiplatform" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
+compose-unstyled = { module = "com.composables:core", version.ref = "composeUnstyled" }
+icons-lucide = { module = "com.composables:icons-lucide-cmp", version.ref = "lucideIcons" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 jewel-intUiStandalone = { module = "org.jetbrains.jewel:jewel-int-ui-standalone", version.ref = "jewel" }
 jewel-intUiDecoratedWindow = { module = "org.jetbrains.jewel:jewel-int-ui-decorated-window", version.ref = "jewel" }
@@ -66,9 +81,12 @@ kotlinx-serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serializat
 filekit-dialogsCompose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 nucleus-nativeHttpKtor = { module = "io.github.kdroidfilter:nucleus.native-http-ktor", version.ref = "nucleus" }
 nucleus-nativeHttp = { module = "io.github.kdroidfilter:nucleus.native-http", version.ref = "nucleus" }
 nucleus-updaterRuntime = { module = "io.github.kdroidfilter:nucleus.updater-runtime", version.ref = "nucleus" }
+ackpine-core = { module = "ru.solrudev.ackpine:ackpine-core", version.ref = "ackpine" }
+ackpine-ktx = { module = "ru.solrudev.ackpine:ackpine-ktx", version.ref = "ackpine" }
 metrox-viewmodel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
 metrox-viewmodelCompose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }

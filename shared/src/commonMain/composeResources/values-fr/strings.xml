@@ -115,4 +115,24 @@
     <string name="about_version">Version %1$s</string>
     <string name="about_license">Licence : %1$s</string>
     <string name="about_made_with_love">Fait avec ♥ par Elie Gambache</string>
+
+    <string name="onboarding_skip">Passer</string>
+    <string name="onboarding_welcome_title">Ton emploi du temps, fait une fois pour toutes.</string>
+    <string name="onboarding_welcome_subtitle">Crée ta semaine type en 30 secondes. On s&#8217;en souvient pour toi.</string>
+    <string name="onboarding_welcome_cta">Commencer</string>
+    <string name="onboarding_setup_title">Tes jours, tes heures.</string>
+    <string name="onboarding_setup_subtitle">Choisis ce que tu veux voir. Les valeurs par défaut conviennent à la plupart des semaines.</string>
+    <string name="onboarding_setup_days_label">Jours visibles</string>
+    <string name="onboarding_setup_hours_label">Heures visibles</string>
+    <string name="onboarding_setup_hint">Tu pourras tout changer plus tard dans les paramètres.</string>
+    <string name="onboarding_setup_continue">Continuer</string>
+    <string name="onboarding_drive_title">Garde ton emploi du temps en sécurité.</string>
+    <string name="onboarding_drive_subtitle">Si tu changes de téléphone, retrouve-le en un tap. Sauvegarde dans ton dossier d&#8217;app privé.</string>
+    <string name="onboarding_drive_privacy">Stocké dans un dossier Drive dédié à l&#8217;app — on ne voit rien d&#8217;autre dans ton Drive.</string>
+    <string name="onboarding_drive_connect_cta">Connecter Google Drive</string>
+    <string name="onboarding_drive_finish_later">Plus tard</string>
+    <string name="onboarding_drive_connecting">En attente de ton autorisation…</string>
+    <string name="onboarding_drive_success">Connecté. Ton emploi du temps est en sécurité.</string>
+    <string name="onboarding_drive_error">Connexion impossible : %1$s</string>
+    <string name="onboarding_drive_open_app">Ouvrir ScheduleIt</string>
 </resources>

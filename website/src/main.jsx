@@ -1,5 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import '@fontsource-variable/fraunces/full.css'
+import '@fontsource-variable/fraunces/full-italic.css'
+import '@fontsource-variable/inter'
+import '@fontsource-variable/jetbrains-mono'
 import App from './App.jsx'
 import './styles.css'
 

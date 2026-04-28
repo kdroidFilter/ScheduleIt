@@ -1,14 +1,13 @@
 package dev.nucleus.scheduleit.ui.common
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import dev.nucleus.scheduleit.ui.mobile.components.MobileDropdownMenu
+import dev.nucleus.scheduleit.ui.mobile.components.MobileMenuItem
 
 @Composable
 actual fun SlotContextMenuArea(
@@ -21,25 +20,19 @@ actual fun SlotContextMenuArea(
     var expanded by remember { mutableStateOf(false) }
     Box {
         content { expanded = true }
-        DropdownMenu(
+        MobileDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
+            onDismiss = { expanded = false },
         ) {
-            DropdownMenuItem(
-                text = { Text(addEventLabel) },
-                onClick = {
-                    expanded = false
-                    onAddEvent()
-                },
-            )
+            MobileMenuItem(label = addEventLabel, onClick = {
+                expanded = false
+                onAddEvent()
+            })
             if (pasteEventLabel != null && onPasteEvent != null) {
-                DropdownMenuItem(
-                    text = { Text(pasteEventLabel) },
-                    onClick = {
-                        expanded = false
-                        onPasteEvent()
-                    },
-                )
+                MobileMenuItem(label = pasteEventLabel, onClick = {
+                    expanded = false
+                    onPasteEvent()
+                })
             }
         }
     }

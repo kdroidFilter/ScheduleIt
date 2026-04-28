@@ -20,6 +20,7 @@ import dev.nucleus.scheduleit.ui.common.localizedWeekOrder
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.component.CircularProgressIndicator
 import org.jetbrains.jewel.ui.component.Text
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.action_paste_event
@@ -34,7 +35,14 @@ fun JewelScheduleHost() {
     val pasteLabel = stringResource(Res.string.action_paste_event)
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (visibleDays.isEmpty()) {
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (visibleDays.isEmpty()) {
             Column(
                 modifier = Modifier.fillMaxSize().padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
