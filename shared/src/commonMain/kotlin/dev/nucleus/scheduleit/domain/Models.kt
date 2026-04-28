@@ -51,11 +51,34 @@ data class ScheduleEvent(
     val notes: String,
 )
 
+data class DayEvent(
+    val id: Long,
+    val day: AppDayOfWeek,
+    val title: String,
+    val startMinute: Int,
+    val endMinute: Int,
+    val color: Long,
+    val notes: String,
+)
+
+data class TemplateEventOverride(
+    val baseEventId: Long,
+    val day: AppDayOfWeek,
+    val hidden: Boolean,
+    val title: String?,
+    val startMinute: Int?,
+    val endMinute: Int?,
+    val color: Long?,
+    val notes: String?,
+)
+
 data class ScheduleSnapshot(
     val settings: ScheduleSettings,
     val templates: List<DayTemplate>,
     val assignments: Map<AppDayOfWeek, Long>,
     val eventsByTemplate: Map<Long, List<ScheduleEvent>>,
+    val dayEventsByDay: Map<AppDayOfWeek, List<DayEvent>> = emptyMap(),
+    val overridesByDay: Map<AppDayOfWeek, Map<Long, TemplateEventOverride>> = emptyMap(),
 ) {
     val visibleDays: List<AppDayOfWeek>
         get() = AppDayOfWeek.entries.filter { it in assignments }
