@@ -483,7 +483,12 @@ class ScheduleViewModel(
 
     private fun connectGoogleDrive() {
         val sync = googleDriveSync ?: return
-        viewModelScope.launch { sync.connect() }
+        viewModelScope.launch {
+            sync.connect()
+            if (sync.status.value is GoogleDriveStatus.Connected && isLocalDataEmpty()) {
+                applyDriveRestore(sync)
+            }
+        }
     }
 
     private fun disconnectGoogleDrive() {
@@ -504,14 +509,23 @@ class ScheduleViewModel(
     private fun restoreFromDrive() {
         val sync = googleDriveSync ?: return
         if (sync.status.value !is GoogleDriveStatus.Connected) return
-        viewModelScope.launch {
-            val payload = sync.restore() ?: return@launch
-            val backup = runCatching { decodeBackupFromString(payload) }.getOrNull() ?: run {
-                _state.update { it.copy(errorMessage = ErrorKey.InvalidBackup) }
-                return@launch
-            }
-            repository.replaceAll(backup.toSnapshot())
+        viewModelScope.launch { applyDriveRestore(sync) }
+    }
+
+    private suspend fun applyDriveRestore(sync: GoogleDriveSync) {
+        val payload = sync.restore() ?: return
+        val backup = runCatching { decodeBackupFromString(payload) }.getOrNull() ?: run {
+            _state.update { it.copy(errorMessage = ErrorKey.InvalidBackup) }
+            return
         }
+        repository.replaceAll(backup.toSnapshot())
+    }
+
+    private suspend fun isLocalDataEmpty(): Boolean {
+        val snapshot = repository.snapshotOnce()
+        return snapshot.eventsByTemplate.values.all { it.isEmpty() } &&
+            snapshot.dayEventsByDay.values.all { it.isEmpty() } &&
+            snapshot.overridesByDay.values.all { it.isEmpty() }
     }
 
     companion object {
