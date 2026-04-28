@@ -88,5 +88,5 @@
     <string name="about_title">אודות ScheduleIt</string>
     <string name="about_version">גרסה %1$s</string>
     <string name="about_license">רישיון: %1$s</string>
-    <string name="about_made_with_love">נוצר באהבה על ידי אליהו גמבש</string>
+    <string name="about_made_with_love">נוצר עם ♥ על ידי אליהו גמבש</string>
 </resources>

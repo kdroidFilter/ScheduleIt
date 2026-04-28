@@ -88,5 +88,5 @@
     <string name="about_title">À propos de ScheduleIt</string>
     <string name="about_version">Version %1$s</string>
     <string name="about_license">Licence : %1$s</string>
-    <string name="about_made_with_love">Fait avec amour par Elie Gambache</string>
+    <string name="about_made_with_love">Fait avec ♥ par Elie Gambache</string>
 </resources>

@@ -48,6 +48,17 @@ dependencies {
 nucleus.application {
     mainClass = "dev.nucleus.scheduleit.MainKt"
 
+    buildTypes {
+        release {
+            proguard {
+                version = "7.8.1"
+                isEnabled = true
+                optimize = true
+                configurationFiles.from(project.file("proguard-rules.pro"))
+            }
+        }
+    }
+
     nativeDistributions {
         targetFormats(TargetFormat.Dmg, TargetFormat.Nsis, TargetFormat.Deb, TargetFormat.AppX)
         cleanupNativeLibs = true

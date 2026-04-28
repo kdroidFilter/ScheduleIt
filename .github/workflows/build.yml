@@ -132,10 +132,10 @@ jobs:
           setup-gradle: "true"
           setup-node: "false"
 
-      - name: Build DMG (JVM + Leyden AOT cache)
+      - name: Build DMG (JVM + Leyden AOT cache + ProGuard)
         shell: bash
         run: |
-          ./gradlew :desktopApp:packageDmg \
+          ./gradlew :desktopApp:packageReleaseDmg \
             -PappVersion=${{ steps.version.outputs.version }} \
             -PenableAotCache=true \
             --no-daemon --stacktrace
@@ -187,10 +187,10 @@ jobs:
           setup-gradle: "true"
           setup-node: "false"
 
-      - name: Build AppX (JVM + Leyden AOT cache)
+      - name: Build AppX (JVM + Leyden AOT cache + ProGuard)
         shell: bash
         run: |
-          ./gradlew :desktopApp:packageAppX \
+          ./gradlew :desktopApp:packageReleaseAppX \
             -PappVersion=${{ steps.version.outputs.version }} \
             -PenableAotCache=true \
             --no-daemon --stacktrace
