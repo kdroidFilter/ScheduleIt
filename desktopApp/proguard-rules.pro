@@ -129,3 +129,26 @@
 -keep class dev.zacsweers.metrox.** { *; }
 -keep @dev.zacsweers.metro.** class * { *; }
 -dontwarn dev.zacsweers.metro.**
+
+# =============================================================================
+# Google Drive backup — Ktor + CIO engine + Nucleus native HTTP SSL
+# =============================================================================
+
+# Ktor (HTTP client). Many internals resolved via ServiceLoader / reflection.
+-keep class io.ktor.** { *; }
+-keepclassmembers class io.ktor.** { *; }
+-dontwarn io.ktor.**
+
+# CIO engine factory is discovered through META-INF/services.
+-keep class * implements io.ktor.client.HttpClientEngineContainer { *; }
+-keep class io.ktor.client.engine.cio.** { *; }
+
+# Nucleus native HTTP / native trust store (JNI + SSL).
+-keep class io.github.kdroidfilter.nucleus.nativehttp.** { *; }
+-keepclassmembers class io.github.kdroidfilter.nucleus.nativehttp.** { *; }
+-dontwarn io.github.kdroidfilter.nucleus.nativehttp.**
+
+# atomicfu / SLF4J pulled in transitively by Ktor — silence warnings.
+-dontwarn kotlinx.atomicfu.**
+-dontwarn javax.servlet.**
+-dontwarn javax.net.ssl.**
