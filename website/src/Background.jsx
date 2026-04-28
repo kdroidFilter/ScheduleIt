@@ -60,11 +60,10 @@ void main() {
   float fy = fract(a_seed.y - t * 0.03 + drift) * 2.0 - 1.0;
   gl_Position = vec4(fx, fy, 0.0, 1.0);
 
-  float dpr = clamp(u_res.x / 600.0, 1.0, 3.0);
-  // Bigger sprite so the soft halo is clearly visible
-  gl_PointSize = (8.0 + 18.0 * fract(a_seed.z * 7.0)) * dpr;
+  float dpr = clamp(u_res.x / 800.0, 1.0, 2.5);
+  gl_PointSize = (4.0 + 8.0 * fract(a_seed.z * 7.0)) * dpr;
 
-  v_alpha = 0.45 + 0.55 * (0.5 + 0.5 * sin(a_seed.z * 9.0 + u_time * 1.2));
+  v_alpha = 0.10 + 0.20 * (0.5 + 0.5 * sin(a_seed.z * 9.0 + u_time * 0.9));
   v_hue = fract(a_seed.z * 3.13);
 }
 `
@@ -115,7 +114,7 @@ function program(gl, vsSrc, fsSrc) {
   return p
 }
 
-export default function Background({ particleCount = 90 }) {
+export default function Background({ particleCount = 35 }) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
