@@ -22,6 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text
 import scheduleit.shared.generated.resources.Res
+import scheduleit.shared.generated.resources.action_paste_event
 import scheduleit.shared.generated.resources.empty_schedule_hint
 
 @Composable
@@ -30,6 +31,7 @@ fun JewelScheduleHost() {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val visibleDays = localizedWeekOrder().filter { it in state.assignments }
+    val pasteLabel = stringResource(Res.string.action_paste_event)
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (visibleDays.isEmpty()) {
@@ -52,6 +54,7 @@ fun JewelScheduleHost() {
                     JewelEventCell(
                         event = event,
                         onEdit = { viewModel.onEvent(ScheduleIntent.RequestEditEffectiveEvent(event)) },
+                        onCopy = { viewModel.onEvent(ScheduleIntent.CopyEvent(event)) },
                         onDelete = { viewModel.onEvent(ScheduleIntent.DeleteEffectiveEvent(event)) },
                     )
                 },
@@ -64,6 +67,10 @@ fun JewelScheduleHost() {
                     gridLineColor = JewelTheme.globalColors.borders.normal,
                     slotHighlight = JewelTheme.globalColors.borders.disabled,
                 ),
+                pasteEventLabel = state.clipboard?.let { pasteLabel },
+                onSlotPaste = state.clipboard?.let {
+                    { day, minute -> viewModel.onEvent(ScheduleIntent.PasteEventAt(day, minute)) }
+                },
             )
         }
     }

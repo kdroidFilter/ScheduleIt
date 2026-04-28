@@ -35,6 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.Tooltip
 import scheduleit.shared.generated.resources.Res
+import scheduleit.shared.generated.resources.action_copy_event
 import scheduleit.shared.generated.resources.action_delete_event
 import scheduleit.shared.generated.resources.action_edit
 
@@ -42,6 +43,7 @@ import scheduleit.shared.generated.resources.action_edit
 fun JewelEventCell(
     event: EffectiveEvent,
     onEdit: () -> Unit,
+    onCopy: () -> Unit,
     onDelete: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -49,6 +51,7 @@ fun JewelEventCell(
     val baseColor = Color(event.color.toInt())
     val shape = RoundedCornerShape(6.dp)
     val editLabel = stringResource(Res.string.action_edit)
+    val copyLabel = stringResource(Res.string.action_copy_event)
     val deleteLabel = stringResource(Res.string.action_delete_event)
     val menuState = remember { ContextMenuState() }
     val isMenuOpen = menuState.status is ContextMenuState.Status.Open
@@ -57,6 +60,7 @@ fun JewelEventCell(
         items = {
             listOf(
                 ContextMenuItem(editLabel, onEdit),
+                ContextMenuItem(copyLabel, onCopy),
                 ContextMenuItem(deleteLabel, onDelete),
             )
         },

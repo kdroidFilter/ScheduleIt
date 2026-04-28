@@ -12,6 +12,8 @@ sealed interface ScheduleIntent {
     data class RequestEditEffectiveEvent(val effective: EffectiveEvent) : ScheduleIntent
     data class DeleteEffectiveEvent(val effective: EffectiveEvent) : ScheduleIntent
     data class HideEffectiveEvent(val effective: EffectiveEvent) : ScheduleIntent
+    data class CopyEvent(val effective: EffectiveEvent) : ScheduleIntent
+    data class PasteEventAt(val day: AppDayOfWeek, val startMinute: Int) : ScheduleIntent
     data class UpdateDraft(val draft: ScheduleEvent) : ScheduleIntent
     data class SetEditorScope(val scope: EventEditorState.Scope) : ScheduleIntent
     data object DismissEditor : ScheduleIntent

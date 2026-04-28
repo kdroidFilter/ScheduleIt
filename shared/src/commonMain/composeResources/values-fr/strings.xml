@@ -17,6 +17,8 @@
     <string name="action_add_event">Ajouter un événement</string>
     <string name="action_edit">Modifier</string>
     <string name="action_delete_event">Supprimer l&#8217;événement</string>
+    <string name="action_copy_event">Copier l&#8217;événement</string>
+    <string name="action_paste_event">Coller l&#8217;événement</string>
     <string name="action_step_up">Augmenter</string>
     <string name="action_step_down">Diminuer</string>
 

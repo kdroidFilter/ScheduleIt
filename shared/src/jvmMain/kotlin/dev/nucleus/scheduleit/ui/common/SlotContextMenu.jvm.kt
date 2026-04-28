@@ -10,10 +10,19 @@ import androidx.compose.runtime.Composable
 actual fun SlotContextMenuArea(
     addEventLabel: String,
     onAddEvent: () -> Unit,
-    content: @Composable () -> Unit,
+    pasteEventLabel: String?,
+    onPasteEvent: (() -> Unit)?,
+    content: @Composable (onLongPress: (() -> Unit)?) -> Unit,
 ) {
     ContextMenuArea(
-        items = { listOf(ContextMenuItem(addEventLabel, onAddEvent)) },
-        content = content,
+        items = {
+            buildList {
+                add(ContextMenuItem(addEventLabel, onAddEvent))
+                if (pasteEventLabel != null && onPasteEvent != null) {
+                    add(ContextMenuItem(pasteEventLabel, onPasteEvent))
+                }
+            }
+        },
+        content = { content(null) },
     )
 }
