@@ -1,0 +1,34 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Calendar hangers -->
+    <path
+        android:pathData="M40,30 L44,30 L44,44 L40,44 Z M64,30 L68,30 L68,44 L64,44 Z"
+        android:fillColor="#FFFFFF"/>
+
+    <!-- Calendar body outline -->
+    <path
+        android:pathData="M30,40 L78,40 A6,6 0 0 1 84,46 L84,82 A6,6 0 0 1 78,88 L30,88 A6,6 0 0 1 24,82 L24,46 A6,6 0 0 1 30,40 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"/>
+
+    <!-- Header band -->
+    <path
+        android:pathData="M24,52 L84,52"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"/>
+
+    <!-- Stylised S inside the body -->
+    <path
+        android:pathData="M62,62 C62,58.5 58,56 54,56 C49,56 45,58.5 45,63 C45,68 51,69.5 54,70.5 C58,71.5 62,73.5 62,78 C62,82 58,84 54,84 C49,84 45,82 45,78"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"/>
+</vector>
