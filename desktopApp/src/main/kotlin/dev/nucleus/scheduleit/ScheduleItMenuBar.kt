@@ -48,7 +48,9 @@ fun ScheduleItMenuBar(onQuit: () -> Unit) {
 
     val targetDay = pickTargetDay(state.assignments.keys)
     val canCreate = targetDay != null
-    val canExport = state.eventsByTemplate.values.any { it.isNotEmpty() }
+    val canExport = state.eventsByTemplate.values.any { it.isNotEmpty() } ||
+        state.dayEventsByDay.values.any { it.isNotEmpty() } ||
+        state.overridesByDay.isNotEmpty()
 
     NativeMenuBar {
         Menu(fileTitle) {

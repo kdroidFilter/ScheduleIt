@@ -2,6 +2,8 @@ package dev.nucleus.scheduleit
 
 import dev.nucleus.scheduleit.data.ScheduleRepository
 import dev.nucleus.scheduleit.domain.AppDayOfWeek
+import dev.nucleus.scheduleit.domain.EffectiveEvent
+import dev.nucleus.scheduleit.domain.effectiveEventsFor
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.nucleus.scheduleit.ui.common.formatTime
 import io.github.kdroidfilter.nucleus.notification.common.NotificationManager
@@ -23,7 +25,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 fun CoroutineScope.startInAppNotificationLoop(repository: ScheduleRepository): Job = launch {
-    val sentInWindow = mutableSetOf<Long>()
+    val sentInWindow = mutableSetOf<String>()
     var lastWindowKey = ""
     while (true) {
         runCatching {
@@ -41,23 +43,30 @@ fun CoroutineScope.startInAppNotificationLoop(repository: ScheduleRepository): J
                     lastWindowKey = windowKey
                 }
                 val today = AppDayOfWeek.fromIso(now.dayOfWeek.isoDayNumber)
-                val templateId = snapshot.assignments[today]
-                if (templateId != null) {
+                if (today in snapshot.assignments || snapshot.dayEventsByDay.containsKey(today)) {
                     val defaultTitle = getString(Res.string.notification_default_title)
-                    snapshot.eventsByTemplate[templateId].orEmpty()
-                        .filter { it.startMinute in windowStart until windowEnd && it.id !in sentInWindow }
-                        .forEach { event ->
-                            val title = event.title.ifEmpty { defaultTitle }
+                    snapshot.effectiveEventsFor(today)
+                        .filter { it.startMinute in windowStart until windowEnd }
+                        .forEach { effective ->
+                            val key = effective.notificationKey()
+                            if (key in sentInWindow) return@forEach
+                            val title = effective.title.ifEmpty { defaultTitle }
                             val message = getString(
                                 Res.string.notification_starts_at,
-                                formatTime(event.startMinute),
+                                formatTime(effective.startMinute),
                             )
                             notification(title = title, message = message).send()
-                            sentInWindow += event.id
+                            sentInWindow += key
                         }
                 }
             }
         }
         delay(20.seconds)
     }
+}
+
+private fun EffectiveEvent.notificationKey(): String = when (val s = source) {
+    is EffectiveEvent.Source.TemplateShared -> "tpl:${s.event.id}"
+    is EffectiveEvent.Source.TemplateOverridden -> "ovr:${s.base.id}:${day.isoIndex}"
+    is EffectiveEvent.Source.DayOnly -> "day:${s.event.id}"
 }

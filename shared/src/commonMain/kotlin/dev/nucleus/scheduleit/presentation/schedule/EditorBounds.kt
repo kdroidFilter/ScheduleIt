@@ -1,5 +1,6 @@
 package dev.nucleus.scheduleit.presentation.schedule
 
+import dev.nucleus.scheduleit.domain.EffectiveEvent
 import dev.nucleus.scheduleit.domain.ScheduleEvent
 import dev.nucleus.scheduleit.domain.ScheduleSettings
 
@@ -12,10 +13,11 @@ data class EditorBounds(
 
 fun computeEditorBounds(
     draft: ScheduleEvent,
-    siblings: List<ScheduleEvent>,
+    siblings: List<EffectiveEvent>,
+    editing: EventEditorState.Original?,
     settings: ScheduleSettings,
 ): EditorBounds {
-    val others = siblings.filter { it.id != draft.id }
+    val others = siblings.filterNot { it.matchesOriginal(editing) }
     val prevEnd = others
         .filter { it.endMinute <= draft.startMinute }
         .maxOfOrNull { it.endMinute }
@@ -29,9 +31,24 @@ fun computeEditorBounds(
     return EditorBounds(lower, upper, lowerReason, upperReason)
 }
 
-fun ScheduleEvent.overlapsAnyOf(others: List<ScheduleEvent>): Boolean =
-    others.any { other ->
-        other.id != id &&
-            startMinute < other.endMinute &&
-            endMinute > other.startMinute
+fun ScheduleEvent.overlapsAnyOf(
+    siblings: List<EffectiveEvent>,
+    editing: EventEditorState.Original?,
+): Boolean {
+    val others = siblings.filterNot { it.matchesOriginal(editing) }
+    return others.any { other ->
+        startMinute < other.endMinute && endMinute > other.startMinute
     }
+}
+
+internal fun EffectiveEvent.matchesOriginal(original: EventEditorState.Original?): Boolean {
+    if (original == null) return false
+    return when (val s = source) {
+        is EffectiveEvent.Source.TemplateShared ->
+            original is EventEditorState.Original.TemplateEvent && s.event.id == original.event.id
+        is EffectiveEvent.Source.TemplateOverridden ->
+            original is EventEditorState.Original.Overridden && s.base.id == original.base.id
+        is EffectiveEvent.Source.DayOnly ->
+            original is EventEditorState.Original.DayOnly && s.event.id == original.event.id
+    }
+}

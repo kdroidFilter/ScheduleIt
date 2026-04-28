@@ -57,6 +57,10 @@
     <string name="event_field_color">Couleur</string>
     <string name="event_field_notes">Notes</string>
     <string name="event_time_format">%02d:%02d</string>
+    <string name="event_scope_label">Portée</string>
+    <string name="event_scope_this_day">Uniquement %1$s</string>
+    <string name="event_scope_all_days">Tous les jours liés</string>
+    <string name="action_hide_for_day">Masquer pour %1$s</string>
 
     <string name="empty_schedule_hint">Aucun jour visible. Ouvrez les paramètres pour activer des jours.</string>
     <string name="error_invalid_range">La fin doit être postérieure au début.</string>

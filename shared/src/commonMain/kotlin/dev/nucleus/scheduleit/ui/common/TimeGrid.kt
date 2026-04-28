@@ -31,7 +31,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.nucleus.scheduleit.domain.AppDayOfWeek
-import dev.nucleus.scheduleit.domain.ScheduleEvent
+import dev.nucleus.scheduleit.domain.EffectiveEvent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 
 private const val SLOT_PER_HOUR = 60 / ScheduleViewModel.SLOT_MINUTES
@@ -49,10 +49,10 @@ fun TimeGrid(
     visibleDays: List<AppDayOfWeek>,
     startMinute: Int,
     endMinute: Int,
-    eventsForDay: (AppDayOfWeek) -> List<ScheduleEvent>,
+    eventsForDay: (AppDayOfWeek) -> List<EffectiveEvent>,
     dayHeader: @Composable (AppDayOfWeek) -> Unit,
     hourLabel: @Composable (hour: Int) -> Unit,
-    eventCell: @Composable (ScheduleEvent, AppDayOfWeek) -> Unit,
+    eventCell: @Composable (EffectiveEvent, AppDayOfWeek) -> Unit,
     onSlotClick: (AppDayOfWeek, startMinute: Int) -> Unit,
     backgroundColor: Color,
     modifier: Modifier = Modifier,
@@ -132,8 +132,8 @@ private fun DayColumn(
     hourHeight: Dp,
     gridLineColor: Color,
     slotHighlight: Color,
-    events: List<ScheduleEvent>,
-    eventCell: @Composable (ScheduleEvent) -> Unit,
+    events: List<EffectiveEvent>,
+    eventCell: @Composable (EffectiveEvent) -> Unit,
     onSlotClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
