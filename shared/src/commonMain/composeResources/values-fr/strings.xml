@@ -134,4 +134,5 @@
     <string name="onboarding_drive_connecting">En attente de ton autorisation…</string>
     <string name="onboarding_drive_success">Connecté. Ton emploi du temps est en sécurité.</string>
     <string name="onboarding_drive_error">Connexion impossible : %1$s</string>
+    <string name="onboarding_drive_open_app">Ouvrir ScheduleIt</string>
 </resources>

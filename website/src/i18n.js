@@ -8,67 +8,62 @@ export const RTL_LANGS = ['he']
 
 export const translations = {
   en: {
-    tagline: 'Plan your week at a glance — fast, native, cross-platform.',
+    tagline: 'A calmer week, in one glance.',
     releaseNotes: 'Release notes',
-    gallery: {
-      editEvent: 'Edit events with title, time, color and notes',
-      settings: 'Tune visible hours and per-day schedules',
-    },
-    features: {
-      title: 'Your school week, finally under control',
-      lede: 'ScheduleIt was made for the way students actually plan: classes that repeat every week, exams that sneak up on you, and a homework pile that never sleeps. Drop your timetable in once and let the rest of the year run itself.',
-      items: [
-        {
-          title: 'Built for student life',
-          body: 'From morning math to late-night study sessions, organize every class, lab and lecture in a layout that mirrors your real school week.',
+    foss: 'Free, open source',
+    truths: [
+      {
+        eyebrow: 'Native everywhere',
+        title: 'On every screen <em>you own</em>.',
+        body: 'Mac, Windows, Linux, Android, tablet. The same week, wherever you open it. No browser tab, no fan spinning up.',
+        devices: {
+          tablet: 'screens/tablet-day.webp',
+          phone: 'screens/mobile-day.webp',
+          altTablet: 'ScheduleIt on a tablet — weekly view',
+          altPhone: 'ScheduleIt on Android — daily view',
         },
-        {
-          title: 'Subjects, color-coded',
-          body: 'Give each course its own color so you can tell English from Chemistry at a glance — no more mixing up rooms or showing up to the wrong class.',
-        },
-        {
-          title: 'Never miss a deadline',
-          body: 'Track exams, homework and project drop-offs alongside your regular schedule. Your agenda stays the single source of truth from Monday to Friday.',
-        },
-        {
-          title: 'Like the school planner, but better',
-          body: 'All the structure of the paper agenda your teachers told you to keep updated — minus the smudged ink, lost pages and forgotten Mondays.',
-        },
-        {
-          title: 'Custom hours per day',
-          body: 'Half-day on Wednesday? Late start on Friday? Tune visible hours per day so your week looks exactly like your real timetable.',
-        },
-        {
-          title: 'Study breaks included',
-          body: 'Block out lunch, recess and free periods so you can actually see when you have time to breathe between two pop quizzes.',
-        },
-      ],
-    },
+      },
+      {
+        eyebrow: 'Yours, on your machine',
+        title: 'Your week stays <em>private</em>.',
+        body: 'Local-first by design. Your file lives on your disk. Optional Drive backup if you want it, nothing if you do not.',
+        visual: 'screens/light.webp',
+        alt: 'ScheduleIt desktop — weekly view',
+      },
+      {
+        eyebrow: 'Built around your day',
+        title: 'Tuned to <em>how you live</em>.',
+        body: 'Half-day Wednesday. Late Friday. Color per subject. Visible hours per day. The agenda matches your week, not the other way around.',
+        visual: 'screens/mobile-settings.webp',
+        alt: 'Settings — tune visible hours and per-day schedules',
+      },
+    ],
     download: {
-      heading: 'Download',
+      eyebrow: 'Download',
+      heading: 'Get it now. <em>It is free.</em>',
       loading: 'Loading latest release…',
       error: 'Could not load release: ',
-      detected: 'Detected',
-      forYou: 'For your machine',
+      primaryFor: 'Download for',
+      otherShow: 'Other platforms',
+      otherHide: 'Hide other platforms',
     },
     footer: {
-      source: 'View source on GitHub',
-      privacy: 'Privacy policy',
+      source: 'Source',
+      privacy: 'Privacy',
       contact: 'Contact',
-      back: 'Back to home',
-      madeWith: 'Made with',
-      by: 'by',
+      back: '← Back',
+      by: 'by Elie Gambache',
       support: 'Support',
       kofiAria: 'Support me on Ko-fi',
     },
     contact: {
-      title: 'Get in touch',
-      lede: 'Find me on these platforms — feel free to reach out for collaborations, feedback or just to say hi.',
+      title: 'Say <em>hello</em>.',
+      lede: 'Open source projects, collaborations, feedback — anything that does not need a meeting works here.',
       links: {
-        portfolio: { label: 'Portfolio', desc: 'Open-source projects and writings' },
-        email: { label: 'Email', desc: 'Drop me a line directly' },
-        github: { label: 'GitHub', desc: 'Source code, issues and contributions' },
-        linkedin: { label: 'LinkedIn', desc: 'Professional profile and experience' },
+        portfolio: { label: 'Portfolio', desc: 'Other projects and writings' },
+        email: { label: 'Email', desc: 'Direct line, no funnel' },
+        github: { label: 'GitHub', desc: 'Code, issues, contributions' },
+        linkedin: { label: 'LinkedIn', desc: 'Professional profile' },
       },
     },
     os: {
@@ -78,7 +73,7 @@ export const translations = {
       other: 'Other',
     },
     privacy: {
-      title: 'Privacy policy',
+      title: 'Privacy',
       lastUpdated: 'Last updated: April 28, 2026',
       sections: [
         {
@@ -113,67 +108,62 @@ export const translations = {
     },
   },
   fr: {
-    tagline: "Planifiez votre semaine d'un coup d'œil — rapide, natif, multi-plateforme.",
+    tagline: "Une semaine plus calme, d'un seul coup d'œil.",
     releaseNotes: 'Notes de version',
-    gallery: {
-      editEvent: 'Modifiez vos événements : titre, horaire, couleur et notes',
-      settings: "Personnalisez les heures visibles et l'emploi du temps par jour",
-    },
-    features: {
-      title: 'Votre semaine scolaire enfin sous contrôle',
-      lede: "ScheduleIt a été pensé pour la façon dont les élèves planifient vraiment : des cours qui se répètent chaque semaine, des contrôles qui arrivent par surprise et une pile de devoirs qui ne dort jamais. Entrez votre emploi du temps une fois, et laissez le reste de l'année se gérer toute seule.",
-      items: [
-        {
-          title: 'Conçu pour la vie étudiante',
-          body: 'Des maths du matin aux révisions tardives, organisez chaque cours, TP et conférence dans une vue qui colle à votre vraie semaine.',
+    foss: 'Gratuit, open source',
+    truths: [
+      {
+        eyebrow: 'Natif partout',
+        title: 'Sur chaque écran <em>qui est à toi</em>.',
+        body: 'Mac, Windows, Linux, Android, tablette. La même semaine, où que tu ouvres l\'app. Pas d\'onglet, pas de ventilo qui s\'emballe.',
+        devices: {
+          tablet: 'screens/tablet-day-fr.webp',
+          phone: 'screens/mobile-day.webp',
+          altTablet: 'ScheduleIt sur tablette — vue hebdomadaire',
+          altPhone: 'ScheduleIt sur Android — vue du jour',
         },
-        {
-          title: 'Matières en couleurs',
-          body: "Donnez une couleur à chaque cours pour distinguer l'anglais de la chimie d'un coup d'œil — fini les confusions de salle ou les oublis.",
-        },
-        {
-          title: 'Ne ratez plus une échéance',
-          body: 'Suivez contrôles, devoirs et rendus de projets en parallèle de votre emploi du temps. Votre agenda devient la seule source de vérité du lundi au vendredi.',
-        },
-        {
-          title: "Comme l'agenda papier, mais en mieux",
-          body: "Toute la structure de l'agenda papier que vos profs vous demandent de tenir à jour — sans l'encre qui bave, les pages perdues ou les lundis oubliés.",
-        },
-        {
-          title: 'Horaires personnalisés par jour',
-          body: 'Demi-journée le mercredi ? Début tardif le vendredi ? Réglez les heures visibles par jour pour que votre semaine ressemble à votre vrai emploi du temps.',
-        },
-        {
-          title: 'Pauses incluses',
-          body: 'Bloquez la pause déjeuner, la récré et les heures libres pour voir quand vous pouvez vraiment souffler entre deux interros surprises.',
-        },
-      ],
-    },
+      },
+      {
+        eyebrow: 'Chez toi, sur ta machine',
+        title: 'Ta semaine reste <em>privée</em>.',
+        body: 'Local-first par principe. Ton fichier vit sur ton disque. Sauvegarde Drive en option si tu veux, rien sinon.',
+        visual: 'screens/light.webp',
+        alt: 'ScheduleIt desktop — vue hebdomadaire',
+      },
+      {
+        eyebrow: 'Calé sur ta journée',
+        title: 'Réglé sur <em>ta vraie semaine</em>.',
+        body: 'Demi-journée le mercredi. Vendredi tardif. Une couleur par matière. Heures visibles par jour. L\'agenda s\'adapte, pas l\'inverse.',
+        visual: 'screens/mobile-settings.webp',
+        alt: 'Réglages — heures visibles et plages horaires par jour',
+      },
+    ],
     download: {
-      heading: 'Télécharger',
+      eyebrow: 'Télécharger',
+      heading: 'Installe-le. <em>C\'est gratuit.</em>',
       loading: 'Chargement de la dernière version…',
       error: 'Impossible de charger la version : ',
-      detected: 'Détecté',
-      forYou: 'Pour votre machine',
+      primaryFor: 'Télécharger pour',
+      otherShow: 'Autres plateformes',
+      otherHide: 'Masquer les autres plateformes',
     },
     footer: {
-      source: 'Voir le code source sur GitHub',
-      privacy: 'Politique de confidentialité',
+      source: 'Source',
+      privacy: 'Confidentialité',
       contact: 'Contact',
-      back: "Retour à l'accueil",
-      madeWith: 'Fait avec',
-      by: 'par',
+      back: '← Retour',
+      by: 'par Elie Gambache',
       support: 'Soutenir',
       kofiAria: 'Soutenez-moi sur Ko-fi',
     },
     contact: {
-      title: 'Me contacter',
-      lede: "Retrouvez-moi sur ces plateformes — n'hésitez pas pour une collaboration, un retour ou juste pour dire bonjour.",
+      title: 'Dis <em>bonjour</em>.',
+      lede: 'Projets open source, collaborations, retours : tout ce qui ne demande pas de réunion passe par ici.',
       links: {
-        portfolio: { label: 'Portfolio', desc: 'Projets open-source et publications' },
-        email: { label: 'Email', desc: 'Écrivez-moi directement' },
-        github: { label: 'GitHub', desc: 'Code source, issues et contributions' },
-        linkedin: { label: 'LinkedIn', desc: 'Profil et parcours professionnel' },
+        portfolio: { label: 'Portfolio', desc: 'Autres projets et écrits' },
+        email: { label: 'Email', desc: 'Ligne directe, sans détour' },
+        github: { label: 'GitHub', desc: 'Code, issues, contributions' },
+        linkedin: { label: 'LinkedIn', desc: 'Profil professionnel' },
       },
     },
     os: {
@@ -183,7 +173,7 @@ export const translations = {
       other: 'Autre',
     },
     privacy: {
-      title: 'Politique de confidentialité',
+      title: 'Confidentialité',
       lastUpdated: 'Dernière mise à jour : 28 avril 2026',
       sections: [
         {
@@ -208,77 +198,72 @@ export const translations = {
         },
         {
           heading: 'Modifications',
-          body: "En cas de mise à jour de cette politique, la nouvelle version sera publiée sur cette page avec une nouvelle date de révision.",
+          body: 'En cas de mise à jour de cette politique, la nouvelle version sera publiée sur cette page avec une nouvelle date de révision.',
         },
         {
           heading: 'Contact',
-          body: "Pour toute question relative à cette politique de confidentialité, ouvrez une issue sur le dépôt GitHub.",
+          body: 'Pour toute question relative à cette politique de confidentialité, ouvrez une issue sur le dépôt GitHub.',
         },
       ],
     },
   },
   he: {
-    tagline: 'תכננו את השבוע במבט אחד — מהיר, נטיבי, חוצה פלטפורמות.',
+    tagline: 'שבוע רגוע יותר, במבט אחד.',
     releaseNotes: 'הערות גרסה',
-    gallery: {
-      editEvent: 'עריכת אירועים — כותרת, שעה, צבע והערות',
-      settings: 'התאמת שעות נראות ולוח שבועי לכל יום',
-    },
-    features: {
-      title: 'השבוע הלימודי שלכם — סוף סוף תחת שליטה',
-      lede: 'ScheduleIt נבנה בדיוק כמו שתלמידים באמת מתכננים: שיעורים שחוזרים בכל שבוע, מבחנים שצצים מאיפה שלא מצפים, וערימה של שיעורי בית שלעולם לא ישנה. הכניסו את מערכת השעות פעם אחת — והשנה תרוץ מעצמה.',
-      items: [
-        {
-          title: 'בנוי לחיי הסטודנט',
-          body: 'ממתמטיקה בבוקר ועד למידה בלילה — סדרו כל שיעור, מעבדה והרצאה במבט שמשקף את השבוע האמיתי שלכם.',
+    foss: 'חינם, קוד פתוח',
+    truths: [
+      {
+        eyebrow: 'נטיבי בכל מקום',
+        title: 'בכל מסך <em>שיש לך</em>.',
+        body: 'Mac, Windows, Linux, Android, טאבלט. אותו שבוע, איפה שלא תפתח. בלי טאב, בלי מאוורר שמתעורר.',
+        devices: {
+          tablet: 'screens/tablet-day.webp',
+          phone: 'screens/mobile-day.webp',
+          altTablet: 'ScheduleIt על טאבלט — תצוגה שבועית',
+          altPhone: 'ScheduleIt על Android — תצוגת היום',
         },
-        {
-          title: 'מקצועות בקוד צבעים',
-          body: 'תנו לכל מקצוע צבע משלו, כדי להבחין בין אנגלית לכימיה במבט מהיר — בלי בלבולי כיתות או הופעה לשיעור הלא נכון.',
-        },
-        {
-          title: 'אף פעם לא תפספסו תאריך יעד',
-          body: 'עקבו אחרי מבחנים, שיעורי בית והגשות פרויקטים לצד מערכת השעות הרגילה. היומן הוא המקור היחיד לאמת מיום ראשון עד שישי.',
-        },
-        {
-          title: 'כמו יומן בית הספר — רק יותר טוב',
-          body: 'כל הסדר של היומן הנייר שהמורים מבקשים לעדכן — בלי דיו מרוח, דפים אבודים או ימי שני שנשכחו.',
-        },
-        {
-          title: 'שעות מותאמות לכל יום',
-          body: 'חצי יום ביום רביעי? התחלה מאוחרת ביום שישי? כווננו את השעות לכל יום כך שהשבוע ייראה בדיוק כמו במציאות.',
-        },
-        {
-          title: 'כולל הפסקות',
-          body: 'חסמו הפסקת צהריים, הפסקות וזמנים פנויים, כדי לראות מתי באמת יש זמן לנשום בין שני מבחני פתע.',
-        },
-      ],
-    },
+      },
+      {
+        eyebrow: 'אצלך, על המכשיר שלך',
+        title: 'השבוע שלך נשאר <em>פרטי</em>.',
+        body: 'Local-first מההתחלה. הקובץ שלך חי על הדיסק שלך. גיבוי ל-Drive אם תרצה, כלום אם לא.',
+        visual: 'screens/light.webp',
+        alt: 'תצוגה שבועית של ScheduleIt — דסקטופ',
+      },
+      {
+        eyebrow: 'מותאם ליום שלך',
+        title: 'מכוון <em>לאיך שאתה חי</em>.',
+        body: 'חצי יום ביום רביעי. יום שישי מאוחר. צבע למקצוע. שעות נראות לכל יום. היומן מתאים לחיים שלך, לא להפך.',
+        visual: 'screens/mobile-settings.webp',
+        alt: 'הגדרות — שעות נראות ולוחות יומיים',
+      },
+    ],
     download: {
-      heading: 'הורדה',
+      eyebrow: 'הורדה',
+      heading: 'תורידו עכשיו. <em>זה חינם.</em>',
       loading: 'טוען את הגרסה האחרונה…',
       error: 'טעינת הגרסה נכשלה: ',
-      detected: 'זוהה',
-      forYou: 'מתאים למכשיר שלך',
+      primaryFor: 'הורדה ל-',
+      otherShow: 'פלטפורמות נוספות',
+      otherHide: 'הסתרת פלטפורמות נוספות',
     },
     footer: {
-      source: 'צפו בקוד המקור ב-GitHub',
-      privacy: 'מדיניות פרטיות',
+      source: 'קוד מקור',
+      privacy: 'פרטיות',
       contact: 'יצירת קשר',
-      back: 'חזרה לדף הבית',
-      madeWith: 'נוצר עם',
-      by: 'על ידי',
+      back: '→ חזרה',
+      by: 'על ידי Elie Gambache',
       support: 'תמיכה',
       kofiAria: 'תמכו בי ב-Ko-fi',
     },
     contact: {
-      title: 'יצירת קשר',
-      lede: 'תמצאו אותי בפלטפורמות הבאות — אל תהססו ליצור קשר לשיתופי פעולה, משוב או סתם כדי להגיד שלום.',
+      title: 'תגידו <em>שלום</em>.',
+      lede: 'פרויקטי קוד פתוח, שיתופי פעולה, משוב — כל מה שלא דורש פגישה עובר כאן.',
       links: {
-        portfolio: { label: 'תיק עבודות', desc: 'פרויקטים בקוד פתוח ופרסומים' },
-        email: { label: 'אימייל', desc: 'כתבו לי ישירות' },
-        github: { label: 'GitHub', desc: 'קוד מקור, issues ותרומות' },
-        linkedin: { label: 'LinkedIn', desc: 'פרופיל וניסיון מקצועי' },
+        portfolio: { label: 'תיק עבודות', desc: 'פרויקטים ופרסומים נוספים' },
+        email: { label: 'אימייל', desc: 'קו ישיר, בלי מסננים' },
+        github: { label: 'GitHub', desc: 'קוד, issues ותרומות' },
+        linkedin: { label: 'LinkedIn', desc: 'פרופיל מקצועי' },
       },
     },
     os: {
@@ -288,7 +273,7 @@ export const translations = {
       other: 'אחר',
     },
     privacy: {
-      title: 'מדיניות פרטיות',
+      title: 'פרטיות',
       lastUpdated: 'עודכן לאחרונה: 28 באפריל 2026',
       sections: [
         {

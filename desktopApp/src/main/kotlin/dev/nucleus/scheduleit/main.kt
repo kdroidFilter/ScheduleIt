@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -19,6 +20,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.nucleus.scheduleit.di.createDesktopAppGraph
 import dev.nucleus.scheduleit.ui.JewelAboutWindow
+import dev.nucleus.scheduleit.ui.jewel.JewelOnboardingWindow
 import dev.nucleus.scheduleit.ui.jewel.ScheduleItTitleBar
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import io.github.kdroidfilter.nucleus.aot.runtime.AotRuntime
@@ -119,47 +121,59 @@ fun main(args: Array<String>) {
             exitApplication()
         }
 
+        // Observe just the gating flag from the repository so the choice of
+        // which window to open doesn't require a ViewModel scope yet.
+        val onboardingCompleted by produceState<Boolean?>(null, graph) {
+            graph.repository.observeSchedule().collect { snapshot ->
+                value = snapshot.settings.onboardingCompleted
+            }
+        }
+
         IntUiTheme(theme = theme, styling = ComponentStyling.default()) {
-            JewelDecoratedWindow(
-                onCloseRequest = { quit() },
-                state = rememberWindowState(
-                    placement = if (shouldStartMaximized()) {
-                        WindowPlacement.Maximized
-                    } else {
-                        WindowPlacement.Floating
-                    },
-                    position = WindowPosition.Aligned(Alignment.Center),
-                    size = DEFAULT_WINDOW_SIZE,
-                ),
-                title = "ScheduleIt",
-                minimumSize = MINIMUM_WINDOW_SIZE,
-            ) {
-                LaunchedEffect(restoreRequested) {
-                    if (restoreRequested) {
-                        window.toFront()
-                        window.requestFocus()
-                        restoreRequested = false
-                    }
-                }
-                var showAbout by remember { mutableStateOf(false) }
-                CompositionLocalProvider(LocalMetroViewModelFactory provides graph.viewModelFactory) {
-                    ScheduleItMenuBar(onQuit = quit)
-                    ScheduleItTitleBar(
-                        onOpenGithub = {
-                            runCatching {
-                                Desktop.getDesktop().browse(URI.create(PROJECT_URL))
-                            }
+            when (onboardingCompleted) {
+                null -> Unit
+                false -> JewelOnboardingWindow(viewModelFactory = graph.viewModelFactory)
+                true -> JewelDecoratedWindow(
+                    onCloseRequest = { quit() },
+                    state = rememberWindowState(
+                        placement = if (shouldStartMaximized()) {
+                            WindowPlacement.Maximized
+                        } else {
+                            WindowPlacement.Floating
                         },
-                        onOpenAbout = { showAbout = true },
-                        onInstallUpdate = if (updateOnLinux) {
-                            (updateState as? UpdateState.ReadyToInstall)?.let {
-                                { appUpdater.installAndRestart() }
-                            }
-                        } else null,
-                    )
-                    App(graph)
-                    if (showAbout) {
-                        JewelAboutWindow(onCloseRequest = { showAbout = false })
+                        position = WindowPosition.Aligned(Alignment.Center),
+                        size = DEFAULT_WINDOW_SIZE,
+                    ),
+                    title = "ScheduleIt",
+                    minimumSize = MINIMUM_WINDOW_SIZE,
+                ) {
+                    LaunchedEffect(restoreRequested) {
+                        if (restoreRequested) {
+                            window.toFront()
+                            window.requestFocus()
+                            restoreRequested = false
+                        }
+                    }
+                    var showAbout by remember { mutableStateOf(false) }
+                    CompositionLocalProvider(LocalMetroViewModelFactory provides graph.viewModelFactory) {
+                        ScheduleItMenuBar(onQuit = quit)
+                        ScheduleItTitleBar(
+                            onOpenGithub = {
+                                runCatching {
+                                    Desktop.getDesktop().browse(URI.create(PROJECT_URL))
+                                }
+                            },
+                            onOpenAbout = { showAbout = true },
+                            onInstallUpdate = if (updateOnLinux) {
+                                (updateState as? UpdateState.ReadyToInstall)?.let {
+                                    { appUpdater.installAndRestart() }
+                                }
+                            } else null,
+                        )
+                        App(graph)
+                        if (showAbout) {
+                            JewelAboutWindow(onCloseRequest = { showAbout = false })
+                        }
                     }
                 }
             }

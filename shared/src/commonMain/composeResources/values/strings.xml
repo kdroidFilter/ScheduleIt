@@ -134,4 +134,5 @@
     <string name="onboarding_drive_connecting">Waiting for your authorization…</string>
     <string name="onboarding_drive_success">Connected. Your schedule is safe.</string>
     <string name="onboarding_drive_error">Couldn&#8217;t connect: %1$s</string>
+    <string name="onboarding_drive_open_app">Open ScheduleIt</string>
 </resources>

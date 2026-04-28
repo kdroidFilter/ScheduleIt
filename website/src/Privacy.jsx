@@ -6,8 +6,6 @@ import Footer from './Footer.jsx'
 import { translations, detectLang, applyLangAttrs } from './i18n.js'
 
 const BASE = import.meta.env.BASE_URL
-const V = `?v=${__BUILD_ID__}`
-const asset = (path) => `${BASE}${path}${V}`
 
 export default function Privacy() {
   const [lang, setLang] = useState(detectLang)
@@ -26,15 +24,14 @@ export default function Privacy() {
   return (
     <>
       <Background />
-      <SupportLink lang={lang} />
-      <LangSwitcher lang={lang} setLang={setLang} />
+      <div className="chrome">
+        <SupportLink lang={lang} />
+        <LangSwitcher lang={lang} setLang={setLang} />
+      </div>
       <div className="page">
-        <header className="hero">
-          <a href={BASE}>
-            <img src={asset('icon.png')} alt="ScheduleIt logo" className="logo" />
-          </a>
+        <header className="sub-header">
           <h1>{t.privacy.title}</h1>
-          <p className="tagline">{t.privacy.lastUpdated}</p>
+          <p>{t.privacy.lastUpdated}</p>
         </header>
 
         <article className="legal">

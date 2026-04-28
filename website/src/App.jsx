@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Background from './Background.jsx'
 import LangSwitcher from './LangSwitcher.jsx'
 import SupportLink from './SupportLink.jsx'
 import Footer from './Footer.jsx'
 import { OS_ICON_PATHS } from './osIcons.js'
-import { FEATURE_ICONS } from './featureIcons.js'
 import { translations, detectLang, applyLangAttrs } from './i18n.js'
 
 const REPO = 'kdroidFilter/ScheduleIt'
@@ -57,12 +56,15 @@ function classifyArch(name) {
   return null
 }
 
-function prettyLabel(name) {
+function prettyExt(name) {
+  return name.slice(name.lastIndexOf('.') + 1).toUpperCase()
+}
+
+function prettyArch(name) {
   const arch = classifyArch(name)
-  const ext = name.slice(name.lastIndexOf('.') + 1).toUpperCase()
-  return [ext, arch === 'arm64' ? 'ARM64' : arch === 'x64' ? 'x64' : '']
-    .filter(Boolean)
-    .join(' · ')
+  if (arch === 'arm64') return 'ARM64'
+  if (arch === 'x64') return 'x64'
+  return ''
 }
 
 function formatSize(bytes) {
@@ -70,20 +72,38 @@ function formatSize(bytes) {
   return `${mb.toFixed(1)} MB`
 }
 
+function osLabel(os) {
+  if (os === 'mac') return 'macOS'
+  if (os === 'windows') return 'Windows'
+  if (os === 'linux') return 'Linux'
+  return 'Other'
+}
+
 function OsIcon({ os }) {
   const path = OS_ICON_PATHS[os]
-  if (!path) {
-    return (
-      <svg className="os-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18-.21 0-.41-.06-.57-.18l-7.9-4.44A.991.991 0 013 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18.21 0 .41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9M12 4.15L6.04 7.5 12 10.85 17.96 7.5 12 4.15M5 15.91l6 3.38v-6.71L5 9.21v6.7m14 0v-6.7l-6 3.37v6.71l6-3.38z" />
-      </svg>
-    )
-  }
+  if (!path) return null
   return (
-    <svg className="os-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d={path} />
     </svg>
   )
+}
+
+function pickPrimary(assets, os, arch) {
+  if (!assets) return null
+  const candidates = assets.filter((a) => classify(a.name) === os)
+  if (!candidates.length) return null
+  if (arch) {
+    const match = candidates.find((a) => classifyArch(a.name) === arch)
+    if (match) return match
+  }
+  // Prefer .dmg for mac, .exe for win, .appimage for linux as universal default
+  const prefer = { mac: '.dmg', windows: '.exe', linux: '.appimage' }[os]
+  if (prefer) {
+    const match = candidates.find((a) => a.name.toLowerCase().endsWith(prefer))
+    if (match) return match
+  }
+  return candidates[0]
 }
 
 export default function App() {
@@ -92,8 +112,10 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [arch, setArch] = useState(null)
   const [lang, setLang] = useState(detectLang)
+  const [showOther, setShowOther] = useState(false)
   const detectedOS = useMemo(detectOS, [])
   const t = translations[lang]
+  const otherRef = useRef(null)
 
   useEffect(() => {
     applyLangAttrs(lang)
@@ -121,133 +143,166 @@ export default function App() {
 
   const grouped = useMemo(() => {
     if (!release?.assets) return {}
-    const acc = release.assets.reduce((map, a) => {
+    return release.assets.reduce((map, a) => {
       const os = classify(a.name)
       if (!os) return map
       if (!map[os]) map[os] = []
       map[os].push(a)
       return map
     }, {})
-    if (arch) {
-      Object.keys(acc).forEach((os) => {
-        acc[os].sort((a, b) => {
-          const aMatch = classifyArch(a.name) === arch
-          const bMatch = classifyArch(b.name) === arch
-          if (aMatch && !bMatch) return -1
-          if (!aMatch && bMatch) return 1
-          return 0
-        })
-      })
-    }
-    return acc
-  }, [release, arch])
+  }, [release])
 
-  const order = ['windows', 'mac', 'linux', 'other'].sort((a, b) => {
-    if (a === detectedOS) return -1
-    if (b === detectedOS) return 1
-    return 0
-  })
+  const primary = useMemo(
+    () => (release && detectedOS !== 'unknown' ? pickPrimary(release.assets, detectedOS, arch) : null),
+    [release, detectedOS, arch]
+  )
 
-  const GALLERY = [
-    { src: asset('screens/edit-event.webp'), caption: t.gallery.editEvent },
-    { src: asset('screens/settings.webp'), caption: t.gallery.settings },
-  ]
+  const otherOses = ['mac', 'windows', 'linux', 'other'].filter(
+    (os) => os !== detectedOS && grouped[os]?.length
+  )
 
   return (
     <>
       <Background />
-      <SupportLink lang={lang} />
-      <LangSwitcher lang={lang} setLang={setLang} />
+      <div className="chrome">
+        <SupportLink lang={lang} />
+        <LangSwitcher lang={lang} setLang={setLang} />
+      </div>
       <div className="page">
-
-      <header className="hero">
-        <img src={asset('icon.png')} alt="ScheduleIt logo" className="logo" />
-        <h1>ScheduleIt</h1>
-        <p className="tagline">{t.tagline}</p>
-        {release && (
-          <div className="version">
-            <span className="badge">{release.tag_name}</span>
-            <a href={release.html_url} target="_blank" rel="noreferrer">{t.releaseNotes}</a>
+        <header className="hero">
+          <div className="hero-mark">
+            <img src={asset('icon.png')} alt="" className="hero-logo" />
+            <h1 className="wordmark">ScheduleIt</h1>
           </div>
-        )}
-      </header>
+          <div className="hero-aside">
+            <p className="tagline">{t.tagline}</p>
+            <div className="version-row">
+              <span className="foss-pill">{t.foss}</span>
+              {release && (
+                <>
+                  <span className="version-tag">{release.tag_name}</span>
+                  <a className="version-link" href={release.html_url} target="_blank" rel="noreferrer">
+                    {t.releaseNotes}
+                  </a>
+                </>
+              )}
+            </div>
+          </div>
+        </header>
 
-      <section className="showcase">
-        <img
-          src={asset('screens/light.webp')}
-          alt="ScheduleIt weekly overview"
-          className="hero-shot"
-        />
-      </section>
+        <section className="showcase">
+          <img
+            src={asset('screens/light.webp')}
+            alt="ScheduleIt — weekly view"
+            className="hero-shot"
+          />
+        </section>
 
-      <section className="gallery">
-        {GALLERY.map((g) => (
-          <figure key={g.src}>
-            <img src={g.src} alt={g.caption} loading="lazy" />
-            <figcaption>{g.caption}</figcaption>
-          </figure>
-        ))}
-      </section>
-
-      <section className="features">
-        <h2>{t.features.title}</h2>
-        <p className="features-lede">{t.features.lede}</p>
-        <div className="feature-grid">
-          {t.features.items.map((f, i) => (
-            <article key={f.title} className="feature-card">
-              <div className="feature-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  {FEATURE_ICONS[i].map((d, j) => (
-                    <path key={j} d={d} />
-                  ))}
-                </svg>
+        <section className="truths">
+          {t.truths.map((truth, i) => (
+            <article key={i} className="truth">
+              <div className="truth-text">
+                <p className="truth-eyebrow">{truth.eyebrow}</p>
+                <h2
+                  className="truth-title"
+                  dangerouslySetInnerHTML={{ __html: truth.title }}
+                />
+                <p className="truth-body">{truth.body}</p>
               </div>
-              <h3>{f.title}</h3>
-              <p>{f.body}</p>
+              {truth.devices ? (
+                <figure className="truth-visual truth-visual-devices">
+                  <img
+                    className="device-tablet"
+                    src={asset(truth.devices.tablet)}
+                    alt={truth.devices.altTablet}
+                    loading="lazy"
+                  />
+                  <img
+                    className="device-phone"
+                    src={asset(truth.devices.phone)}
+                    alt={truth.devices.altPhone}
+                    loading="lazy"
+                  />
+                </figure>
+              ) : (
+                <figure className="truth-visual">
+                  <img src={asset(truth.visual)} alt={truth.alt} loading="lazy" />
+                </figure>
+              )}
             </article>
           ))}
-        </div>
-      </section>
+        </section>
 
-      <section className="download-section">
-        <h2>{t.download.heading}</h2>
-        {loading && <p className="status">{t.download.loading}</p>}
-        {error && <p className="status error">{t.download.error}{error}</p>}
+        <section className="download">
+          <p className="download-eyebrow">{t.download.eyebrow}</p>
+          <h2
+            className="download-heading"
+            dangerouslySetInnerHTML={{ __html: t.download.heading }}
+          />
 
-        {release && (
-          <div className="downloads">
-            {order
-              .filter((os) => grouped[os]?.length)
-              .map((os) => (
-                <section key={os} className={`os-card ${os === detectedOS ? 'highlight' : ''}`}>
-                  <header>
-                    <OsIcon os={os} />
-                    <h3>{t.os[os]}</h3>
-                    {os === detectedOS && <span className="pill">{t.download.detected}</span>}
-                  </header>
-                  <ul>
-                    {grouped[os].map((a) => {
-                      const matchArch = arch && classifyArch(a.name) === arch && os === detectedOS
-                      return (
-                        <li key={a.id}>
-                          <a className={`dl-btn ${matchArch ? 'match' : ''}`} href={a.browser_download_url}>
-                            <span className="dl-name">
-                              {prettyLabel(a.name)}
-                              {matchArch && <span className="dl-tag">{t.download.forYou}</span>}
-                            </span>
-                            <span className="dl-size">{formatSize(a.size)}</span>
-                          </a>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </section>
-              ))}
-          </div>
-        )}
-      </section>
+          {loading && <p className="dl-status">{t.download.loading}</p>}
+          {error && <p className="dl-status error">{t.download.error}{error}</p>}
 
-      <Footer lang={lang} />
+          {primary && (
+            <a className="dl-primary" href={primary.browser_download_url}>
+              <span className="dl-primary-os">
+                <OsIcon os={detectedOS} />
+                <span>{t.download.primaryFor} {osLabel(detectedOS)}</span>
+              </span>
+              <span className="dl-primary-meta">
+                {prettyExt(primary.name)}
+                {prettyArch(primary.name) && ` · ${prettyArch(primary.name)}`}
+                {' · '}
+                {formatSize(primary.size)}
+              </span>
+            </a>
+          )}
+
+          {release && otherOses.length > 0 && (
+            <div className="dl-disclosure">
+              <button
+                type="button"
+                className="dl-toggle"
+                aria-expanded={showOther}
+                aria-controls="dl-other"
+                onClick={() => setShowOther((v) => !v)}
+              >
+                <span>{showOther ? t.download.otherHide : t.download.otherShow}</span>
+                <svg className="chev" viewBox="0 0 12 12" aria-hidden="true">
+                  <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
+              {showOther && (
+                <div className="dl-other" id="dl-other" ref={otherRef}>
+                  {otherOses.map((os) => (
+                    <div key={os} className="dl-os">
+                      <span className="dl-os-name">
+                        <OsIcon os={os} />
+                        {t.os[os]}
+                      </span>
+                      <ul className="dl-list">
+                        {grouped[os].map((a) => (
+                          <li key={a.id}>
+                            <a className="dl-row" href={a.browser_download_url}>
+                              <span className="dl-row-label">
+                                {prettyExt(a.name)}
+                                {prettyArch(a.name) && ` · ${prettyArch(a.name)}`}
+                              </span>
+                              <span className="dl-row-size">{formatSize(a.size)}</span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+
+        <Footer lang={lang} />
       </div>
     </>
   )
