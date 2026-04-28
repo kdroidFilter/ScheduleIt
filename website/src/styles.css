@@ -219,7 +219,12 @@ a:hover { text-decoration: underline; }
   margin: 0;
   flex: 1;
 }
-.os-icon { font-size: 22px; }
+.os-icon {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
 
 .pill {
   background: var(--accent-strong);
