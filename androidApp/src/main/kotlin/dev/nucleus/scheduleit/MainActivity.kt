@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import dev.nucleus.scheduleit.data.drive.DriveAuthResolver
 import dev.nucleus.scheduleit.data.drive.DriveAuthResolverHolder
 import dev.nucleus.scheduleit.di.createAndroidAppGraph
+import dev.nucleus.scheduleit.ui.mobile.theme.MobileTheme
 import dev.nucleus.scheduleit.updater.AndroidAppUpdater
 import dev.nucleus.scheduleit.updater.AppUpdaterOverlay
 import java.util.concurrent.atomic.AtomicBoolean
@@ -71,10 +72,12 @@ class MainActivity : ComponentActivity(), DriveAuthResolver {
         setContent {
             Box(Modifier.fillMaxSize()) {
                 App(graph)
-                AppUpdaterOverlay(
-                    state = updater.state.collectAsState(),
-                    onInstall = { updater.install(lifecycleScope) },
-                )
+                MobileTheme {
+                    AppUpdaterOverlay(
+                        state = updater.state.collectAsState(),
+                        onInstall = { updater.install(lifecycleScope) },
+                    )
+                }
             }
         }
     }
