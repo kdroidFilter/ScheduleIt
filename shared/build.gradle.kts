@@ -72,7 +72,8 @@ kotlin {
         val nonJvmMain by creating {
             dependsOn(commonMain)
             dependencies {
-                implementation(libs.compose.material3)
+                implementation(libs.compose.unstyled)
+                implementation(libs.icons.lucide)
             }
         }
 
@@ -80,6 +81,12 @@ kotlin {
             dependsOn(nonJvmMain)
             dependencies {
                 implementation(libs.sqldelight.androidDriver)
+                implementation(libs.androidx.datastore.preferences)
+                implementation(libs.play.services.auth)
+                implementation(libs.kotlinx.coroutines.play.services)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.cio)
+                implementation(libs.kotlinx.serializationJson)
             }
         }
 
