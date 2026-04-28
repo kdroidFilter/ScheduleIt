@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%BASE_URL%favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="%BASE_URL%favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="%BASE_URL%apple-touch-icon.png" />
+    <title>ScheduleIt — Privacy policy</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('lang');
+          var nav = (navigator.language || 'en').slice(0, 2).toLowerCase();
+          if (nav === 'iw') nav = 'he';
+          var lang = stored || (['en', 'fr', 'he'].indexOf(nav) >= 0 ? nav : 'en');
+          document.documentElement.lang = lang;
+          document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+        } catch (e) {}
+      })();
+    </script>
+    <script type="module" src="/src/privacy-main.jsx"></script>
+  </body>
+</html>

@@ -325,6 +325,32 @@ a:hover { text-decoration: underline; }
   color: var(--muted);
   font-size: 14px;
 }
+.footer-sep {
+  margin: 0 10px;
+  color: var(--border);
+}
+
+/* Legal pages (privacy, terms…) */
+.legal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px;
+  line-height: 1.65;
+}
+.legal section + section {
+  margin-top: 24px;
+}
+.legal h2 {
+  font-size: 18px;
+  margin: 0 0 8px;
+  letter-spacing: -.2px;
+}
+.legal p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
 
 @media (max-width: 600px) {
   .hero h1 { font-size: 44px; }

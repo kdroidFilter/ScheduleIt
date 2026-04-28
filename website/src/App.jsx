@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import Background from './Background.jsx'
+import LangSwitcher from './LangSwitcher.jsx'
 import { OS_ICON_PATHS } from './osIcons.js'
-import { LANGS, translations, detectLang, applyLangAttrs } from './i18n.js'
+import { translations, detectLang, applyLangAttrs } from './i18n.js'
 
 const REPO = 'kdroidFilter/ScheduleIt'
 const API_URL = `https://api.github.com/repos/${REPO}/releases/latest`
@@ -77,24 +78,6 @@ function OsIcon({ os }) {
     <svg className="os-icon" viewBox="0 0 24 24" aria-hidden="true">
       <path d={path} />
     </svg>
-  )
-}
-
-function LangSwitcher({ lang, setLang }) {
-  return (
-    <div className="lang-switcher" role="group" aria-label="Language">
-      {LANGS.map((l) => (
-        <button
-          key={l.code}
-          type="button"
-          className={l.code === lang ? 'active' : ''}
-          onClick={() => setLang(l.code)}
-          aria-pressed={l.code === lang}
-        >
-          {l.label}
-        </button>
-      ))}
-    </div>
   )
 }
 
@@ -256,6 +239,8 @@ export default function App() {
         <a href={`https://github.com/${REPO}`} target="_blank" rel="noreferrer">
           {t.footer.source}
         </a>
+        <span className="footer-sep" aria-hidden="true">·</span>
+        <a href={`${BASE}privacy.html`}>{t.footer.privacy}</a>
       </footer>
       </div>
     </>
