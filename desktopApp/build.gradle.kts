@@ -93,7 +93,7 @@ nucleus.application {
             appx {
                 applicationId = "ScheduleIt"
                 identityName = "KdroidFilter.ScheduleIt-ClassTimetable"
-                displayName = "ScheduleIt"
+                displayName = "ScheduleIt - Class Timetable"
                 publisherDisplayName = "KdroidFilter"
                 // Publisher CN provided by the Microsoft Partner Center for this Store listing.
                 publisher = "CN=D541E802-6D30-446A-864E-2E8ABD2DAA5E"
