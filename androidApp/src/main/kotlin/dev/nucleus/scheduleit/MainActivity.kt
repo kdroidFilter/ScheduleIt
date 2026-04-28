@@ -9,10 +9,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import dev.nucleus.scheduleit.data.drive.DriveAuthResolver
 import dev.nucleus.scheduleit.data.drive.DriveAuthResolverHolder
 import dev.nucleus.scheduleit.di.createAndroidAppGraph
+import dev.nucleus.scheduleit.updater.AndroidAppUpdater
+import dev.nucleus.scheduleit.updater.AppUpdaterOverlay
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
@@ -59,8 +65,17 @@ class MainActivity : ComponentActivity(), DriveAuthResolver {
             ready.set(true)
         }
 
+        val updater = AndroidAppUpdater(applicationContext)
+        updater.start(lifecycleScope)
+
         setContent {
-            App(graph)
+            Box(Modifier.fillMaxSize()) {
+                App(graph)
+                AppUpdaterOverlay(
+                    state = updater.state.collectAsState(),
+                    onInstall = { updater.install(lifecycleScope) },
+                )
+            }
         }
     }
 

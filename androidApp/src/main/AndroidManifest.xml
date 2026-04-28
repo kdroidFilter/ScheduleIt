@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- API 31+ silent self-update: combined with Ackpine's requireUserAction=false,
+         lets ScheduleIt update itself without the system "Install?" dialog when it
+         is the update owner of the previously installed version. -->
+    <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
 
     <application
             android:allowBackup="true"

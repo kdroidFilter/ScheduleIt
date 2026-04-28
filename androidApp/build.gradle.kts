@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -87,6 +88,18 @@ dependencies {
     implementation(libs.androidx.splashscreen)
     implementation(libs.metrox.viewmodel)
     implementation(libs.filekit.core)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.animation)
     implementation(libs.compose.uiToolingPreview)
+    implementation(libs.icons.lucide)
     debugImplementation(libs.compose.uiTooling)
+
+    // In-app updater: GitHub release polling + Ackpine package install.
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.kotlinx.serializationJson)
+    implementation(libs.ackpine.core)
+    implementation(libs.ackpine.ktx)
 }
