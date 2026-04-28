@@ -71,7 +71,7 @@ nucleus.application {
         copyright = "© 2026 Elie Gambache. Licensed under GPLv3."
         homepage = "https://github.com/kdroidFilter/ScheduleIt"
         licenseFile.set(rootProject.file("LICENSE"))
-        modules("java.sql")
+        modules("java.sql", "jdk.httpserver")
 
         macOS {
             iconFile.set(rootProject.file("art/icon.icns"))
