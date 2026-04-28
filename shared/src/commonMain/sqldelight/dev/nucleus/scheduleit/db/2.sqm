@@ -1,0 +1,5 @@
+ALTER TABLE schedule_settings ADD COLUMN onboarding_completed INTEGER NOT NULL DEFAULT 0;
+
+-- Existing installs skip onboarding (they already have a working schedule).
+-- Fresh installs hit the default 0 from the INSERT OR IGNORE above.
+UPDATE schedule_settings SET onboarding_completed = 1 WHERE id = 1;

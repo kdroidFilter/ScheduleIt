@@ -29,6 +29,7 @@ import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.nucleus.scheduleit.ui.common.localizedWeekOrder
 import dev.nucleus.scheduleit.ui.mobile.components.ConfirmDialog
 import dev.nucleus.scheduleit.ui.mobile.components.LoadingIndicator
+import dev.nucleus.scheduleit.ui.mobile.onboarding.OnboardingFlow
 import dev.nucleus.scheduleit.ui.mobile.theme.MobileTheme
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -56,6 +57,8 @@ fun MobileScheduleHost() {
     var showAbout by rememberSaveable { mutableStateOf(false) }
     val openAbout: () -> Unit = { showAbout = true }
 
+    val showOnboarding = !state.isLoading && !state.settings.onboardingCompleted
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
@@ -67,6 +70,7 @@ fun MobileScheduleHost() {
 
         when {
             state.isLoading -> LoadingState()
+            showOnboarding -> OnboardingFlow(state = state, onIntent = viewModel::onEvent)
             visibleDays.isEmpty() -> EmptyScheduleHint(onIntent = viewModel::onEvent)
             widthDp < PHONE_MAX_DP && !isLandscape ->
                 PhoneDayScreen(state, visibleDays, viewModel::onEvent, openAbout)
@@ -79,28 +83,31 @@ fun MobileScheduleHost() {
         }
     }
 
-    if (showAbout) {
+    if (showAbout && !showOnboarding) {
         MobileAboutDialog(onDismiss = { showAbout = false })
     }
 
     // Modal overlays — always mounted so the exit animation can play out.
-    MobileEventEditor(
-        editor = state.editor,
-        settings = state.settings,
-        siblings = state.editor?.day?.let { state.effectiveEventsFor(it) } ?: emptyList(),
-        onIntent = viewModel::onEvent,
-    )
+    // Suppressed during onboarding to keep the flow uncluttered.
+    if (!showOnboarding) {
+        MobileEventEditor(
+            editor = state.editor,
+            settings = state.settings,
+            siblings = state.editor?.day?.let { state.effectiveEventsFor(it) } ?: emptyList(),
+            onIntent = viewModel::onEvent,
+        )
 
-    MobileSettingsSheet(
-        visible = state.showSettings,
-        state = state,
-        onIntent = viewModel::onEvent,
-    )
+        MobileSettingsSheet(
+            visible = state.showSettings,
+            state = state,
+            onIntent = viewModel::onEvent,
+        )
 
-    ErrorBanner(
-        errorMessage = state.errorMessage,
-        onDismiss = { viewModel.onEvent(ScheduleIntent.DismissError) },
-    )
+        ErrorBanner(
+            errorMessage = state.errorMessage,
+            onDismiss = { viewModel.onEvent(ScheduleIntent.DismissError) },
+        )
+    }
 }
 
 @Composable

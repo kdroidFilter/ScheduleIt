@@ -106,7 +106,13 @@ class ScheduleViewModel(
 
             ScheduleIntent.DismissError -> _state.update { it.copy(errorMessage = null) }
             is ScheduleIntent.ReportBlocked -> _state.update { it.copy(errorMessage = intent.reason) }
+
+            ScheduleIntent.CompleteOnboarding -> completeOnboarding()
         }
+    }
+
+    private fun completeOnboarding() {
+        viewModelScope.launch { repository.setOnboardingCompleted(true) }
     }
 
     private fun startCreate(day: AppDayOfWeek, startMinute: Int) {

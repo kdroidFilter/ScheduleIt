@@ -82,6 +82,7 @@ kotlin {
             dependencies {
                 implementation(libs.sqldelight.androidDriver)
                 implementation(libs.androidx.datastore.preferences)
+                implementation(libs.androidx.activity.compose)
                 implementation(libs.play.services.auth)
                 implementation(libs.kotlinx.coroutines.play.services)
                 implementation(libs.ktor.client.core)

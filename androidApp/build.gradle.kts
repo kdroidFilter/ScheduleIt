@@ -64,6 +64,10 @@ android {
         }
         getByName("debug") {
             isMinifyEnabled = false
+            // Suffix lets debug installs coexist with the release build on
+            // the same device — avoids INSTALL_FAILED_UPDATE_INCOMPATIBLE.
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
         }
     }
 

@@ -115,4 +115,23 @@
     <string name="about_version">Version %1$s</string>
     <string name="about_license">License: %1$s</string>
     <string name="about_made_with_love">Made with ♥ by Elie Gambache</string>
+
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_welcome_title">Your week, organized once and for all.</string>
+    <string name="onboarding_welcome_subtitle">Build your recurring schedule in 30 seconds. We&#8217;ll remember it for you.</string>
+    <string name="onboarding_welcome_cta">Get started</string>
+    <string name="onboarding_setup_title">Your days, your hours.</string>
+    <string name="onboarding_setup_subtitle">Pick what you want to see. The defaults fit most weeks.</string>
+    <string name="onboarding_setup_days_label">Visible days</string>
+    <string name="onboarding_setup_hours_label">Visible hours</string>
+    <string name="onboarding_setup_hint">You can change everything later in Settings.</string>
+    <string name="onboarding_setup_continue">Continue</string>
+    <string name="onboarding_drive_title">Keep your schedule safe.</string>
+    <string name="onboarding_drive_subtitle">If you switch phones, get it back in one tap. We back up to your private app folder.</string>
+    <string name="onboarding_drive_privacy">Stored in a Drive folder we created for the app — we can&#8217;t see anything else in your Drive.</string>
+    <string name="onboarding_drive_connect_cta">Connect Google Drive</string>
+    <string name="onboarding_drive_finish_later">Maybe later</string>
+    <string name="onboarding_drive_connecting">Waiting for your authorization…</string>
+    <string name="onboarding_drive_success">Connected. Your schedule is safe.</string>
+    <string name="onboarding_drive_error">Couldn&#8217;t connect: %1$s</string>
 </resources>
