@@ -108,19 +108,20 @@ internal class JvmGoogleDriveSync(
         _status.value = current.copy(operation = GoogleDriveStatus.Operation.Restoring)
         return try {
             val fresh = ensureFreshToken(saved)
-            val fileId = fresh.backupFileId
-                ?: drive.findLatest(fresh.accessToken, BACKUP_FILE_NAME)
-                ?: run {
-                    _status.value = current.copy(operation = null)
-                    return null
-                }
-            if (fresh.backupFileId == null) {
-                store.save(fresh.copy(backupFileId = fileId))
+            val ref = drive.findLatest(fresh.accessToken, BACKUP_FILE_NAME) ?: run {
+                _status.value = current.copy(operation = null)
+                return null
             }
-            val payload = drive.download(fresh.accessToken, fileId)
+            val payload = drive.download(fresh.accessToken, ref.id)
+            store.save(
+                fresh.copy(
+                    backupFileId = ref.id,
+                    lastBackupEpochSec = ref.modifiedEpochSec,
+                ),
+            )
             _status.value = GoogleDriveStatus.Connected(
                 email = fresh.email,
-                lastBackupEpochSec = store.load()?.lastBackupEpochSec,
+                lastBackupEpochSec = ref.modifiedEpochSec,
                 operation = null,
             )
             payload

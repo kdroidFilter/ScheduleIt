@@ -64,8 +64,10 @@ internal class DriveBackup(
         }
     }
 
+    data class DriveFileRef(val id: String, val modifiedEpochSec: Long)
+
     /** Returns the most recent file matching [fileName] in the appDataFolder, or null. */
-    suspend fun findLatest(accessToken: String, fileName: String): String? {
+    suspend fun findLatest(accessToken: String, fileName: String): DriveFileRef? {
         val q = "name = '${fileName.replace("'", "\\'")}' and trashed = false"
         val response = http.get(LIST_URL) {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
@@ -78,10 +80,16 @@ internal class DriveBackup(
             }
         }
         if (!response.status.isSuccess()) return null
-        val files = json.parseToJsonElement(response.bodyAsText())
+        val first = json.parseToJsonElement(response.bodyAsText())
             .jsonObject["files"]?.jsonArray
+            ?.firstOrNull()
+            ?.jsonObject
             ?: return null
-        return files.firstOrNull()?.jsonObject?.get("id")?.jsonPrimitive?.content
+        val id = first["id"]?.jsonPrimitive?.content ?: return null
+        val modifiedSec = first["modifiedTime"]?.jsonPrimitive?.content
+            ?.let { runCatching { java.time.Instant.parse(it).epochSecond }.getOrNull() }
+            ?: (System.currentTimeMillis() / 1000)
+        return DriveFileRef(id, modifiedSec)
     }
 
     suspend fun download(accessToken: String, fileId: String): String {
