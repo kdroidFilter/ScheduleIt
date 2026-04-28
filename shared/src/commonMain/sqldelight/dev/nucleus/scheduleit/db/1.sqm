@@ -1,0 +1,25 @@
+CREATE TABLE day_event (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    day INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    start_minute INTEGER NOT NULL,
+    end_minute INTEGER NOT NULL,
+    color INTEGER NOT NULL,
+    notes TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX day_event_day_idx ON day_event(day);
+
+CREATE TABLE template_event_override (
+    base_event_id INTEGER NOT NULL REFERENCES event(id) ON DELETE CASCADE,
+    day INTEGER NOT NULL,
+    hidden INTEGER NOT NULL DEFAULT 0,
+    title TEXT,
+    start_minute INTEGER,
+    end_minute INTEGER,
+    color INTEGER,
+    notes TEXT,
+    PRIMARY KEY (base_event_id, day)
+);
+
+CREATE INDEX template_event_override_day_idx ON template_event_override(day);
