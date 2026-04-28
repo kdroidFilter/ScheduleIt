@@ -8,6 +8,7 @@
     <string name="action_open_settings">Paramètres</string>
     <string name="action_open_github">Ouvrir le dépôt GitHub</string>
     <string name="action_open_about">À propos</string>
+    <string name="action_install_update">Redémarrer et installer la mise à jour</string>
     <string name="action_close">Fermer</string>
     <string name="action_back">Retour</string>
     <string name="action_save">Enregistrer</string>

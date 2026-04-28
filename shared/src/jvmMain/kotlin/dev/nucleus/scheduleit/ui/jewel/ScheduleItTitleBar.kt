@@ -21,6 +21,7 @@ import org.jetbrains.jewel.ui.component.Tooltip
 import org.jetbrains.jewel.ui.icons.AllIconsKeys
 import org.jetbrains.jewel.ui.painter.hints.Size
 import scheduleit.shared.generated.resources.Res
+import scheduleit.shared.generated.resources.action_install_update
 import scheduleit.shared.generated.resources.action_open_about
 import scheduleit.shared.generated.resources.action_open_github
 import scheduleit.shared.generated.resources.action_open_settings
@@ -31,6 +32,7 @@ import scheduleit.shared.generated.resources.app_name
 fun DecoratedWindowScope.ScheduleItTitleBar(
     onOpenGithub: () -> Unit,
     onOpenAbout: () -> Unit,
+    onInstallUpdate: (() -> Unit)? = null,
 ) {
     val viewModel: ScheduleViewModel = metroViewModel()
     JewelTitleBar(Modifier) {
@@ -40,6 +42,22 @@ fun DecoratedWindowScope.ScheduleItTitleBar(
         // End on macOS (controls on the left), Start on Windows/Linux (controls on the right).
         val actionsAlignment = if (Platform.Current == Platform.MacOS) Alignment.End else Alignment.Start
         Row(Modifier.align(actionsAlignment)) {
+            if (onInstallUpdate != null) {
+                val updateTooltip = stringResource(Res.string.action_install_update)
+                Tooltip({ Text(updateTooltip) }) {
+                    IconButton(
+                        onClick = onInstallUpdate,
+                        modifier = Modifier.size(40.dp).padding(5.dp),
+                    ) {
+                        Icon(
+                            key = AllIconsKeys.Ide.Notification.IdeUpdate,
+                            contentDescription = updateTooltip,
+                            hints = arrayOf(Size(20)),
+                        )
+                    }
+                }
+            }
+
             val githubTooltip = stringResource(Res.string.action_open_github)
             Tooltip({ Text(githubTooltip) }) {
                 IconButton(

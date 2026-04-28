@@ -8,6 +8,7 @@
     <string name="action_open_settings">הגדרות</string>
     <string name="action_open_github">פתח את מאגר GitHub</string>
     <string name="action_open_about">אודות</string>
+    <string name="action_install_update">הפעל מחדש והתקן עדכון</string>
     <string name="action_close">סגור</string>
     <string name="action_back">חזור</string>
     <string name="action_save">שמור</string>

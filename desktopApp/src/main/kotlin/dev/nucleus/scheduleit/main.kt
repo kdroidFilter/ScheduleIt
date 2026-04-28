@@ -5,6 +5,7 @@ package dev.nucleus.scheduleit
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import dev.nucleus.scheduleit.ui.JewelAboutWindow
 import dev.nucleus.scheduleit.ui.jewel.ScheduleItTitleBar
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import io.github.kdroidfilter.nucleus.aot.runtime.AotRuntime
+import io.github.kdroidfilter.nucleus.core.runtime.Platform
 import io.github.kdroidfilter.nucleus.core.runtime.SingleInstanceManager
 import io.github.kdroidfilter.nucleus.darkmodedetector.isSystemInDarkMode
 import io.github.kdroidfilter.nucleus.notification.windows.WindowsNotificationCenter
@@ -87,9 +89,14 @@ fun main(args: Array<String>) {
         val notificationScope = remember {
             CoroutineScope(SupervisorJob() + Dispatchers.Default)
         }
+        val appUpdater = remember { AppUpdater() }
+        val updateState by appUpdater.state.collectAsState()
         LaunchedEffect(notificationScope) {
             runCatching { notificationScope.startInAppNotificationLoop(graph.repository) }
             runCatching { notificationScope.startSchedulerSync(graph.repository) }
+            if (!AotRuntime.isTraining()) {
+                runCatching { appUpdater.start(notificationScope) }
+            }
         }
         DisposableEffect(notificationScope) {
             onDispose { notificationScope.cancel() }
@@ -101,12 +108,20 @@ fun main(args: Array<String>) {
             JewelTheme.lightThemeDefinition()
         }
 
+        // Linux DEB requires a graphical pkexec prompt → user must trigger install
+        // explicitly via the title-bar icon. Windows/macOS install silently on quit.
+        val updateOnLinux = Platform.Current == Platform.Linux
+        val quit = {
+            if (!updateOnLinux && updateState is UpdateState.ReadyToInstall) {
+                appUpdater.installAndQuit()
+            }
+            notificationScope.cancel()
+            exitApplication()
+        }
+
         IntUiTheme(theme = theme, styling = ComponentStyling.default()) {
             JewelDecoratedWindow(
-                onCloseRequest = {
-                    notificationScope.cancel()
-                    exitApplication()
-                },
+                onCloseRequest = { quit() },
                 state = rememberWindowState(
                     placement = if (shouldStartMaximized()) {
                         WindowPlacement.Maximized
@@ -128,12 +143,7 @@ fun main(args: Array<String>) {
                 }
                 var showAbout by remember { mutableStateOf(false) }
                 CompositionLocalProvider(LocalMetroViewModelFactory provides graph.viewModelFactory) {
-                    ScheduleItMenuBar(
-                        onQuit = {
-                            notificationScope.cancel()
-                            exitApplication()
-                        },
-                    )
+                    ScheduleItMenuBar(onQuit = quit)
                     ScheduleItTitleBar(
                         onOpenGithub = {
                             runCatching {
@@ -141,6 +151,11 @@ fun main(args: Array<String>) {
                             }
                         },
                         onOpenAbout = { showAbout = true },
+                        onInstallUpdate = if (updateOnLinux) {
+                            (updateState as? UpdateState.ReadyToInstall)?.let {
+                                { appUpdater.installAndRestart() }
+                            }
+                        } else null,
                     )
                     App(graph)
                     if (showAbout) {

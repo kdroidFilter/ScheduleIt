@@ -1,4 +1,6 @@
 import io.github.kdroidfilter.nucleus.desktop.application.dsl.CompressionLevel
+import io.github.kdroidfilter.nucleus.desktop.application.dsl.ReleaseChannel
+import io.github.kdroidfilter.nucleus.desktop.application.dsl.ReleaseType
 import io.github.kdroidfilter.nucleus.desktop.application.dsl.TargetFormat
 import org.gradle.jvm.toolchain.JvmVendorSpec
 
@@ -43,6 +45,8 @@ dependencies {
     implementation(libs.nucleus.graalvmRuntime)
     implementation(libs.nucleus.aotRuntime)
     implementation(libs.nucleus.menuMacos)
+    implementation(libs.nucleus.updaterRuntime)
+    implementation(libs.nucleus.nativeHttp)
 }
 
 nucleus.application {
@@ -60,10 +64,22 @@ nucleus.application {
     }
 
     nativeDistributions {
-        targetFormats(TargetFormat.Dmg, TargetFormat.Nsis, TargetFormat.Deb, TargetFormat.AppX)
+        // TargetFormat.Zip is required on macOS so the auto-updater can extract
+        // and replace the .app bundle silently. DMG handles initial install.
+        targetFormats(
+            TargetFormat.Dmg,
+            TargetFormat.Zip,
+            TargetFormat.Nsis,
+            TargetFormat.Deb,
+            TargetFormat.AppX,
+        )
         cleanupNativeLibs = true
         compressionLevel = CompressionLevel.Maximum
         enableAotCache = aotCacheEnabled
+        // Disambiguate per-arch artifact filenames so the auto-updater can
+        // pick the right installer/ZIP from latest-*.yml (and so multi-arch
+        // assets don't overwrite each other in the GitHub Release).
+        artifactName = $$"${name}-${version}-${os}-${arch}.${ext}"
         packageName = "ScheduleIt"
         packageVersion = appVersion
         description = "Schedule and manage your tasks across desktop and mobile."
@@ -115,6 +131,17 @@ nucleus.application {
             debMaintainer = "Elie Gambache <elyahou.hadass@gmail.com>"
             menuGroup = "Office"
             shortcut = true
+        }
+
+        // Tells the auto-updater where to fetch latest-*.yml and installers.
+        publish {
+            github {
+                enabled = true
+                owner = "kdroidFilter"
+                repo = "ScheduleIt"
+                channel = ReleaseChannel.Latest
+                releaseType = ReleaseType.Release
+            }
         }
     }
 
