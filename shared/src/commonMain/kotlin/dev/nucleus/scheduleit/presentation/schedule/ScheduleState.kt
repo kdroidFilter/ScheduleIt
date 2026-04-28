@@ -1,5 +1,6 @@
 package dev.nucleus.scheduleit.presentation.schedule
 
+import dev.nucleus.scheduleit.data.drive.GoogleDriveStatus
 import dev.nucleus.scheduleit.domain.AppDayOfWeek
 import dev.nucleus.scheduleit.domain.DayEvent
 import dev.nucleus.scheduleit.domain.DayTemplate
@@ -22,6 +23,7 @@ data class ScheduleUiState(
     val showSettings: Boolean = false,
     val errorMessage: ErrorKey? = null,
     val clipboard: ClipboardEvent? = null,
+    val googleDrive: GoogleDriveStatus? = null,
 ) {
     val visibleDays: List<AppDayOfWeek>
         get() = AppDayOfWeek.entries.filter { it in assignments }

@@ -91,12 +91,16 @@ kotlin {
         }
 
         val jvmMain by getting {
+            kotlin.srcDir(layout.buildDirectory.dir("generated/source/driveOAuth/jvmMain"))
             dependencies {
                 implementation(libs.sqldelight.sqliteDriver)
                 implementation(libs.jewel.intUiStandalone)
                 implementation(libs.intellij.icons)
                 implementation(libs.nucleus.decoratedWindowCore)
                 implementation(libs.nucleus.decoratedWindowJewel)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.cio)
+                implementation(libs.nucleus.nativeHttpKtor)
             }
         }
     }
@@ -109,6 +113,37 @@ sqldelight {
             dialect(libs.sqldelight.sqlite324Dialect)
         }
     }
+}
+
+val generateDriveOAuthConfig by tasks.registering {
+    val outputDir = layout.buildDirectory.dir("generated/source/driveOAuth/jvmMain")
+    val clientId = providers.environmentVariable("GOOGLE_DRIVE_CLIENT_ID").orElse("")
+    val clientSecret = providers.environmentVariable("GOOGLE_DRIVE_CLIENT_SECRET").orElse("")
+    inputs.property("clientId", clientId)
+    inputs.property("clientSecret", clientSecret)
+    outputs.dir(outputDir)
+    doLast {
+        val file = outputDir.get()
+            .file("dev/nucleus/scheduleit/data/drive/DriveOAuthConfig.kt")
+            .asFile
+        file.parentFile.mkdirs()
+        file.writeText(
+            """
+            // Generated file. Do not edit.
+            package dev.nucleus.scheduleit.data.drive
+
+            internal object DriveOAuthConfig {
+                const val CLIENT_ID: String = "${clientId.get()}"
+                const val CLIENT_SECRET: String = "${clientSecret.get()}"
+                val isConfigured: Boolean get() = CLIENT_ID.isNotEmpty() && CLIENT_SECRET.isNotEmpty()
+            }
+            """.trimIndent(),
+        )
+    }
+}
+
+tasks.matching { it.name == "compileKotlinJvm" }.configureEach {
+    dependsOn(generateDriveOAuthConfig)
 }
 
 compose.resources {

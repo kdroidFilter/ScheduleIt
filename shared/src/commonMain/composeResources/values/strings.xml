@@ -80,6 +80,25 @@
     <string name="action_export">Export…</string>
     <string name="action_import">Import…</string>
     <string name="action_reset_database">Reset database</string>
+
+    <string name="settings_drive_section">Google Drive backup</string>
+    <string name="settings_drive_disconnected">Not connected. Sign in to back up your schedule.</string>
+    <string name="settings_drive_connecting">Waiting for authorization in your browser…</string>
+    <string name="settings_drive_connected">Connected as %1$s</string>
+    <string name="settings_drive_connected_anon">Connected</string>
+    <string name="settings_drive_last_backup">Last backup: %1$s</string>
+    <string name="settings_drive_no_backup">No backup yet</string>
+    <string name="settings_drive_uploading">Uploading…</string>
+    <string name="settings_drive_restoring">Restoring…</string>
+    <string name="settings_drive_error">Error: %1$s</string>
+    <string name="action_drive_connect">Connect Google Drive</string>
+    <string name="action_drive_backup_now">Back up now</string>
+    <string name="action_drive_restore">Restore</string>
+    <string name="action_drive_disconnect">Disconnect</string>
+    <string name="action_drive_retry">Retry</string>
+    <string name="restore_confirm_title">Restore from Google Drive?</string>
+    <string name="restore_confirm_message">Your current schedule will be replaced with the latest backup from Google Drive.</string>
+    <string name="action_restore_confirm">Restore</string>
     <string name="reset_confirm_title">Reset database?</string>
     <string name="reset_confirm_message">All your events, days and settings will be permanently deleted.</string>
     <string name="action_reset_confirm">Reset</string>
