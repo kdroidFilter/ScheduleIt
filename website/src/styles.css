@@ -127,6 +127,54 @@ a:hover { text-decoration: underline; }
   border-top: 1px solid var(--border);
 }
 
+/* Features */
+.features { margin-bottom: 64px; }
+.features h2 {
+  font-size: 32px;
+  margin: 0 0 14px;
+  text-align: center;
+  letter-spacing: -.5px;
+}
+.features-lede {
+  max-width: 640px;
+  margin: 0 auto 36px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.feature-card:hover {
+  border-color: var(--accent-strong);
+  transform: translateY(-2px);
+}
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.feature-card h3 {
+  font-size: 17px;
+  margin: 0 0 8px;
+  letter-spacing: -.2px;
+}
+.feature-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
 /* Download */
 .download-section { margin-bottom: 24px; }
 .download-section h2 {

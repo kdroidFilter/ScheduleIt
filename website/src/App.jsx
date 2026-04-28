@@ -50,6 +50,39 @@ const GALLERY = [
   { src: `${BASE}screens/settings.jpg`, caption: 'Tune visible hours and per-day schedules' },
 ]
 
+const FEATURES = [
+  {
+    icon: '🎒',
+    title: 'Built for student life',
+    body: 'From morning math to late-night study sessions, organize every class, lab and lecture in a layout that mirrors your real school week.',
+  },
+  {
+    icon: '📚',
+    title: 'Subjects, color-coded',
+    body: 'Give each course its own color so you can tell English from Chemistry at a glance — no more mixing up rooms or showing up to the wrong class.',
+  },
+  {
+    icon: '🔔',
+    title: 'Never miss a deadline',
+    body: 'Track exams, homework and project drop-offs alongside your regular schedule. Your agenda stays the single source of truth from Monday to Friday.',
+  },
+  {
+    icon: '🏫',
+    title: 'Like the school planner, but better',
+    body: 'All the structure of the paper agenda your teachers told you to keep updated — minus the smudged ink, lost pages and forgotten Mondays.',
+  },
+  {
+    icon: '⏰',
+    title: 'Custom hours per day',
+    body: 'Half-day on Wednesday? Late start on Friday? Tune visible hours per day so your week looks exactly like your real timetable.',
+  },
+  {
+    icon: '☕',
+    title: 'Study breaks included',
+    body: 'Block out lunch, recess and free periods so you can actually see when you have time to breathe between two pop quizzes.',
+  },
+]
+
 export default function App() {
   const [release, setRelease] = useState(null)
   const [error, setError] = useState(null)
@@ -116,6 +149,25 @@ export default function App() {
             <figcaption>{g.caption}</figcaption>
           </figure>
         ))}
+      </section>
+
+      <section className="features">
+        <h2>Your school week, finally under control</h2>
+        <p className="features-lede">
+          ScheduleIt was made for the way students actually plan: classes that
+          repeat every week, exams that sneak up on you, and a homework pile
+          that never sleeps. Drop your timetable in once and let the rest of
+          the year run itself.
+        </p>
+        <div className="feature-grid">
+          {FEATURES.map((f) => (
+            <article key={f.title} className="feature-card">
+              <div className="feature-icon">{f.icon}</div>
+              <h3>{f.title}</h3>
+              <p>{f.body}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="download-section">
