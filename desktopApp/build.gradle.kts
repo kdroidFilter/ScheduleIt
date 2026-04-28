@@ -92,12 +92,11 @@ nucleus.application {
             }
             appx {
                 applicationId = "ScheduleIt"
-                identityName = "ElieGambache.ScheduleIt"
+                identityName = "KdroidFilter.ScheduleIt-ClassTimetable"
                 displayName = "ScheduleIt"
-                publisherDisplayName = "Elie Gambache"
-                // Placeholder publisher CN — must match the code-signing certificate Subject.
-                // Replace with the real "CN=..." (and SHA1 thumbprint if applicable) before publishing.
-                publisher = "CN=Elie Gambache"
+                publisherDisplayName = "KdroidFilter"
+                // Publisher CN provided by the Microsoft Partner Center for this Store listing.
+                publisher = "CN=D541E802-6D30-446A-864E-2E8ABD2DAA5E"
                 languages = listOf("en-US", "fr-FR", "he-IL")
                 backgroundColor = "#FFFFFF"
                 showNameOnTiles = true
