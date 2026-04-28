@@ -42,9 +42,11 @@ async function detectArch() {
 function classify(name) {
   const n = name.toLowerCase()
   if (n.endsWith('.appx') || n.endsWith('.msixbundle')) return null
+  if (n.endsWith('.yml') || n.endsWith('.yaml') || n.endsWith('.blockmap')) return null
+  if (n.endsWith('.zip')) return null
   if (n.endsWith('.exe')) return 'windows'
-  if (n.includes('mac') || n.endsWith('.dmg') || n.endsWith('.pkg')) return 'mac'
-  if (n.includes('linux') || n.endsWith('.deb') || n.endsWith('.rpm') || n.endsWith('.appimage')) return 'linux'
+  if (n.endsWith('.dmg') || n.endsWith('.pkg')) return 'mac'
+  if (n.endsWith('.deb') || n.endsWith('.rpm') || n.endsWith('.appimage')) return 'linux'
   return 'other'
 }
 
