@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -27,6 +28,7 @@ import io.github.kdroidfilter.nucleus.scheduler.DesktopBootReceiver
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedWindow
 import io.github.kdroidfilter.nucleus.graalvm.GraalVmInitializer
 import java.awt.Desktop
+import java.awt.GraphicsEnvironment
 import java.net.URI
 import kotlin.system.exitProcess
 import kotlinx.coroutines.CoroutineScope
@@ -42,6 +44,16 @@ import org.jetbrains.jewel.ui.ComponentStyling
 
 private const val AOT_TRAINING_DURATION_MS = 45_000L
 private const val PROJECT_URL = "https://github.com/kdroidFilter/ScheduleIt"
+private val DEFAULT_WINDOW_SIZE = DpSize(1280.dp, 820.dp)
+private val MINIMUM_WINDOW_SIZE = DpSize(1100.dp, 720.dp)
+
+private fun shouldStartMaximized(): Boolean {
+    val bounds = runCatching {
+        GraphicsEnvironment.getLocalGraphicsEnvironment().maximumWindowBounds
+    }.getOrNull() ?: return false
+    return bounds.width < DEFAULT_WINDOW_SIZE.width.value ||
+        bounds.height < DEFAULT_WINDOW_SIZE.height.value
+}
 
 fun main(args: Array<String>) {
     runCatching { GraalVmInitializer.initialize() }
@@ -96,11 +108,16 @@ fun main(args: Array<String>) {
                     exitApplication()
                 },
                 state = rememberWindowState(
+                    placement = if (shouldStartMaximized()) {
+                        WindowPlacement.Maximized
+                    } else {
+                        WindowPlacement.Floating
+                    },
                     position = WindowPosition.Aligned(Alignment.Center),
-                    size = DpSize(1280.dp, 820.dp),
+                    size = DEFAULT_WINDOW_SIZE,
                 ),
                 title = "ScheduleIt",
-                minimumSize = DpSize(1100.dp, 720.dp),
+                minimumSize = MINIMUM_WINDOW_SIZE,
             ) {
                 LaunchedEffect(restoreRequested) {
                     if (restoreRequested) {
