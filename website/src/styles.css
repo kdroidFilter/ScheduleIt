@@ -1,17 +1,16 @@
 :root {
-  --bg: #0f1115;
-  --surface: #181b23;
-  --surface-2: #20242e;
-  --border: #2a2f3a;
-  --text: #e6e8ee;
-  --muted: #9aa3b2;
+  --bg: #0b0d12;
+  --surface: #161a23;
+  --surface-2: #1d2230;
+  --border: #2a2f3d;
+  --text: #e8eaf0;
+  --muted: #98a1b3;
   --accent: #6ea8ff;
   --accent-strong: #4c8dff;
+  --accent-glow: rgba(76, 141, 255, 0.35);
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html, body {
   margin: 0;
@@ -20,47 +19,60 @@ html, body {
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-a {
-  color: var(--accent);
-  text-decoration: none;
-}
+a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 .page {
-  max-width: 920px;
+  position: relative;
+  max-width: 980px;
   margin: 0 auto;
-  padding: 64px 24px 48px;
+  padding: 80px 24px 48px;
 }
 
+.bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+  display: block;
+}
+
+/* Hero */
 .hero {
   text-align: center;
-  margin-bottom: 48px;
+  margin-bottom: 64px;
 }
-
+.logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 22px;
+  box-shadow: 0 20px 50px -10px var(--accent-glow);
+  margin-bottom: 20px;
+}
 .hero h1 {
-  font-size: 56px;
+  font-size: 64px;
   margin: 0 0 12px;
-  letter-spacing: -1px;
+  letter-spacing: -1.5px;
   background: linear-gradient(135deg, #fff 0%, #6ea8ff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-
 .tagline {
-  font-size: 18px;
+  font-size: 19px;
   color: var(--muted);
   margin: 0 0 20px;
 }
-
 .version {
   display: inline-flex;
   align-items: center;
   gap: 12px;
 }
-
 .badge {
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -68,6 +80,56 @@ a:hover { text-decoration: underline; }
   padding: 4px 12px;
   font-size: 13px;
   font-weight: 600;
+}
+
+/* Showcase */
+.showcase { margin-bottom: 56px; }
+.hero-shot {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .02) inset;
+}
+
+/* Gallery */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 64px;
+}
+.gallery figure {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.gallery img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #f4f4f6;
+}
+.gallery figcaption {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+/* Download */
+.download-section { margin-bottom: 24px; }
+.download-section h2 {
+  font-size: 28px;
+  margin: 0 0 24px;
+  text-align: center;
+  letter-spacing: -.4px;
 }
 
 .status {
@@ -87,11 +149,11 @@ a:hover { text-decoration: underline; }
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 20px;
-  transition: border-color .15s ease, transform .15s ease;
+  transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
 }
 .os-card.highlight {
   border-color: var(--accent-strong);
-  box-shadow: 0 0 0 3px rgba(76, 141, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(76, 141, 255, 0.12), 0 20px 50px -20px var(--accent-glow);
 }
 
 .os-card > header {
@@ -100,7 +162,7 @@ a:hover { text-decoration: underline; }
   gap: 10px;
   margin-bottom: 16px;
 }
-.os-card h2 {
+.os-card h3 {
   font-size: 18px;
   margin: 0;
   flex: 1;
@@ -137,12 +199,13 @@ a:hover { text-decoration: underline; }
   border-radius: 10px;
   color: var(--text);
   font-size: 14px;
-  transition: background .15s ease, border-color .15s ease;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease;
 }
 .dl-btn:hover {
   background: #262b37;
   border-color: var(--accent-strong);
   text-decoration: none;
+  transform: translateY(-1px);
 }
 .dl-name { font-weight: 600; }
 .dl-size { color: var(--muted); font-size: 12px; }
@@ -152,4 +215,10 @@ a:hover { text-decoration: underline; }
   text-align: center;
   color: var(--muted);
   font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .hero h1 { font-size: 44px; }
+  .logo { width: 80px; height: 80px; }
+  .download-section h2 { font-size: 22px; }
 }

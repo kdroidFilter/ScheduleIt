@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
+import Background from './Background.jsx'
 
 const REPO = 'kdroidFilter/ScheduleIt'
 const API_URL = `https://api.github.com/repos/${REPO}/releases/latest`
+const BASE = import.meta.env.BASE_URL
 
 function detectOS() {
   if (typeof navigator === 'undefined') return 'unknown'
@@ -43,6 +45,11 @@ const OS_META = {
   other: { label: 'Other', icon: '📦' },
 }
 
+const GALLERY = [
+  { src: `${BASE}screens/edit-event.png`, caption: 'Edit events with title, time, color and notes' },
+  { src: `${BASE}screens/settings.png`, caption: 'Tune visible hours and per-day schedules' },
+]
+
 export default function App() {
   const [release, setRelease] = useState(null)
   const [error, setError] = useState(null)
@@ -79,9 +86,12 @@ export default function App() {
 
   return (
     <div className="page">
+      <Background />
+
       <header className="hero">
+        <img src={`${BASE}icon.png`} alt="ScheduleIt logo" className="logo" />
         <h1>ScheduleIt</h1>
-        <p className="tagline">Schedule your week. Download the desktop app.</p>
+        <p className="tagline">Plan your week at a glance — fast, native, cross-platform.</p>
         {release && (
           <div className="version">
             <span className="badge">{release.tag_name}</span>
@@ -90,34 +100,54 @@ export default function App() {
         )}
       </header>
 
-      {loading && <p className="status">Loading latest release…</p>}
-      {error && <p className="status error">Could not load release: {error}</p>}
+      <section className="showcase">
+        <img
+          src={`${BASE}screens/light.png`}
+          alt="ScheduleIt weekly overview"
+          className="hero-shot"
+        />
+      </section>
 
-      {release && (
-        <main className="downloads">
-          {order
-            .filter((os) => grouped[os]?.length)
-            .map((os) => (
-              <section key={os} className={`os-card ${os === detected ? 'highlight' : ''}`}>
-                <header>
-                  <span className="os-icon">{OS_META[os].icon}</span>
-                  <h2>{OS_META[os].label}</h2>
-                  {os === detected && <span className="pill">Detected</span>}
-                </header>
-                <ul>
-                  {grouped[os].map((asset) => (
-                    <li key={asset.id}>
-                      <a className="dl-btn" href={asset.browser_download_url}>
-                        <span className="dl-name">{prettyLabel(asset.name)}</span>
-                        <span className="dl-size">{formatSize(asset.size)}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-        </main>
-      )}
+      <section className="gallery">
+        {GALLERY.map((g) => (
+          <figure key={g.src}>
+            <img src={g.src} alt={g.caption} loading="lazy" />
+            <figcaption>{g.caption}</figcaption>
+          </figure>
+        ))}
+      </section>
+
+      <section className="download-section">
+        <h2>Download</h2>
+        {loading && <p className="status">Loading latest release…</p>}
+        {error && <p className="status error">Could not load release: {error}</p>}
+
+        {release && (
+          <div className="downloads">
+            {order
+              .filter((os) => grouped[os]?.length)
+              .map((os) => (
+                <section key={os} className={`os-card ${os === detected ? 'highlight' : ''}`}>
+                  <header>
+                    <span className="os-icon">{OS_META[os].icon}</span>
+                    <h3>{OS_META[os].label}</h3>
+                    {os === detected && <span className="pill">Detected</span>}
+                  </header>
+                  <ul>
+                    {grouped[os].map((asset) => (
+                      <li key={asset.id}>
+                        <a className="dl-btn" href={asset.browser_download_url}>
+                          <span className="dl-name">{prettyLabel(asset.name)}</span>
+                          <span className="dl-size">{formatSize(asset.size)}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+          </div>
+        )}
+      </section>
 
       <footer className="footer">
         <a href={`https://github.com/${REPO}`} target="_blank" rel="noreferrer">
