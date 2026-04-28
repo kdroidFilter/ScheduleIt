@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,6 +46,7 @@ import org.jetbrains.jewel.ui.component.OutlinedButton
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.TextArea
 import org.jetbrains.jewel.ui.component.TextField
+import org.jetbrains.jewel.ui.component.VerticalScrollbar
 import androidx.compose.foundation.shape.RoundedCornerShape
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.action_cancel
@@ -80,7 +82,7 @@ fun JewelEventEditor(
 ) {
     val draft = editor.draft
     val bounds = computeEditorBounds(draft, siblings, editor.original, settings)
-    val state = rememberDialogState(size = DpSize(460.dp, 560.dp))
+    val state = rememberDialogState(size = DpSize(620.dp, 680.dp))
     val dialogTitle = stringResource(
         if (editor.mode == EventEditorState.Mode.Create) Res.string.event_dialog_new_title
         else Res.string.event_dialog_edit_title,
@@ -98,11 +100,13 @@ fun JewelEventEditor(
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
+            val scrollState = rememberScrollState()
+            Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState()),
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(end = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {
                 if (editor.templateIsShared) {
@@ -182,6 +186,13 @@ fun JewelEventEditor(
                     editorKey = editor.draft.id to editor.mode,
                     onValueChange = { onIntent(ScheduleIntent.UpdateDraft(draft.copy(notes = it))) },
                 )
+            }
+            VerticalScrollbar(
+                scrollState = scrollState,
+                modifier = Modifier
+                    .align(androidx.compose.ui.Alignment.CenterEnd)
+                    .fillMaxHeight(),
+            )
             }
 
             Row(

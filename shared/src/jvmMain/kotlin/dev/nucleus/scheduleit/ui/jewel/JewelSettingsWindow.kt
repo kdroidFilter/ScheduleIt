@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,6 +46,7 @@ import org.jetbrains.jewel.ui.component.Dropdown
 import org.jetbrains.jewel.ui.component.GroupHeader
 import org.jetbrains.jewel.ui.component.OutlinedButton
 import org.jetbrains.jewel.ui.component.Text
+import org.jetbrains.jewel.ui.component.VerticalScrollbar
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.action_cancel
 import scheduleit.shared.generated.resources.action_export
@@ -95,29 +98,41 @@ fun JewelSettingsWindow(
         title = title,
     ) {
         JewelDialogTitleBar { _ -> Text(title) }
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(JewelTheme.globalColors.panelBackground)
-                .verticalScroll(rememberScrollState())
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+                .fillMaxSize()
+                .background(JewelTheme.globalColors.panelBackground),
         ) {
-            HoursSection(
-                startHour = state.settings.startMinute / 60,
-                endHour = state.settings.endMinute / 60,
-                onIntent = onIntent,
+            val scrollState = rememberScrollState()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(start = 20.dp, end = 32.dp, top = 20.dp, bottom = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+                HoursSection(
+                    startHour = state.settings.startMinute / 60,
+                    endHour = state.settings.endMinute / 60,
+                    onIntent = onIntent,
+                )
+
+                DaysSection(state = state, onIntent = onIntent)
+
+                // TODO: re-enable once notifications behave reliably across platforms.
+                // NotificationsSection(
+                //     enabled = state.settings.notificationsEnabled,
+                //     onIntent = onIntent,
+                // )
+
+                DataSection(onIntent = onIntent)
+            }
+            VerticalScrollbar(
+                scrollState = scrollState,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .fillMaxHeight(),
             )
-
-            DaysSection(state = state, onIntent = onIntent)
-
-            // TODO: re-enable once notifications behave reliably across platforms.
-            // NotificationsSection(
-            //     enabled = state.settings.notificationsEnabled,
-            //     onIntent = onIntent,
-            // )
-
-            DataSection(onIntent = onIntent)
         }
     }
 }
