@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.nucleus.scheduleit.data.ScheduleRepository
 import dev.nucleus.scheduleit.data.decodeBackupFromString
+import dev.nucleus.scheduleit.data.drive.GoogleDriveStatus
+import dev.nucleus.scheduleit.data.drive.GoogleDriveSync
 import dev.nucleus.scheduleit.data.encodeToString
 import dev.nucleus.scheduleit.data.toBackup
 import dev.nucleus.scheduleit.data.toSnapshot
@@ -33,9 +35,12 @@ import kotlinx.coroutines.launch
 @ViewModelKey(ScheduleViewModel::class)
 class ScheduleViewModel(
     private val repository: ScheduleRepository,
+    private val googleDriveSync: GoogleDriveSync?,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ScheduleUiState())
+    private val _state = MutableStateFlow(
+        ScheduleUiState(googleDrive = googleDriveSync?.status?.value),
+    )
     val state: StateFlow<ScheduleUiState> = _state.asStateFlow()
 
     init {
@@ -52,6 +57,13 @@ class ScheduleViewModel(
                         dayEventsByDay = snapshot.dayEventsByDay,
                         overridesByDay = snapshot.overridesByDay,
                     )
+                }
+            }
+        }
+        googleDriveSync?.let { sync ->
+            viewModelScope.launch {
+                sync.status.collect { status ->
+                    _state.update { it.copy(googleDrive = status) }
                 }
             }
         }
@@ -83,6 +95,10 @@ class ScheduleViewModel(
             ScheduleIntent.ExportData -> exportData()
             ScheduleIntent.ImportData -> importData()
             ScheduleIntent.ResetData -> resetData()
+            ScheduleIntent.ConnectGoogleDrive -> connectGoogleDrive()
+            ScheduleIntent.DisconnectGoogleDrive -> disconnectGoogleDrive()
+            ScheduleIntent.BackupNowToDrive -> backupNowToDrive()
+            ScheduleIntent.RestoreFromDrive -> restoreFromDrive()
             is ScheduleIntent.HideDay -> hideDay(intent.day)
             is ScheduleIntent.AssignDayToTemplate -> assignDay(intent.day, intent.templateId)
             is ScheduleIntent.AssignDayToNewTemplate -> assignDayToNew(intent.day)
@@ -463,6 +479,39 @@ class ScheduleViewModel(
 
     private fun resetData() {
         viewModelScope.launch { repository.resetAll() }
+    }
+
+    private fun connectGoogleDrive() {
+        val sync = googleDriveSync ?: return
+        viewModelScope.launch { sync.connect() }
+    }
+
+    private fun disconnectGoogleDrive() {
+        val sync = googleDriveSync ?: return
+        viewModelScope.launch { sync.disconnect() }
+    }
+
+    private fun backupNowToDrive() {
+        val sync = googleDriveSync ?: return
+        if (sync.status.value !is GoogleDriveStatus.Connected) return
+        viewModelScope.launch {
+            val snapshot = repository.snapshotOnce()
+            val payload = snapshot.toBackup().encodeToString()
+            sync.backup(payload)
+        }
+    }
+
+    private fun restoreFromDrive() {
+        val sync = googleDriveSync ?: return
+        if (sync.status.value !is GoogleDriveStatus.Connected) return
+        viewModelScope.launch {
+            val payload = sync.restore() ?: return@launch
+            val backup = runCatching { decodeBackupFromString(payload) }.getOrNull() ?: run {
+                _state.update { it.copy(errorMessage = ErrorKey.InvalidBackup) }
+                return@launch
+            }
+            repository.replaceAll(backup.toSnapshot())
+        }
     }
 
     companion object {

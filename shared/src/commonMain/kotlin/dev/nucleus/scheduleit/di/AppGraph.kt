@@ -3,6 +3,8 @@ package dev.nucleus.scheduleit.di
 import androidx.lifecycle.ViewModel
 import dev.nucleus.scheduleit.data.DriverFactory
 import dev.nucleus.scheduleit.data.ScheduleRepository
+import dev.nucleus.scheduleit.data.drive.GoogleDriveSync
+import dev.nucleus.scheduleit.data.drive.createGoogleDriveSync
 import dev.nucleus.scheduleit.db.ScheduleDatabase
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -28,6 +30,10 @@ interface AppGraph : ViewModelGraph {
     @SingleIn(AppScope::class)
     fun provideDatabase(driverFactory: DriverFactory): ScheduleDatabase =
         ScheduleDatabase(driverFactory.createDriver())
+
+    @Provides
+    @SingleIn(AppScope::class)
+    fun provideGoogleDriveSync(): GoogleDriveSync? = createGoogleDriveSync()
 
     @DependencyGraph.Factory
     fun interface Factory {

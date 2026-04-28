@@ -16,6 +16,7 @@ intellijIcons = "253.31033.145"
 jewel = "0.35.0-261.23567.138"
 junit = "4.13.2"
 kotlin = "2.3.21"
+ktor = "3.4.3"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
 kotlinx-serialization = "1.7.3"
@@ -63,6 +64,9 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 filekit-dialogsCompose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+nucleus-nativeHttpKtor = { module = "io.github.kdroidfilter:nucleus.native-http-ktor", version.ref = "nucleus" }
 metrox-viewmodel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
 metrox-viewmodelCompose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }

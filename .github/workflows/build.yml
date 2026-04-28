@@ -67,6 +67,9 @@ jobs:
 
       - name: Build native image
         shell: bash
+        env:
+          GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.GOOGLE_DRIVE_CLIENT_ID }}
+          GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.GOOGLE_DRIVE_CLIENT_SECRET }}
         run: |
           set -euo pipefail
           GRADLE_TASKS=""
@@ -134,6 +137,9 @@ jobs:
 
       - name: Build DMG (JVM + Leyden AOT cache + ProGuard)
         shell: bash
+        env:
+          GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.GOOGLE_DRIVE_CLIENT_ID }}
+          GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.GOOGLE_DRIVE_CLIENT_SECRET }}
         run: |
           ./gradlew :desktopApp:packageReleaseDmg \
             -PappVersion=${{ steps.version.outputs.version }} \
@@ -189,6 +195,9 @@ jobs:
 
       - name: Build AppX (JVM + Leyden AOT cache + ProGuard)
         shell: bash
+        env:
+          GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.GOOGLE_DRIVE_CLIENT_ID }}
+          GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.GOOGLE_DRIVE_CLIENT_SECRET }}
         run: |
           ./gradlew :desktopApp:packageReleaseAppX \
             -PappVersion=${{ steps.version.outputs.version }} \

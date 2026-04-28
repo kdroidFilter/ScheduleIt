@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.rememberDialogState
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedDialog
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDialogTitleBar
+import dev.nucleus.scheduleit.data.drive.GoogleDriveStatus
 import dev.nucleus.scheduleit.domain.AppDayOfWeek
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleUiState
@@ -49,15 +50,33 @@ import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.VerticalScrollbar
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.action_cancel
+import scheduleit.shared.generated.resources.action_drive_backup_now
+import scheduleit.shared.generated.resources.action_drive_connect
+import scheduleit.shared.generated.resources.action_drive_disconnect
+import scheduleit.shared.generated.resources.action_drive_restore
+import scheduleit.shared.generated.resources.action_drive_retry
 import scheduleit.shared.generated.resources.action_export
 import scheduleit.shared.generated.resources.action_import
 import scheduleit.shared.generated.resources.action_reset_confirm
 import scheduleit.shared.generated.resources.action_reset_database
+import scheduleit.shared.generated.resources.action_restore_confirm
 import scheduleit.shared.generated.resources.reset_confirm_message
 import scheduleit.shared.generated.resources.reset_confirm_title
+import scheduleit.shared.generated.resources.restore_confirm_message
+import scheduleit.shared.generated.resources.restore_confirm_title
 import scheduleit.shared.generated.resources.settings_data_section
 import scheduleit.shared.generated.resources.settings_days_explanation
 import scheduleit.shared.generated.resources.settings_days_section
+import scheduleit.shared.generated.resources.settings_drive_connected
+import scheduleit.shared.generated.resources.settings_drive_connected_anon
+import scheduleit.shared.generated.resources.settings_drive_connecting
+import scheduleit.shared.generated.resources.settings_drive_disconnected
+import scheduleit.shared.generated.resources.settings_drive_error
+import scheduleit.shared.generated.resources.settings_drive_last_backup
+import scheduleit.shared.generated.resources.settings_drive_no_backup
+import scheduleit.shared.generated.resources.settings_drive_restoring
+import scheduleit.shared.generated.resources.settings_drive_section
+import scheduleit.shared.generated.resources.settings_drive_uploading
 import scheduleit.shared.generated.resources.settings_end_hour
 import scheduleit.shared.generated.resources.settings_hours_range_label
 import scheduleit.shared.generated.resources.settings_hours_section
@@ -125,6 +144,10 @@ fun JewelSettingsWindow(
                 //     onIntent = onIntent,
                 // )
 
+                state.googleDrive?.let { driveStatus ->
+                    GoogleDriveSection(status = driveStatus, onIntent = onIntent)
+                }
+
                 DataSection(onIntent = onIntent)
             }
             VerticalScrollbar(
@@ -150,6 +173,133 @@ private fun NotificationsSection(
             text = stringResource(Res.string.settings_notifications_label),
         )
     }
+}
+
+@Composable
+private fun GoogleDriveSection(
+    status: GoogleDriveStatus,
+    onIntent: (ScheduleIntent) -> Unit,
+) {
+    var showRestoreConfirm by remember { mutableStateOf(false) }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        GroupHeader(stringResource(Res.string.settings_drive_section))
+        when (status) {
+            is GoogleDriveStatus.Disconnected -> {
+                Text(
+                    stringResource(Res.string.settings_drive_disconnected),
+                    color = JewelTheme.globalColors.text.info,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    DefaultButton(onClick = { onIntent(ScheduleIntent.ConnectGoogleDrive) }) {
+                        Text(stringResource(Res.string.action_drive_connect))
+                    }
+                }
+            }
+            is GoogleDriveStatus.Connecting -> {
+                Text(
+                    stringResource(Res.string.settings_drive_connecting),
+                    color = JewelTheme.globalColors.text.info,
+                )
+            }
+            is GoogleDriveStatus.Connected -> {
+                val accountText = status.email
+                    ?.let { stringResource(Res.string.settings_drive_connected, it) }
+                    ?: stringResource(Res.string.settings_drive_connected_anon)
+                Text(accountText)
+                val statusText = when (status.operation) {
+                    GoogleDriveStatus.Operation.Uploading -> stringResource(Res.string.settings_drive_uploading)
+                    GoogleDriveStatus.Operation.Restoring -> stringResource(Res.string.settings_drive_restoring)
+                    null -> when (val ts = status.lastBackupEpochSec) {
+                        null -> stringResource(Res.string.settings_drive_no_backup)
+                        else -> stringResource(Res.string.settings_drive_last_backup, formatBackupTimestamp(ts))
+                    }
+                }
+                Text(statusText, color = JewelTheme.globalColors.text.info)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    DefaultButton(
+                        onClick = { onIntent(ScheduleIntent.BackupNowToDrive) },
+                        enabled = status.operation == null,
+                    ) {
+                        Text(stringResource(Res.string.action_drive_backup_now))
+                    }
+                    OutlinedButton(
+                        onClick = { showRestoreConfirm = true },
+                        enabled = status.operation == null,
+                    ) {
+                        Text(stringResource(Res.string.action_drive_restore))
+                    }
+                    OutlinedButton(onClick = { onIntent(ScheduleIntent.DisconnectGoogleDrive) }) {
+                        Text(stringResource(Res.string.action_drive_disconnect))
+                    }
+                }
+            }
+            is GoogleDriveStatus.Error -> {
+                Text(
+                    stringResource(Res.string.settings_drive_error, status.message),
+                    color = JewelTheme.globalColors.text.error,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    DefaultButton(onClick = { onIntent(ScheduleIntent.ConnectGoogleDrive) }) {
+                        Text(stringResource(Res.string.action_drive_retry))
+                    }
+                    OutlinedButton(onClick = { onIntent(ScheduleIntent.DisconnectGoogleDrive) }) {
+                        Text(stringResource(Res.string.action_drive_disconnect))
+                    }
+                }
+            }
+        }
+    }
+    if (showRestoreConfirm) {
+        RestoreConfirmDialog(
+            onConfirm = {
+                showRestoreConfirm = false
+                onIntent(ScheduleIntent.RestoreFromDrive)
+            },
+            onCancel = { showRestoreConfirm = false },
+        )
+    }
+}
+
+@Composable
+private fun RestoreConfirmDialog(
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    val dialogState = rememberDialogState(size = DpSize(420.dp, 200.dp))
+    val title = stringResource(Res.string.restore_confirm_title)
+    JewelDecoratedDialog(
+        onCloseRequest = onCancel,
+        state = dialogState,
+        title = title,
+    ) {
+        JewelDialogTitleBar { _ -> Text(title) }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(JewelTheme.globalColors.panelBackground)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(stringResource(Res.string.restore_confirm_message))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+            ) {
+                OutlinedButton(onClick = onCancel) {
+                    Text(stringResource(Res.string.action_cancel))
+                }
+                DefaultButton(onClick = onConfirm) {
+                    Text(stringResource(Res.string.action_restore_confirm))
+                }
+            }
+        }
+    }
+}
+
+private fun formatBackupTimestamp(epochSec: Long): String {
+    val instant = java.time.Instant.ofEpochSecond(epochSec)
+    val zoned = instant.atZone(java.time.ZoneId.systemDefault())
+    return zoned.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
 }
 
 @Composable

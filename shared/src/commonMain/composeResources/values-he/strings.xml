@@ -80,6 +80,25 @@
     <string name="action_export">ייצוא…</string>
     <string name="action_import">ייבוא…</string>
     <string name="action_reset_database">אפס מסד נתונים</string>
+
+    <string name="settings_drive_section">גיבוי ל-Google Drive</string>
+    <string name="settings_drive_disconnected">לא מחובר. התחבר כדי לגבות את לוח הזמנים שלך.</string>
+    <string name="settings_drive_connecting">ממתין לאישור בדפדפן…</string>
+    <string name="settings_drive_connected">מחובר כ-%1$s</string>
+    <string name="settings_drive_connected_anon">מחובר</string>
+    <string name="settings_drive_last_backup">גיבוי אחרון: %1$s</string>
+    <string name="settings_drive_no_backup">אין גיבוי עדיין</string>
+    <string name="settings_drive_uploading">מעלה…</string>
+    <string name="settings_drive_restoring">משחזר…</string>
+    <string name="settings_drive_error">שגיאה: %1$s</string>
+    <string name="action_drive_connect">התחבר ל-Google Drive</string>
+    <string name="action_drive_backup_now">גבה עכשיו</string>
+    <string name="action_drive_restore">שחזר</string>
+    <string name="action_drive_disconnect">התנתק</string>
+    <string name="action_drive_retry">נסה שוב</string>
+    <string name="restore_confirm_title">לשחזר מ-Google Drive?</string>
+    <string name="restore_confirm_message">לוח הזמנים הנוכחי יוחלף בגיבוי האחרון מ-Google Drive.</string>
+    <string name="action_restore_confirm">שחזר</string>
     <string name="reset_confirm_title">לאפס את מסד הנתונים?</string>
     <string name="reset_confirm_message">כל האירועים, הימים וההגדרות יימחקו לצמיתות.</string>
     <string name="action_reset_confirm">אפס</string>

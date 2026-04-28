@@ -80,6 +80,25 @@
     <string name="action_export">Exporter…</string>
     <string name="action_import">Importer…</string>
     <string name="action_reset_database">Réinitialiser la base</string>
+
+    <string name="settings_drive_section">Sauvegarde Google Drive</string>
+    <string name="settings_drive_disconnected">Non connecté. Connectez-vous pour sauvegarder votre planning.</string>
+    <string name="settings_drive_connecting">En attente d&#8217;autorisation dans votre navigateur…</string>
+    <string name="settings_drive_connected">Connecté en tant que %1$s</string>
+    <string name="settings_drive_connected_anon">Connecté</string>
+    <string name="settings_drive_last_backup">Dernière sauvegarde : %1$s</string>
+    <string name="settings_drive_no_backup">Aucune sauvegarde</string>
+    <string name="settings_drive_uploading">Envoi en cours…</string>
+    <string name="settings_drive_restoring">Restauration en cours…</string>
+    <string name="settings_drive_error">Erreur : %1$s</string>
+    <string name="action_drive_connect">Connecter Google Drive</string>
+    <string name="action_drive_backup_now">Sauvegarder maintenant</string>
+    <string name="action_drive_restore">Restaurer</string>
+    <string name="action_drive_disconnect">Se déconnecter</string>
+    <string name="action_drive_retry">Réessayer</string>
+    <string name="restore_confirm_title">Restaurer depuis Google Drive ?</string>
+    <string name="restore_confirm_message">Votre planning actuel sera remplacé par la dernière sauvegarde Google Drive.</string>
+    <string name="action_restore_confirm">Restaurer</string>
     <string name="reset_confirm_title">Réinitialiser la base ?</string>
     <string name="reset_confirm_message">Tous vos événements, jours et paramètres seront définitivement supprimés.</string>
     <string name="action_reset_confirm">Réinitialiser</string>

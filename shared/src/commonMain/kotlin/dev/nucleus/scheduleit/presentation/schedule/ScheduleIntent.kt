@@ -25,6 +25,10 @@ sealed interface ScheduleIntent {
     data object ExportData : ScheduleIntent
     data object ImportData : ScheduleIntent
     data object ResetData : ScheduleIntent
+    data object ConnectGoogleDrive : ScheduleIntent
+    data object DisconnectGoogleDrive : ScheduleIntent
+    data object BackupNowToDrive : ScheduleIntent
+    data object RestoreFromDrive : ScheduleIntent
     data class HideDay(val day: AppDayOfWeek) : ScheduleIntent
     data class AssignDayToTemplate(val day: AppDayOfWeek, val templateId: Long) : ScheduleIntent
     data class AssignDayToNewTemplate(val day: AppDayOfWeek) : ScheduleIntent
