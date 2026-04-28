@@ -100,6 +100,10 @@ nucleus.application {
                 languages = listOf("en-US", "fr-FR", "he-IL")
                 backgroundColor = "#FFFFFF"
                 showNameOnTiles = true
+                // Microsoft Store rejects MSIX packages with MinVersion <= 10.0.17134.0 (Win10 1803).
+                // 10.0.17763.0 = Windows 10 1809 (October 2018 Update) — minimum accepted by the Store.
+                minVersion = "10.0.17763.0"
+                maxVersionTested = "10.0.22621.0"
                 storeLogo.set(project.file("packaging/appx/StoreLogo.png"))
                 square44x44Logo.set(project.file("packaging/appx/Square44x44Logo.png"))
                 square150x150Logo.set(project.file("packaging/appx/Square150x150Logo.png"))
