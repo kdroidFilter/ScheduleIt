@@ -1,8 +1,7 @@
-name: Build (GraalVM Native Image + JBR/Leyden AppX)
+name: Build (GraalVM Native Image + JBR/Leyden AppX/DMG)
 
 on:
   push:
-    branches: [main]
     tags: ["v*"]
   pull_request:
     branches: [main]
@@ -16,8 +15,9 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # GraalVM Native Image builds — Linux .deb, Windows .exe (NSIS), macOS .dmg.
-  # GraalVM does not target Windows ARM64, so AppX/MSIX is built in a separate JBR job.
+  # GraalVM Native Image builds — Linux .deb, Windows .exe (NSIS).
+  # GraalVM does not target Windows ARM64 → AppX/MSIX uses JBR/Leyden.
+  # macOS GraalVM builds are flaky (codegen/toolchain issues) → macOS uses JBR/Leyden too.
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -38,14 +38,6 @@ jobs:
             os: windows-latest
             tasks: packageGraalvmNsis
             artifact: windows-x64
-          - name: macOS (arm64)
-            os: macos-latest
-            tasks: packageGraalvmDmg
-            artifact: macos-arm64
-          - name: macOS (x64)
-            os: macos-13
-            tasks: packageGraalvmDmg
-            artifact: macos-x64
 
     steps:
       - name: Checkout
@@ -95,6 +87,64 @@ jobs:
             desktopApp/build/compose/binaries/**/*.dmg
             desktopApp/build/compose/binaries/**/*.exe
             desktopApp/build/compose/binaries/**/*.msi
+          if-no-files-found: error
+
+  # macOS .dmg — JBR 25 + Project Leyden AOT cache (GraalVM is unreliable on macOS).
+  # Runner labels per Nucleus CI guidance: macos-latest (arm64), macos-15-intel (amd64).
+  build-mac:
+    name: macOS DMG (${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            arch: arm64
+            jbr-download-url: "https://github.com/kdroidFilter/JetBrainsRuntime/releases/download/v25.0.2b329.66-rtl/jdk-macos-aarch64.tar.gz"
+          - os: macos-15-intel
+            arch: amd64
+            jbr-download-url: "https://github.com/kdroidFilter/JetBrainsRuntime/releases/download/v25.0.2b329.66-rtl/jdk-macos-x64.tar.gz"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve app version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          else
+            VERSION="1.0.0"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Nucleus (JBR)
+        uses: kdroidFilter/Nucleus/.github/actions/setup-nucleus@main
+        with:
+          graalvm: "false"
+          jbr-version: "25.0.2b329.66"
+          jbr-download-url: ${{ matrix.jbr-download-url }}
+          packaging-tools: "false"
+          setup-gradle: "true"
+          setup-node: "false"
+
+      - name: Build DMG (JVM + Leyden AOT cache)
+        shell: bash
+        run: |
+          ./gradlew :desktopApp:packageDmg \
+            -PappVersion=${{ steps.version.outputs.version }} \
+            -PenableAotCache=true \
+            --no-daemon --stacktrace
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheduleit-macos-${{ matrix.arch }}
+          path: desktopApp/build/compose/binaries/**/*.dmg
           if-no-files-found: error
 
   # AppX/MSIX builds — JBR 25 + Project Leyden AOT cache. Built on x64 and arm64
@@ -189,7 +239,7 @@ jobs:
 
   release:
     name: Publish Release
-    needs: [build, build-appx, bundle-windows]
+    needs: [build, build-mac, build-appx, bundle-windows]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:

@@ -6,6 +6,8 @@
     <string name="settings_title">Paramètres</string>
 
     <string name="action_open_settings">Paramètres</string>
+    <string name="action_open_github">Ouvrir le dépôt GitHub</string>
+    <string name="action_open_about">À propos</string>
     <string name="action_close">Fermer</string>
     <string name="action_back">Retour</string>
     <string name="action_save">Enregistrer</string>
@@ -82,4 +84,9 @@
     <string name="menu_help">Aide</string>
     <string name="menu_new_event">Nouvel événement</string>
     <string name="menu_quit">Quitter %1$s</string>
+
+    <string name="about_title">À propos de ScheduleIt</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_license">Licence : %1$s</string>
+    <string name="about_made_with_love">Fait avec amour par Elie Gambache</string>
 </resources>

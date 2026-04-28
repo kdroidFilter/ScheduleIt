@@ -46,7 +46,6 @@ import org.jetbrains.jewel.ui.component.OutlinedButton
 import org.jetbrains.jewel.ui.component.Text
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.action_cancel
-import scheduleit.shared.generated.resources.action_close
 import scheduleit.shared.generated.resources.action_export
 import scheduleit.shared.generated.resources.action_import
 import scheduleit.shared.generated.resources.action_reset_confirm
@@ -112,18 +111,13 @@ fun JewelSettingsWindow(
 
             DaysSection(state = state, onIntent = onIntent)
 
-            NotificationsSection(
-                enabled = state.settings.notificationsEnabled,
-                onIntent = onIntent,
-            )
+            // TODO: re-enable once notifications behave reliably across platforms.
+            // NotificationsSection(
+            //     enabled = state.settings.notificationsEnabled,
+            //     onIntent = onIntent,
+            // )
 
             DataSection(onIntent = onIntent)
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                DefaultButton(onClick = { onIntent(ScheduleIntent.CloseSettings) }) {
-                    Text(stringResource(Res.string.action_close))
-                }
-            }
         }
     }
 }

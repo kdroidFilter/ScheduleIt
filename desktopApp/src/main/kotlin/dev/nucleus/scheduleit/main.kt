@@ -16,6 +16,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.nucleus.scheduleit.di.createDesktopAppGraph
+import dev.nucleus.scheduleit.ui.JewelAboutWindow
 import dev.nucleus.scheduleit.ui.jewel.ScheduleItTitleBar
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import io.github.kdroidfilter.nucleus.aot.runtime.AotRuntime
@@ -25,6 +26,8 @@ import io.github.kdroidfilter.nucleus.notification.windows.WindowsNotificationCe
 import io.github.kdroidfilter.nucleus.scheduler.DesktopBootReceiver
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedWindow
 import io.github.kdroidfilter.nucleus.graalvm.GraalVmInitializer
+import java.awt.Desktop
+import java.net.URI
 import kotlin.system.exitProcess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +40,8 @@ import org.jetbrains.jewel.intui.standalone.theme.default
 import org.jetbrains.jewel.intui.standalone.theme.lightThemeDefinition
 import org.jetbrains.jewel.ui.ComponentStyling
 
-private const val AOT_TRAINING_DURATION_MS = 30_000L
+private const val AOT_TRAINING_DURATION_MS = 45_000L
+private const val PROJECT_URL = "https://github.com/kdroidFilter/ScheduleIt"
 
 fun main(args: Array<String>) {
     runCatching { GraalVmInitializer.initialize() }
@@ -105,6 +109,7 @@ fun main(args: Array<String>) {
                         restoreRequested = false
                     }
                 }
+                var showAbout by remember { mutableStateOf(false) }
                 CompositionLocalProvider(LocalMetroViewModelFactory provides graph.viewModelFactory) {
                     ScheduleItMenuBar(
                         onQuit = {
@@ -112,8 +117,18 @@ fun main(args: Array<String>) {
                             exitApplication()
                         },
                     )
-                    ScheduleItTitleBar()
+                    ScheduleItTitleBar(
+                        onOpenGithub = {
+                            runCatching {
+                                Desktop.getDesktop().browse(URI.create(PROJECT_URL))
+                            }
+                        },
+                        onOpenAbout = { showAbout = true },
+                    )
                     App(graph)
+                    if (showAbout) {
+                        JewelAboutWindow(onCloseRequest = { showAbout = false })
+                    }
                 }
             }
         }

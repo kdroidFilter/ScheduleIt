@@ -21,29 +21,62 @@ import org.jetbrains.jewel.ui.component.Tooltip
 import org.jetbrains.jewel.ui.icons.AllIconsKeys
 import org.jetbrains.jewel.ui.painter.hints.Size
 import scheduleit.shared.generated.resources.Res
+import scheduleit.shared.generated.resources.action_open_about
+import scheduleit.shared.generated.resources.action_open_github
 import scheduleit.shared.generated.resources.action_open_settings
 import scheduleit.shared.generated.resources.app_name
 
 @Composable
 @androidx.compose.foundation.ExperimentalFoundationApi
-fun DecoratedWindowScope.ScheduleItTitleBar() {
+fun DecoratedWindowScope.ScheduleItTitleBar(
+    onOpenGithub: () -> Unit,
+    onOpenAbout: () -> Unit,
+) {
     val viewModel: ScheduleViewModel = metroViewModel()
     JewelTitleBar(Modifier) {
         Text(stringResource(Res.string.app_name))
 
-        // Place the settings button opposite the window control buttons:
+        // Place the action buttons opposite the window control buttons:
         // End on macOS (controls on the left), Start on Windows/Linux (controls on the right).
-        val settingsAlignment = if (Platform.Current == Platform.MacOS) Alignment.End else Alignment.Start
-        Row(Modifier.align(settingsAlignment)) {
-            val tooltipText = stringResource(Res.string.action_open_settings)
-            Tooltip({ Text(tooltipText) }) {
+        val actionsAlignment = if (Platform.Current == Platform.MacOS) Alignment.End else Alignment.Start
+        Row(Modifier.align(actionsAlignment)) {
+            val githubTooltip = stringResource(Res.string.action_open_github)
+            Tooltip({ Text(githubTooltip) }) {
+                IconButton(
+                    onClick = onOpenGithub,
+                    modifier = Modifier.size(40.dp).padding(5.dp),
+                ) {
+                    Icon(
+                        key = AllIconsKeys.Vcs.Vendors.Github,
+                        contentDescription = githubTooltip,
+                        hints = arrayOf(Size(20)),
+                    )
+                }
+            }
+
+            val aboutTooltip = stringResource(Res.string.action_open_about)
+            Tooltip({ Text(aboutTooltip) }) {
+                IconButton(
+                    onClick = onOpenAbout,
+                    modifier = Modifier.size(40.dp).padding(5.dp),
+                ) {
+                    Icon(
+                        key = AllIconsKeys.General.ShowInfos,
+                        contentDescription = aboutTooltip,
+                        hints = arrayOf(Size(20)),
+                    )
+                }
+            }
+
+            val settingsTooltip = stringResource(Res.string.action_open_settings)
+            Tooltip({ Text(settingsTooltip) }) {
                 IconButton(
                     onClick = { viewModel.onEvent(ScheduleIntent.OpenSettings) },
                     modifier = Modifier.size(40.dp).padding(5.dp),
                 ) {
                     Icon(
                         key = AllIconsKeys.General.Gear,
-                        contentDescription = tooltipText,
+                        contentDescription = settingsTooltip,
                         hints = arrayOf(Size(20)),
                     )
                 }
