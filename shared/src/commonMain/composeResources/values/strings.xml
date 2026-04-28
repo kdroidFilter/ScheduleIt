@@ -17,6 +17,8 @@
     <string name="action_add_event">Add event</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete_event">Delete event</string>
+    <string name="action_copy_event">Copy event</string>
+    <string name="action_paste_event">Paste event</string>
     <string name="action_step_up">Increase</string>
     <string name="action_step_down">Decrease</string>
 

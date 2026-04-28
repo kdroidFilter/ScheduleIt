@@ -1,7 +1,9 @@
+@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+
 package dev.nucleus.scheduleit.ui.common
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -57,6 +59,8 @@ fun TimeGrid(
     backgroundColor: Color,
     modifier: Modifier = Modifier,
     dimensions: TimeGridDimensions = TimeGridDimensions(),
+    pasteEventLabel: String? = null,
+    onSlotPaste: ((AppDayOfWeek, startMinute: Int) -> Unit)? = null,
 ) {
     val hours = remember(startMinute, endMinute) {
         val first = startMinute / 60
@@ -97,6 +101,8 @@ fun TimeGrid(
                         events = eventsForDay(day),
                         eventCell = { event -> eventCell(event, day) },
                         onSlotClick = { minute -> onSlotClick(day, minute) },
+                        pasteEventLabel = pasteEventLabel,
+                        onSlotPaste = onSlotPaste?.let { paste -> { minute -> paste(day, minute) } },
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -135,6 +141,8 @@ private fun DayColumn(
     events: List<EffectiveEvent>,
     eventCell: @Composable (EffectiveEvent) -> Unit,
     onSlotClick: (Int) -> Unit,
+    pasteEventLabel: String?,
+    onSlotPaste: ((Int) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
@@ -163,6 +171,8 @@ private fun DayColumn(
                             gridLineColor = gridLineColor,
                             slotHighlight = slotHighlight,
                             onSlotClick = onSlotClick,
+                            pasteEventLabel = pasteEventLabel,
+                            onSlotPaste = onSlotPaste,
                         )
                     }
                 }
@@ -193,6 +203,8 @@ private fun HoverableSlot(
     gridLineColor: Color,
     slotHighlight: Color,
     onSlotClick: (Int) -> Unit,
+    pasteEventLabel: String?,
+    onSlotPaste: ((Int) -> Unit)?,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
@@ -201,7 +213,9 @@ private fun HoverableSlot(
     SlotContextMenuArea(
         addEventLabel = addEventLabel,
         onAddEvent = { onSlotClick(slotStart) },
-    ) {
+        pasteEventLabel = pasteEventLabel,
+        onPasteEvent = onSlotPaste?.let { paste -> { paste(slotStart) } },
+    ) { onLongPress ->
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -209,7 +223,12 @@ private fun HoverableSlot(
                 .background(hoverBg)
                 .hoverable(interactionSource)
                 .pointerHoverIcon(PointerIcon.Hand)
-                .clickable(interactionSource = interactionSource, indication = null) { onSlotClick(slotStart) },
+                .combinedClickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = { onSlotClick(slotStart) },
+                    onLongClick = onLongPress,
+                ),
         ) {
             if (slotIdx == 0) {
                 Box(

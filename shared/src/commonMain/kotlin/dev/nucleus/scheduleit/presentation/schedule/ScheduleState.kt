@@ -21,6 +21,7 @@ data class ScheduleUiState(
     val editor: EventEditorState? = null,
     val showSettings: Boolean = false,
     val errorMessage: ErrorKey? = null,
+    val clipboard: ClipboardEvent? = null,
 ) {
     val visibleDays: List<AppDayOfWeek>
         get() = AppDayOfWeek.entries.filter { it in assignments }
@@ -61,6 +62,13 @@ data class EventEditorState(
         ) : Original
     }
 }
+
+data class ClipboardEvent(
+    val title: String,
+    val color: Long,
+    val notes: String,
+    val durationMinutes: Int,
+)
 
 enum class ErrorKey {
     InvalidRange,

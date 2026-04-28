@@ -17,6 +17,8 @@
     <string name="action_add_event">הוסף אירוע</string>
     <string name="action_edit">ערוך</string>
     <string name="action_delete_event">מחק אירוע</string>
+    <string name="action_copy_event">העתק אירוע</string>
+    <string name="action_paste_event">הדבק אירוע</string>
     <string name="action_step_up">הגדל</string>
     <string name="action_step_down">הקטן</string>
 

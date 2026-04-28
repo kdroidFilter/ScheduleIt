@@ -66,6 +66,8 @@ class ScheduleViewModel(
             is ScheduleIntent.RequestEditEffectiveEvent -> startEdit(intent.effective)
             is ScheduleIntent.DeleteEffectiveEvent -> deleteEffective(intent.effective)
             is ScheduleIntent.HideEffectiveEvent -> hideEffective(intent.effective)
+            is ScheduleIntent.CopyEvent -> copyEvent(intent.effective)
+            is ScheduleIntent.PasteEventAt -> pasteAt(intent.day, intent.startMinute)
             is ScheduleIntent.UpdateDraft -> _state.update {
                 it.copy(editor = it.editor?.copy(draft = intent.draft))
             }
@@ -331,6 +333,58 @@ class ScheduleViewModel(
                     repository.deleteDayEvent(s.event.id)
             }
             _state.update { it.copy(editor = null) }
+        }
+    }
+
+    private fun copyEvent(effective: EffectiveEvent) {
+        _state.update {
+            it.copy(
+                clipboard = ClipboardEvent(
+                    title = effective.title,
+                    color = effective.color,
+                    notes = effective.notes,
+                    durationMinutes = effective.endMinute - effective.startMinute,
+                ),
+            )
+        }
+    }
+
+    private fun pasteAt(day: AppDayOfWeek, startMinute: Int) {
+        val current = _state.value
+        val clipboard = current.clipboard ?: return
+        val window = current.settings
+        val snapped = (startMinute / SLOT_MINUTES) * SLOT_MINUTES
+        val start = snapped.coerceAtLeast(window.startMinute)
+        val end = start + clipboard.durationMinutes
+        if (end > window.endMinute) {
+            _state.update { it.copy(errorMessage = ErrorKey.OutsideWindow) }
+            return
+        }
+        val draft = ScheduleEvent(
+            id = 0L,
+            templateId = current.assignments[day] ?: 0L,
+            title = clipboard.title,
+            startMinute = start,
+            endMinute = end,
+            color = clipboard.color,
+            notes = clipboard.notes,
+        )
+        if (draft.overlapsAnyOf(current.effectiveEventsFor(day), editing = null)) {
+            _state.update { it.copy(errorMessage = ErrorKey.Overlap) }
+            return
+        }
+        viewModelScope.launch {
+            repository.upsertDayEvent(
+                DayEvent(
+                    id = 0L,
+                    day = day,
+                    title = clipboard.title,
+                    startMinute = start,
+                    endMinute = end,
+                    color = clipboard.color,
+                    notes = clipboard.notes,
+                ),
+            )
         }
     }
 

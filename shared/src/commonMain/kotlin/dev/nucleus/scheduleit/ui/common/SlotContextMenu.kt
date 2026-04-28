@@ -6,5 +6,7 @@ import androidx.compose.runtime.Composable
 expect fun SlotContextMenuArea(
     addEventLabel: String,
     onAddEvent: () -> Unit,
-    content: @Composable () -> Unit,
+    pasteEventLabel: String?,
+    onPasteEvent: (() -> Unit)?,
+    content: @Composable (onLongPress: (() -> Unit)?) -> Unit,
 )
