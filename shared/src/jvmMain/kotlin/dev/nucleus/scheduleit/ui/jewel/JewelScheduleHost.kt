@@ -45,17 +45,14 @@ fun JewelScheduleHost() {
                 visibleDays = visibleDays,
                 startMinute = state.settings.startMinute,
                 endMinute = state.settings.endMinute,
-                eventsForDay = { day ->
-                    val tpl = state.assignments[day] ?: return@TimeGrid emptyList()
-                    state.eventsByTemplate[tpl].orEmpty()
-                },
+                eventsForDay = { day -> state.effectiveEventsFor(day) },
                 dayHeader = { day -> Text(day.fullName()) },
                 hourLabel = { hour -> Text(dev.nucleus.scheduleit.ui.common.formatHourLabel(hour)) },
                 eventCell = { event, _ ->
                     JewelEventCell(
                         event = event,
-                        onEdit = { viewModel.onEvent(ScheduleIntent.RequestEditEvent(event)) },
-                        onDelete = { viewModel.onEvent(ScheduleIntent.DeleteEvent(event.id)) },
+                        onEdit = { viewModel.onEvent(ScheduleIntent.RequestEditEffectiveEvent(event)) },
+                        onDelete = { viewModel.onEvent(ScheduleIntent.DeleteEffectiveEvent(event)) },
                     )
                 },
                 onSlotClick = { day, minute ->
@@ -75,7 +72,7 @@ fun JewelScheduleHost() {
         JewelEventEditor(
             editor = editor,
             settings = state.settings,
-            siblings = state.eventsByTemplate[editor.templateId].orEmpty(),
+            siblings = state.effectiveEventsFor(editor.day),
             errorMessage = state.errorMessage,
             onIntent = viewModel::onEvent,
         )

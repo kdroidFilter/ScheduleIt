@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -20,17 +21,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import dev.nucleus.scheduleit.domain.ScheduleEvent
+import dev.nucleus.scheduleit.domain.EffectiveEvent
 import dev.nucleus.scheduleit.domain.ScheduleSettings
 import dev.nucleus.scheduleit.presentation.schedule.ErrorKey
 import dev.nucleus.scheduleit.presentation.schedule.EventEditorState
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.nucleus.scheduleit.presentation.schedule.computeEditorBounds
+import dev.nucleus.scheduleit.ui.common.fullName
 import org.jetbrains.compose.resources.stringResource
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.action_cancel
 import scheduleit.shared.generated.resources.action_delete
+import scheduleit.shared.generated.resources.action_hide_for_day
 import scheduleit.shared.generated.resources.action_save
 import scheduleit.shared.generated.resources.event_dialog_edit_title
 import scheduleit.shared.generated.resources.event_dialog_new_title
@@ -39,6 +42,9 @@ import scheduleit.shared.generated.resources.event_field_end
 import scheduleit.shared.generated.resources.event_field_notes
 import scheduleit.shared.generated.resources.event_field_start
 import scheduleit.shared.generated.resources.event_field_title
+import scheduleit.shared.generated.resources.event_scope_all_days
+import scheduleit.shared.generated.resources.event_scope_label
+import scheduleit.shared.generated.resources.event_scope_this_day
 
 private val EVENT_COLORS = listOf(
     0xFF42A5F5L, 0xFFEF5350L, 0xFF66BB6AL, 0xFFFFCA28L,
@@ -50,11 +56,11 @@ private val EVENT_COLORS = listOf(
 fun MaterialEventEditor(
     editor: EventEditorState,
     settings: ScheduleSettings,
-    siblings: List<ScheduleEvent>,
+    siblings: List<EffectiveEvent>,
     onIntent: (ScheduleIntent) -> Unit,
 ) {
     val draft = editor.draft
-    val bounds = computeEditorBounds(draft, siblings, settings)
+    val bounds = computeEditorBounds(draft, siblings, editor.original, settings)
     AlertDialog(
         onDismissRequest = { onIntent(ScheduleIntent.DismissEditor) },
         title = {
@@ -72,6 +78,14 @@ fun MaterialEventEditor(
             androidx.compose.foundation.layout.Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
+                if (editor.templateIsShared) {
+                    MaterialScopeSelector(
+                        dayLabel = editor.day.fullName(),
+                        scope = editor.scope,
+                        onScopeChange = { onIntent(ScheduleIntent.SetEditorScope(it)) },
+                    )
+                }
+
                 MaterialStableTextField(
                     value = draft.title,
                     onValueChange = { onIntent(ScheduleIntent.UpdateDraft(draft.copy(title = it))) },
@@ -152,6 +166,18 @@ fun MaterialEventEditor(
         dismissButton = {
             Row {
                 if (editor.mode == EventEditorState.Mode.Edit) {
+                    val original = editor.original
+                    val canHide = editor.templateIsShared && (
+                        original is EventEditorState.Original.TemplateEvent ||
+                            original is EventEditorState.Original.Overridden
+                        )
+                    if (canHide) {
+                        TextButton(
+                            onClick = { onIntent(ScheduleIntent.HideEffectiveEvent(editor.toEffective())) },
+                        ) {
+                            Text(stringResource(Res.string.action_hide_for_day, editor.day.fullName()))
+                        }
+                    }
                     TextButton(onClick = { onIntent(ScheduleIntent.DeleteEditor) }) {
                         Text(stringResource(Res.string.action_delete))
                     }
@@ -161,5 +187,52 @@ fun MaterialEventEditor(
                 }
             }
         },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MaterialScopeSelector(
+    dayLabel: String,
+    scope: EventEditorState.Scope,
+    onScopeChange: (EventEditorState.Scope) -> Unit,
+) {
+    androidx.compose.foundation.layout.Column(
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            text = stringResource(Res.string.event_scope_label),
+            style = MaterialTheme.typography.labelMedium,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(
+                selected = scope == EventEditorState.Scope.ThisDayOnly,
+                onClick = { onScopeChange(EventEditorState.Scope.ThisDayOnly) },
+                label = { Text(stringResource(Res.string.event_scope_this_day, dayLabel)) },
+            )
+            FilterChip(
+                selected = scope == EventEditorState.Scope.AllLinkedDays,
+                onClick = { onScopeChange(EventEditorState.Scope.AllLinkedDays) },
+                label = { Text(stringResource(Res.string.event_scope_all_days)) },
+            )
+        }
+    }
+}
+
+private fun EventEditorState.toEffective(): EffectiveEvent {
+    val source: EffectiveEvent.Source = when (val o = original) {
+        is EventEditorState.Original.TemplateEvent -> EffectiveEvent.Source.TemplateShared(o.event)
+        is EventEditorState.Original.Overridden -> EffectiveEvent.Source.TemplateOverridden(o.base, o.override)
+        is EventEditorState.Original.DayOnly -> EffectiveEvent.Source.DayOnly(o.event)
+        null -> error("Editor without original cannot be hidden")
+    }
+    return EffectiveEvent(
+        day = day,
+        title = draft.title,
+        startMinute = draft.startMinute,
+        endMinute = draft.endMinute,
+        color = draft.color,
+        notes = draft.notes,
+        source = source,
     )
 }

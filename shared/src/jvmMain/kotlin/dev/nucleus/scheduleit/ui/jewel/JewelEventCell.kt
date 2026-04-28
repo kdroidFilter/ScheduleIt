@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.nucleus.scheduleit.domain.ScheduleEvent
+import dev.nucleus.scheduleit.domain.EffectiveEvent
 import dev.nucleus.scheduleit.ui.common.formatTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.ui.component.Text
@@ -40,7 +40,7 @@ import scheduleit.shared.generated.resources.action_edit
 
 @Composable
 fun JewelEventCell(
-    event: ScheduleEvent,
+    event: EffectiveEvent,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {

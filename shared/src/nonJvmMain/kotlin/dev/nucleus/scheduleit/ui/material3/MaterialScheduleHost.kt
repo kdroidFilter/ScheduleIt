@@ -101,10 +101,7 @@ fun MaterialScheduleHost() {
                     visibleDays = visibleDays,
                     startMinute = state.settings.startMinute,
                     endMinute = state.settings.endMinute,
-                    eventsForDay = { day ->
-                        val tpl = state.assignments[day] ?: return@TimeGrid emptyList()
-                        state.eventsByTemplate[tpl].orEmpty()
-                    },
+                    eventsForDay = { day -> state.effectiveEventsFor(day) },
                     dayHeader = { day ->
                         Text(
                             text = day.fullName(),
@@ -126,7 +123,7 @@ fun MaterialScheduleHost() {
                             tonalElevation = 2.dp,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .clickable { viewModel.onEvent(ScheduleIntent.RequestEditEvent(event)) },
+                                .clickable { viewModel.onEvent(ScheduleIntent.RequestEditEffectiveEvent(event)) },
                         ) {
                             Box(modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)) {
                                 Text(
@@ -158,7 +155,7 @@ fun MaterialScheduleHost() {
         MaterialEventEditor(
             editor = editor,
             settings = state.settings,
-            siblings = state.eventsByTemplate[editor.templateId].orEmpty(),
+            siblings = state.effectiveEventsFor(editor.day),
             onIntent = viewModel::onEvent,
         )
     }

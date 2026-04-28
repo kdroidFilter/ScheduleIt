@@ -57,6 +57,10 @@
     <string name="event_field_color">צבע</string>
     <string name="event_field_notes">הערות</string>
     <string name="event_time_format">%02d:%02d</string>
+    <string name="event_scope_label">תחולה</string>
+    <string name="event_scope_this_day">רק %1$s</string>
+    <string name="event_scope_all_days">כל הימים המקושרים</string>
+    <string name="action_hide_for_day">הסתר עבור %1$s</string>
 
     <string name="empty_schedule_hint">אין יום גלוי. פתח את ההגדרות כדי להפעיל ימים.</string>
     <string name="error_invalid_range">הסיום חייב להיות אחרי ההתחלה.</string>

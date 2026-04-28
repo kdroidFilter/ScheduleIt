@@ -5,10 +5,12 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
 import dev.nucleus.scheduleit.db.ScheduleDatabase
 import dev.nucleus.scheduleit.domain.AppDayOfWeek
+import dev.nucleus.scheduleit.domain.DayEvent
 import dev.nucleus.scheduleit.domain.DayTemplate
 import dev.nucleus.scheduleit.domain.ScheduleEvent
 import dev.nucleus.scheduleit.domain.ScheduleSettings
 import dev.nucleus.scheduleit.domain.ScheduleSnapshot
+import dev.nucleus.scheduleit.domain.TemplateEventOverride
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -69,8 +71,56 @@ class ScheduleRepository(
                 }.groupBy { it.templateId }
             }
 
-        return combine(settingsFlow, templatesFlow, assignmentsFlow, eventsFlow) { s, t, a, e ->
-            ScheduleSnapshot(s, t, a, e)
+        val dayEventsFlow = queries.selectAllDayEvents()
+            .asFlow()
+            .mapToList(ioDispatcher)
+            .map { rows ->
+                rows.map { row ->
+                    DayEvent(
+                        id = row.id,
+                        day = AppDayOfWeek.fromIso(row.day.toInt()),
+                        title = row.title,
+                        startMinute = row.start_minute.toInt(),
+                        endMinute = row.end_minute.toInt(),
+                        color = row.color,
+                        notes = row.notes,
+                    )
+                }.groupBy { it.day }
+            }
+
+        val overridesFlow = queries.selectAllOverrides()
+            .asFlow()
+            .mapToList(ioDispatcher)
+            .map { rows ->
+                rows.map { row ->
+                    TemplateEventOverride(
+                        baseEventId = row.base_event_id,
+                        day = AppDayOfWeek.fromIso(row.day.toInt()),
+                        hidden = row.hidden != 0L,
+                        title = row.title,
+                        startMinute = row.start_minute?.toInt(),
+                        endMinute = row.end_minute?.toInt(),
+                        color = row.color,
+                        notes = row.notes,
+                    )
+                }.groupBy { it.day }.mapValues { (_, list) ->
+                    list.associateBy { it.baseEventId }
+                }
+            }
+
+        val eventsBundleFlow = combine(eventsFlow, dayEventsFlow, overridesFlow) { byTpl, byDay, ov ->
+            Triple(byTpl, byDay, ov)
+        }
+
+        return combine(settingsFlow, templatesFlow, assignmentsFlow, eventsBundleFlow) { s, t, a, bundle ->
+            ScheduleSnapshot(
+                settings = s,
+                templates = t,
+                assignments = a,
+                eventsByTemplate = bundle.first,
+                dayEventsByDay = bundle.second,
+                overridesByDay = bundle.third,
+            )
         }.flowOn(ioDispatcher)
     }
 
@@ -147,6 +197,88 @@ class ScheduleRepository(
         queries.deleteEvent(id)
     }
 
+    suspend fun upsertDayEvent(event: DayEvent): Long = withContext(ioDispatcher) {
+        if (event.id == 0L) {
+            database.transactionWithResult {
+                queries.insertDayEvent(
+                    event.day.isoIndex.toLong(),
+                    event.title,
+                    event.startMinute.toLong(),
+                    event.endMinute.toLong(),
+                    event.color,
+                    event.notes,
+                )
+                queries.lastInsertedId().executeAsOne()
+            }
+        } else {
+            queries.updateDayEvent(
+                event.day.isoIndex.toLong(),
+                event.title,
+                event.startMinute.toLong(),
+                event.endMinute.toLong(),
+                event.color,
+                event.notes,
+                event.id,
+            )
+            event.id
+        }
+    }
+
+    suspend fun deleteDayEvent(id: Long) = withContext(ioDispatcher) {
+        queries.deleteDayEvent(id)
+    }
+
+    suspend fun upsertOverride(override: TemplateEventOverride) = withContext(ioDispatcher) {
+        queries.upsertOverride(
+            override.baseEventId,
+            override.day.isoIndex.toLong(),
+            if (override.hidden) 1L else 0L,
+            override.title,
+            override.startMinute?.toLong(),
+            override.endMinute?.toLong(),
+            override.color,
+            override.notes,
+        )
+    }
+
+    suspend fun deleteOverride(baseEventId: Long, day: AppDayOfWeek) = withContext(ioDispatcher) {
+        queries.deleteOverride(baseEventId, day.isoIndex.toLong())
+    }
+
+    suspend fun hideTemplateEventForDay(baseEventId: Long, day: AppDayOfWeek) {
+        upsertOverride(
+            TemplateEventOverride(
+                baseEventId = baseEventId,
+                day = day,
+                hidden = true,
+                title = null,
+                startMinute = null,
+                endMinute = null,
+                color = null,
+                notes = null,
+            ),
+        )
+    }
+
+    suspend fun promoteDayEventToTemplate(dayEventId: Long, templateId: Long): Long = withContext(ioDispatcher) {
+        database.transactionWithResult {
+            val rows = queries.selectAllDayEvents().executeAsList()
+            val source = rows.firstOrNull { it.id == dayEventId }
+                ?: error("DayEvent $dayEventId not found")
+            queries.insertEvent(
+                templateId,
+                source.title,
+                source.start_minute,
+                source.end_minute,
+                source.color,
+                source.notes,
+            )
+            val newId = queries.lastInsertedId().executeAsOne()
+            queries.deleteDayEvent(dayEventId)
+            newId
+        }
+    }
+
     suspend fun setNotificationsEnabled(enabled: Boolean) = withContext(ioDispatcher) {
         queries.updateNotificationsEnabled(if (enabled) 1L else 0L)
     }
@@ -169,6 +301,31 @@ class ScheduleRepository(
                     notes = it.notes,
                 )
             }.groupBy { it.templateId }
+            val dayEvents = queries.selectAllDayEvents().executeAsList().map { row ->
+                DayEvent(
+                    id = row.id,
+                    day = AppDayOfWeek.fromIso(row.day.toInt()),
+                    title = row.title,
+                    startMinute = row.start_minute.toInt(),
+                    endMinute = row.end_minute.toInt(),
+                    color = row.color,
+                    notes = row.notes,
+                )
+            }.groupBy { it.day }
+            val overrides = queries.selectAllOverrides().executeAsList().map { row ->
+                TemplateEventOverride(
+                    baseEventId = row.base_event_id,
+                    day = AppDayOfWeek.fromIso(row.day.toInt()),
+                    hidden = row.hidden != 0L,
+                    title = row.title,
+                    startMinute = row.start_minute?.toInt(),
+                    endMinute = row.end_minute?.toInt(),
+                    color = row.color,
+                    notes = row.notes,
+                )
+            }.groupBy { it.day }.mapValues { (_, list) ->
+                list.associateBy { it.baseEventId }
+            }
 
             ScheduleSnapshot(
                 settings = ScheduleSettings(
@@ -179,12 +336,16 @@ class ScheduleRepository(
                 templates = templates,
                 assignments = assignments,
                 eventsByTemplate = events,
+                dayEventsByDay = dayEvents,
+                overridesByDay = overrides,
             )
         }
     }
 
     suspend fun resetAll() = withContext(ioDispatcher) {
         database.transaction {
+            queries.deleteAllOverrides()
+            queries.deleteAllDayEvents()
             queries.deleteAllEvents()
             queries.deleteAllAssignments()
             queries.deleteAllTemplates()
@@ -200,6 +361,8 @@ class ScheduleRepository(
 
     suspend fun replaceAll(snapshot: ScheduleSnapshot) = withContext(ioDispatcher) {
         database.transaction {
+            queries.deleteAllOverrides()
+            queries.deleteAllDayEvents()
             queries.deleteAllEvents()
             queries.deleteAllAssignments()
             queries.deleteAllTemplates()
@@ -225,6 +388,29 @@ class ScheduleRepository(
                     e.endMinute.toLong(),
                     e.color,
                     e.notes,
+                )
+            }
+            snapshot.dayEventsByDay.values.flatten().forEach { e ->
+                queries.insertDayEventWithId(
+                    e.id,
+                    e.day.isoIndex.toLong(),
+                    e.title,
+                    e.startMinute.toLong(),
+                    e.endMinute.toLong(),
+                    e.color,
+                    e.notes,
+                )
+            }
+            snapshot.overridesByDay.values.flatMap { it.values }.forEach { ov ->
+                queries.upsertOverride(
+                    ov.baseEventId,
+                    ov.day.isoIndex.toLong(),
+                    if (ov.hidden) 1L else 0L,
+                    ov.title,
+                    ov.startMinute?.toLong(),
+                    ov.endMinute?.toLong(),
+                    ov.color,
+                    ov.notes,
                 )
             }
         }

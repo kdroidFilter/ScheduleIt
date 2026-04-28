@@ -1,6 +1,7 @@
 package dev.nucleus.scheduleit.presentation.schedule
 
 import dev.nucleus.scheduleit.domain.AppDayOfWeek
+import dev.nucleus.scheduleit.domain.EffectiveEvent
 import dev.nucleus.scheduleit.domain.ScheduleEvent
 
 sealed interface ScheduleIntent {
@@ -8,9 +9,11 @@ sealed interface ScheduleIntent {
     data object CloseSettings : ScheduleIntent
 
     data class RequestCreateEvent(val day: AppDayOfWeek, val startMinute: Int) : ScheduleIntent
-    data class RequestEditEvent(val event: ScheduleEvent) : ScheduleIntent
-    data class DeleteEvent(val id: Long) : ScheduleIntent
+    data class RequestEditEffectiveEvent(val effective: EffectiveEvent) : ScheduleIntent
+    data class DeleteEffectiveEvent(val effective: EffectiveEvent) : ScheduleIntent
+    data class HideEffectiveEvent(val effective: EffectiveEvent) : ScheduleIntent
     data class UpdateDraft(val draft: ScheduleEvent) : ScheduleIntent
+    data class SetEditorScope(val scope: EventEditorState.Scope) : ScheduleIntent
     data object DismissEditor : ScheduleIntent
     data object SaveEditor : ScheduleIntent
     data object DeleteEditor : ScheduleIntent

@@ -57,6 +57,10 @@
     <string name="event_field_color">Color</string>
     <string name="event_field_notes">Notes</string>
     <string name="event_time_format">%02d:%02d</string>
+    <string name="event_scope_label">Scope</string>
+    <string name="event_scope_this_day">Only %1$s</string>
+    <string name="event_scope_all_days">All linked days</string>
+    <string name="action_hide_for_day">Hide for %1$s</string>
 
     <string name="empty_schedule_hint">No visible day. Open settings to enable days.</string>
     <string name="error_invalid_range">End must be after start.</string>

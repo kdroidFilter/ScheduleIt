@@ -31,6 +31,32 @@ CREATE TABLE event (
 
 CREATE INDEX event_template_idx ON event(template_id);
 
+CREATE TABLE day_event (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    day INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    start_minute INTEGER NOT NULL,
+    end_minute INTEGER NOT NULL,
+    color INTEGER NOT NULL,
+    notes TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX day_event_day_idx ON day_event(day);
+
+CREATE TABLE template_event_override (
+    base_event_id INTEGER NOT NULL REFERENCES event(id) ON DELETE CASCADE,
+    day INTEGER NOT NULL,
+    hidden INTEGER NOT NULL DEFAULT 0,
+    title TEXT,
+    start_minute INTEGER,
+    end_minute INTEGER,
+    color INTEGER,
+    notes TEXT,
+    PRIMARY KEY (base_event_id, day)
+);
+
+CREATE INDEX template_event_override_day_idx ON template_event_override(day);
+
 selectSettings:
 SELECT start_minute, end_minute, notifications_enabled FROM schedule_settings WHERE id = 1;
 
@@ -106,3 +132,48 @@ INSERT INTO day_template(id, name) VALUES (?, ?);
 insertEventWithId:
 INSERT INTO event(id, template_id, title, start_minute, end_minute, color, notes)
 VALUES (?, ?, ?, ?, ?, ?, ?);
+
+selectAllDayEvents:
+SELECT id, day, title, start_minute, end_minute, color, notes
+FROM day_event
+ORDER BY start_minute;
+
+insertDayEvent:
+INSERT INTO day_event(day, title, start_minute, end_minute, color, notes)
+VALUES (?, ?, ?, ?, ?, ?);
+
+insertDayEventWithId:
+INSERT INTO day_event(id, day, title, start_minute, end_minute, color, notes)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+updateDayEvent:
+UPDATE day_event
+SET day = ?, title = ?, start_minute = ?, end_minute = ?, color = ?, notes = ?
+WHERE id = ?;
+
+deleteDayEvent:
+DELETE FROM day_event WHERE id = ?;
+
+deleteAllDayEvents:
+DELETE FROM day_event;
+
+selectAllOverrides:
+SELECT base_event_id, day, hidden, title, start_minute, end_minute, color, notes
+FROM template_event_override;
+
+upsertOverride:
+INSERT INTO template_event_override(base_event_id, day, hidden, title, start_minute, end_minute, color, notes)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT(base_event_id, day) DO UPDATE SET
+    hidden = excluded.hidden,
+    title = excluded.title,
+    start_minute = excluded.start_minute,
+    end_minute = excluded.end_minute,
+    color = excluded.color,
+    notes = excluded.notes;
+
+deleteOverride:
+DELETE FROM template_event_override WHERE base_event_id = ? AND day = ?;
+
+deleteAllOverrides:
+DELETE FROM template_event_override;

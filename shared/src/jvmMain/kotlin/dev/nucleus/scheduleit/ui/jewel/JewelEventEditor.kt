@@ -29,13 +29,14 @@ import androidx.compose.ui.window.rememberDialogState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedDialog
 import io.github.kdroidfilter.nucleus.window.jewel.JewelDialogTitleBar
-import dev.nucleus.scheduleit.domain.ScheduleEvent
+import dev.nucleus.scheduleit.domain.EffectiveEvent
 import dev.nucleus.scheduleit.domain.ScheduleSettings
 import dev.nucleus.scheduleit.presentation.schedule.ErrorKey
 import dev.nucleus.scheduleit.presentation.schedule.EventEditorState
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.nucleus.scheduleit.presentation.schedule.computeEditorBounds
+import dev.nucleus.scheduleit.ui.common.fullName
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.DefaultButton
@@ -46,6 +47,7 @@ import org.jetbrains.jewel.ui.component.TextField
 import androidx.compose.foundation.shape.RoundedCornerShape
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.action_cancel
+import scheduleit.shared.generated.resources.action_hide_for_day
 import scheduleit.shared.generated.resources.error_invalid_range
 import scheduleit.shared.generated.resources.error_outside_window
 import scheduleit.shared.generated.resources.error_overlap
@@ -58,6 +60,9 @@ import scheduleit.shared.generated.resources.event_field_end
 import scheduleit.shared.generated.resources.event_field_notes
 import scheduleit.shared.generated.resources.event_field_start
 import scheduleit.shared.generated.resources.event_field_title
+import scheduleit.shared.generated.resources.event_scope_all_days
+import scheduleit.shared.generated.resources.event_scope_label
+import scheduleit.shared.generated.resources.event_scope_this_day
 
 private val EVENT_COLORS = listOf(
     0xFF42A5F5L, 0xFFEF5350L, 0xFF66BB6AL, 0xFFFFCA28L,
@@ -68,12 +73,12 @@ private val EVENT_COLORS = listOf(
 fun JewelEventEditor(
     editor: EventEditorState,
     settings: ScheduleSettings,
-    siblings: List<ScheduleEvent>,
+    siblings: List<EffectiveEvent>,
     errorMessage: ErrorKey?,
     onIntent: (ScheduleIntent) -> Unit,
 ) {
     val draft = editor.draft
-    val bounds = computeEditorBounds(draft, siblings, settings)
+    val bounds = computeEditorBounds(draft, siblings, editor.original, settings)
     val state = rememberDialogState(size = DpSize(460.dp, 560.dp))
     val dialogTitle = stringResource(
         if (editor.mode == EventEditorState.Mode.Create) Res.string.event_dialog_new_title
@@ -92,6 +97,14 @@ fun JewelEventEditor(
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
+            if (editor.templateIsShared) {
+                ScopeSelector(
+                    dayLabel = editor.day.fullName(),
+                    scope = editor.scope,
+                    onScopeChange = { onIntent(ScheduleIntent.SetEditorScope(it)) },
+                )
+            }
+
             Text(stringResource(Res.string.event_field_title), color = JewelTheme.globalColors.text.info)
             TitleTextField(
                 value = draft.title,
@@ -168,6 +181,18 @@ fun JewelEventEditor(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = androidx.compose.ui.Alignment.End),
             ) {
                 if (editor.mode == EventEditorState.Mode.Edit) {
+                    val original = editor.original
+                    val canHide = editor.templateIsShared && (
+                        original is EventEditorState.Original.TemplateEvent ||
+                            original is EventEditorState.Original.Overridden
+                        )
+                    if (canHide) {
+                        OutlinedButton(
+                            onClick = { onIntent(ScheduleIntent.HideEffectiveEvent(editor.toEffective())) },
+                        ) {
+                            Text(stringResource(Res.string.action_hide_for_day, editor.day.fullName()))
+                        }
+                    }
                     OutlinedButton(onClick = { onIntent(ScheduleIntent.DeleteEditor) }) {
                         Text(stringResource(Res.string.action_delete))
                     }
@@ -257,5 +282,61 @@ private fun NotesTextArea(
     TextArea(
         state = state,
         modifier = Modifier.fillMaxWidth().height(96.dp),
+    )
+}
+
+@Composable
+private fun ScopeSelector(
+    dayLabel: String,
+    scope: EventEditorState.Scope,
+    onScopeChange: (EventEditorState.Scope) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(stringResource(Res.string.event_scope_label), color = JewelTheme.globalColors.text.info)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            val thisDay = EventEditorState.Scope.ThisDayOnly
+            val allDays = EventEditorState.Scope.AllLinkedDays
+            ScopeButton(
+                label = stringResource(Res.string.event_scope_this_day, dayLabel),
+                selected = scope == thisDay,
+                onClick = { onScopeChange(thisDay) },
+            )
+            ScopeButton(
+                label = stringResource(Res.string.event_scope_all_days),
+                selected = scope == allDays,
+                onClick = { onScopeChange(allDays) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun ScopeButton(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    if (selected) {
+        DefaultButton(onClick = onClick) { Text(label) }
+    } else {
+        OutlinedButton(onClick = onClick) { Text(label) }
+    }
+}
+
+private fun EventEditorState.toEffective(): EffectiveEvent {
+    val source: EffectiveEvent.Source = when (val o = original) {
+        is EventEditorState.Original.TemplateEvent -> EffectiveEvent.Source.TemplateShared(o.event)
+        is EventEditorState.Original.Overridden -> EffectiveEvent.Source.TemplateOverridden(o.base, o.override)
+        is EventEditorState.Original.DayOnly -> EffectiveEvent.Source.DayOnly(o.event)
+        null -> error("Editor without original cannot be hidden")
+    }
+    return EffectiveEvent(
+        day = day,
+        title = draft.title,
+        startMinute = draft.startMinute,
+        endMinute = draft.endMinute,
+        color = draft.color,
+        notes = draft.notes,
+        source = source,
     )
 }
