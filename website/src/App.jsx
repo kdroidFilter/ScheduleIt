@@ -147,8 +147,8 @@ export default function App() {
   })
 
   const GALLERY = [
-    { src: asset('screens/edit-event.jpg'), caption: t.gallery.editEvent },
-    { src: asset('screens/settings.jpg'), caption: t.gallery.settings },
+    { src: asset('screens/edit-event.webp'), caption: t.gallery.editEvent },
+    { src: asset('screens/settings.webp'), caption: t.gallery.settings },
   ]
 
   return (
@@ -172,7 +172,7 @@ export default function App() {
 
       <section className="showcase">
         <img
-          src={asset('screens/light.jpg')}
+          src={asset('screens/light.webp')}
           alt="ScheduleIt weekly overview"
           className="hero-shot"
         />

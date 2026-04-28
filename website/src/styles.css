@@ -95,10 +95,7 @@ a:hover { text-decoration: underline; }
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .02) inset;
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, .6));
 }
 
 /* Gallery */
@@ -110,24 +107,20 @@ a:hover { text-decoration: underline; }
 }
 .gallery figure {
   margin: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 .gallery img {
   width: 100%;
   height: auto;
   display: block;
-  background: #f4f4f6;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, .5));
 }
 .gallery figcaption {
-  padding: 14px 16px;
   font-size: 14px;
   color: var(--muted);
-  border-top: 1px solid var(--border);
+  text-align: center;
 }
 
 /* Features */
