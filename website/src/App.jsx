@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Background from './Background.jsx'
 import { OS_ICON_PATHS } from './osIcons.js'
+import { LANGS, translations, detectLang, applyLangAttrs } from './i18n.js'
 
 const REPO = 'kdroidFilter/ScheduleIt'
 const API_URL = `https://api.github.com/repos/${REPO}/releases/latest`
@@ -17,6 +18,23 @@ function detectOS() {
   return 'unknown'
 }
 
+async function detectArch() {
+  if (typeof navigator === 'undefined') return null
+  if (navigator.userAgentData?.getHighEntropyValues) {
+    try {
+      const data = await navigator.userAgentData.getHighEntropyValues(['architecture', 'bitness'])
+      if (data.architecture === 'arm' && data.bitness === '64') return 'arm64'
+      if (data.architecture === 'x86' && data.bitness === '64') return 'x64'
+    } catch {
+      // fall through to UA fallback
+    }
+  }
+  const ua = navigator.userAgent.toLowerCase()
+  if (ua.includes('arm64') || ua.includes('aarch64')) return 'arm64'
+  if (ua.includes('x86_64') || ua.includes('x64') || ua.includes('amd64') || ua.includes('win64')) return 'x64'
+  return null
+}
+
 function classify(name) {
   const n = name.toLowerCase()
   if (n.endsWith('.appx') || n.endsWith('.msixbundle')) return null
@@ -26,26 +44,24 @@ function classify(name) {
   return 'other'
 }
 
+function classifyArch(name) {
+  const n = name.toLowerCase()
+  if (n.includes('arm64') || n.includes('aarch64')) return 'arm64'
+  if (n.includes('amd64') || n.includes('x64') || n.includes('x86_64')) return 'x64'
+  return null
+}
+
 function prettyLabel(name) {
-  const lower = name.toLowerCase()
-  const arch =
-    lower.includes('arm64') ? 'ARM64' :
-    lower.includes('amd64') || lower.includes('x64') || lower.includes('x86_64') ? 'x64' :
-    ''
+  const arch = classifyArch(name)
   const ext = name.slice(name.lastIndexOf('.') + 1).toUpperCase()
-  return [ext, arch].filter(Boolean).join(' · ')
+  return [ext, arch === 'arm64' ? 'ARM64' : arch === 'x64' ? 'x64' : '']
+    .filter(Boolean)
+    .join(' · ')
 }
 
 function formatSize(bytes) {
   const mb = bytes / (1024 * 1024)
   return `${mb.toFixed(1)} MB`
-}
-
-const OS_META = {
-  windows: { label: 'Windows' },
-  mac: { label: 'macOS' },
-  linux: { label: 'Linux' },
-  other: { label: 'Other' },
 }
 
 function OsIcon({ os }) {
@@ -64,49 +80,45 @@ function OsIcon({ os }) {
   )
 }
 
-const GALLERY = [
-  { src: asset('screens/edit-event.jpg'), caption: 'Edit events with title, time, color and notes' },
-  { src: asset('screens/settings.jpg'), caption: 'Tune visible hours and per-day schedules' },
-]
-
-const FEATURES = [
-  {
-    icon: '🎒',
-    title: 'Built for student life',
-    body: 'From morning math to late-night study sessions, organize every class, lab and lecture in a layout that mirrors your real school week.',
-  },
-  {
-    icon: '📚',
-    title: 'Subjects, color-coded',
-    body: 'Give each course its own color so you can tell English from Chemistry at a glance — no more mixing up rooms or showing up to the wrong class.',
-  },
-  {
-    icon: '🔔',
-    title: 'Never miss a deadline',
-    body: 'Track exams, homework and project drop-offs alongside your regular schedule. Your agenda stays the single source of truth from Monday to Friday.',
-  },
-  {
-    icon: '🏫',
-    title: 'Like the school planner, but better',
-    body: 'All the structure of the paper agenda your teachers told you to keep updated — minus the smudged ink, lost pages and forgotten Mondays.',
-  },
-  {
-    icon: '⏰',
-    title: 'Custom hours per day',
-    body: 'Half-day on Wednesday? Late start on Friday? Tune visible hours per day so your week looks exactly like your real timetable.',
-  },
-  {
-    icon: '☕',
-    title: 'Study breaks included',
-    body: 'Block out lunch, recess and free periods so you can actually see when you have time to breathe between two pop quizzes.',
-  },
-]
+function LangSwitcher({ lang, setLang }) {
+  return (
+    <div className="lang-switcher" role="group" aria-label="Language">
+      {LANGS.map((l) => (
+        <button
+          key={l.code}
+          type="button"
+          className={l.code === lang ? 'active' : ''}
+          onClick={() => setLang(l.code)}
+          aria-pressed={l.code === lang}
+        >
+          {l.label}
+        </button>
+      ))}
+    </div>
+  )
+}
 
 export default function App() {
   const [release, setRelease] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
-  const detected = useMemo(detectOS, [])
+  const [arch, setArch] = useState(null)
+  const [lang, setLang] = useState(detectLang)
+  const detectedOS = useMemo(detectOS, [])
+  const t = translations[lang]
+
+  useEffect(() => {
+    applyLangAttrs(lang)
+    try {
+      localStorage.setItem('lang', lang)
+    } catch {
+      // localStorage may be unavailable (private mode, etc.) — ignore
+    }
+  }, [lang])
+
+  useEffect(() => {
+    detectArch().then(setArch)
+  }, [])
 
   useEffect(() => {
     fetch(API_URL)
@@ -121,34 +133,52 @@ export default function App() {
 
   const grouped = useMemo(() => {
     if (!release?.assets) return {}
-    return release.assets.reduce((acc, a) => {
+    const acc = release.assets.reduce((map, a) => {
       const os = classify(a.name)
-      if (!os) return acc
-      if (!acc[os]) acc[os] = []
-      acc[os].push(a)
-      return acc
+      if (!os) return map
+      if (!map[os]) map[os] = []
+      map[os].push(a)
+      return map
     }, {})
-  }, [release])
+    if (arch) {
+      Object.keys(acc).forEach((os) => {
+        acc[os].sort((a, b) => {
+          const aMatch = classifyArch(a.name) === arch
+          const bMatch = classifyArch(b.name) === arch
+          if (aMatch && !bMatch) return -1
+          if (!aMatch && bMatch) return 1
+          return 0
+        })
+      })
+    }
+    return acc
+  }, [release, arch])
 
   const order = ['windows', 'mac', 'linux', 'other'].sort((a, b) => {
-    if (a === detected) return -1
-    if (b === detected) return 1
+    if (a === detectedOS) return -1
+    if (b === detectedOS) return 1
     return 0
   })
+
+  const GALLERY = [
+    { src: asset('screens/edit-event.jpg'), caption: t.gallery.editEvent },
+    { src: asset('screens/settings.jpg'), caption: t.gallery.settings },
+  ]
 
   return (
     <>
       <Background />
+      <LangSwitcher lang={lang} setLang={setLang} />
       <div className="page">
 
       <header className="hero">
         <img src={asset('icon.png')} alt="ScheduleIt logo" className="logo" />
         <h1>ScheduleIt</h1>
-        <p className="tagline">Plan your week at a glance — fast, native, cross-platform.</p>
+        <p className="tagline">{t.tagline}</p>
         {release && (
           <div className="version">
             <span className="badge">{release.tag_name}</span>
-            <a href={release.html_url} target="_blank" rel="noreferrer">Release notes</a>
+            <a href={release.html_url} target="_blank" rel="noreferrer">{t.releaseNotes}</a>
           </div>
         )}
       </header>
@@ -171,15 +201,10 @@ export default function App() {
       </section>
 
       <section className="features">
-        <h2>Your school week, finally under control</h2>
-        <p className="features-lede">
-          ScheduleIt was made for the way students actually plan: classes that
-          repeat every week, exams that sneak up on you, and a homework pile
-          that never sleeps. Drop your timetable in once and let the rest of
-          the year run itself.
-        </p>
+        <h2>{t.features.title}</h2>
+        <p className="features-lede">{t.features.lede}</p>
         <div className="feature-grid">
-          {FEATURES.map((f) => (
+          {t.features.items.map((f) => (
             <article key={f.title} className="feature-card">
               <div className="feature-icon">{f.icon}</div>
               <h3>{f.title}</h3>
@@ -190,30 +215,36 @@ export default function App() {
       </section>
 
       <section className="download-section">
-        <h2>Download</h2>
-        {loading && <p className="status">Loading latest release…</p>}
-        {error && <p className="status error">Could not load release: {error}</p>}
+        <h2>{t.download.heading}</h2>
+        {loading && <p className="status">{t.download.loading}</p>}
+        {error && <p className="status error">{t.download.error}{error}</p>}
 
         {release && (
           <div className="downloads">
             {order
               .filter((os) => grouped[os]?.length)
               .map((os) => (
-                <section key={os} className={`os-card ${os === detected ? 'highlight' : ''}`}>
+                <section key={os} className={`os-card ${os === detectedOS ? 'highlight' : ''}`}>
                   <header>
                     <OsIcon os={os} />
-                    <h3>{OS_META[os].label}</h3>
-                    {os === detected && <span className="pill">Detected</span>}
+                    <h3>{t.os[os]}</h3>
+                    {os === detectedOS && <span className="pill">{t.download.detected}</span>}
                   </header>
                   <ul>
-                    {grouped[os].map((asset) => (
-                      <li key={asset.id}>
-                        <a className="dl-btn" href={asset.browser_download_url}>
-                          <span className="dl-name">{prettyLabel(asset.name)}</span>
-                          <span className="dl-size">{formatSize(asset.size)}</span>
-                        </a>
-                      </li>
-                    ))}
+                    {grouped[os].map((a) => {
+                      const matchArch = arch && classifyArch(a.name) === arch && os === detectedOS
+                      return (
+                        <li key={a.id}>
+                          <a className={`dl-btn ${matchArch ? 'match' : ''}`} href={a.browser_download_url}>
+                            <span className="dl-name">
+                              {prettyLabel(a.name)}
+                              {matchArch && <span className="dl-tag">{t.download.forYou}</span>}
+                            </span>
+                            <span className="dl-size">{formatSize(a.size)}</span>
+                          </a>
+                        </li>
+                      )
+                    })}
                   </ul>
                 </section>
               ))}
@@ -223,7 +254,7 @@ export default function App() {
 
       <footer className="footer">
         <a href={`https://github.com/${REPO}`} target="_blank" rel="noreferrer">
-          View source on GitHub
+          {t.footer.source}
         </a>
       </footer>
       </div>
