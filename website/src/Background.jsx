@@ -51,6 +51,7 @@ attribute vec3 a_seed; // x, y, phase
 uniform float u_time;
 uniform vec2 u_res;
 varying float v_alpha;
+varying float v_hue;
 
 void main() {
   float t = u_time * 0.08;
@@ -59,21 +60,31 @@ void main() {
   float fy = fract(a_seed.y - t * 0.03 + drift) * 2.0 - 1.0;
   gl_Position = vec4(fx, fy, 0.0, 1.0);
 
-  float dpr = clamp(u_res.x / 800.0, 1.0, 2.5);
-  gl_PointSize = (1.5 + 2.5 * fract(a_seed.z * 7.0)) * dpr;
+  float dpr = clamp(u_res.x / 600.0, 1.0, 3.0);
+  // Bigger sprite so the soft halo is clearly visible
+  gl_PointSize = (8.0 + 18.0 * fract(a_seed.z * 7.0)) * dpr;
 
-  v_alpha = 0.25 + 0.55 * (0.5 + 0.5 * sin(a_seed.z * 9.0 + u_time * 0.8));
+  v_alpha = 0.45 + 0.55 * (0.5 + 0.5 * sin(a_seed.z * 9.0 + u_time * 1.2));
+  v_hue = fract(a_seed.z * 3.13);
 }
 `
 
 const FRAG_PARTICLES = `
 precision highp float;
 varying float v_alpha;
+varying float v_hue;
 void main() {
   vec2 p = gl_PointCoord - 0.5;
   float d = length(p);
-  float a = smoothstep(0.5, 0.0, d) * v_alpha;
-  gl_FragColor = vec4(0.75, 0.85, 1.0, a);
+  if (d > 0.5) discard;
+  // Soft halo: bright core with smooth falloff
+  float core = smoothstep(0.18, 0.0, d);
+  float halo = smoothstep(0.5, 0.05, d);
+  vec3 cool = vec3(0.70, 0.85, 1.00);
+  vec3 warm = vec3(0.85, 0.75, 1.00);
+  vec3 col = mix(cool, warm, v_hue);
+  float a = (halo * 0.55 + core) * v_alpha;
+  gl_FragColor = vec4(col, a);
 }
 `
 

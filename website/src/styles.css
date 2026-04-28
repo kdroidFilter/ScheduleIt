@@ -12,21 +12,25 @@
 
 * { box-sizing: border-box; }
 
+html {
+  background: var(--bg);
+}
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
+body { background: transparent; }
 
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 .page {
   position: relative;
+  z-index: 1;
   max-width: 980px;
   margin: 0 auto;
   padding: 80px 24px 48px;
@@ -38,7 +42,7 @@ a:hover { text-decoration: underline; }
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
   display: block;
 }
 

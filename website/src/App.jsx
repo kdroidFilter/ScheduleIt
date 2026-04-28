@@ -46,8 +46,8 @@ const OS_META = {
 }
 
 const GALLERY = [
-  { src: `${BASE}screens/edit-event.png`, caption: 'Edit events with title, time, color and notes' },
-  { src: `${BASE}screens/settings.png`, caption: 'Tune visible hours and per-day schedules' },
+  { src: `${BASE}screens/edit-event.jpg`, caption: 'Edit events with title, time, color and notes' },
+  { src: `${BASE}screens/settings.jpg`, caption: 'Tune visible hours and per-day schedules' },
 ]
 
 export default function App() {
@@ -85,8 +85,9 @@ export default function App() {
   })
 
   return (
-    <div className="page">
+    <>
       <Background />
+      <div className="page">
 
       <header className="hero">
         <img src={`${BASE}icon.png`} alt="ScheduleIt logo" className="logo" />
@@ -102,7 +103,7 @@ export default function App() {
 
       <section className="showcase">
         <img
-          src={`${BASE}screens/light.png`}
+          src={`${BASE}screens/light.jpg`}
           alt="ScheduleIt weekly overview"
           className="hero-shot"
         />
@@ -154,6 +155,7 @@ export default function App() {
           View source on GitHub
         </a>
       </footer>
-    </div>
+      </div>
+    </>
   )
 }
