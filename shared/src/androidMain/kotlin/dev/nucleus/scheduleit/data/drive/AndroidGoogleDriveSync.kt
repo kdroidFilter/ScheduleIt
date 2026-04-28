@@ -1,11 +1,14 @@
 package dev.nucleus.scheduleit.data.drive
 
 import android.content.Context
+import android.util.Log
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Scope
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
@@ -41,7 +44,10 @@ internal class AndroidGoogleDriveSync(
 ) : GoogleDriveSync {
 
     private val store = AndroidTokenStore(context)
-    private val http: HttpClient = HttpClient(CIO)
+    // OkHttp uses Android's system trust store and Conscrypt — avoids the
+    // "Trust anchor for certification path not found" issues that the CIO
+    // engine produces on some Android (esp. MIUI) devices.
+    private val http: HttpClient = HttpClient(OkHttp)
     private val drive = AndroidDriveBackup(http)
     private val json = Json { ignoreUnknownKeys = true }
     private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -90,8 +96,32 @@ internal class AndroidGoogleDriveSync(
                 lastBackupEpochSec = null,
             )
         } catch (t: Throwable) {
-            _status.value = GoogleDriveStatus.Error(t.message ?: "Connection failed")
+            Log.e(TAG, "Drive connect failed", t)
+            _status.value = GoogleDriveStatus.Error(describeError(t))
         }
+    }
+
+    /**
+     * Maps the noisy Google Play Services status codes to clearer messages.
+     * Identity routinely surfaces "7: NETWORK_ERROR" for what is really a
+     * developer-error (SHA-1 / package / consent screen / Drive API disabled),
+     * so we always show the numeric code to make debugging tractable.
+     */
+    private fun describeError(t: Throwable): String {
+        val api = (t as? ApiException) ?: t.cause as? ApiException
+        if (api != null) {
+            val codeName = when (api.statusCode) {
+                CommonStatusCodes.NETWORK_ERROR -> "NETWORK_ERROR (or unregistered SHA-1/package)"
+                CommonStatusCodes.DEVELOPER_ERROR -> "DEVELOPER_ERROR — SHA-1/package mismatch"
+                CommonStatusCodes.SIGN_IN_REQUIRED -> "SIGN_IN_REQUIRED"
+                CommonStatusCodes.INTERNAL_ERROR -> "INTERNAL_ERROR"
+                CommonStatusCodes.CANCELED -> "CANCELED"
+                CommonStatusCodes.API_NOT_CONNECTED -> "API_NOT_CONNECTED"
+                else -> "code=${api.statusCode}"
+            }
+            return "Drive auth failed: $codeName"
+        }
+        return t.message ?: "Connection failed"
     }
 
     /**
@@ -99,16 +129,15 @@ internal class AndroidGoogleDriveSync(
      * if the user cancels. When [allowResolution] is false, only the silent path
      * is attempted and we return null whenever consent UI would be required —
      * useful for refreshing an already-granted token without showing UI again.
+     *
+     * Only the Drive scope is requested. The Identity API's authorize() flow
+     * is documented to take *API* scopes (Drive, Calendar, etc.); identity
+     * scopes (email/profile) are meant to flow through Credential Manager
+     * — mixing them here can make Google refuse to finalise the consent.
      */
     private suspend fun authorizeAndGetToken(allowResolution: Boolean): String? {
         val request = AuthorizationRequest.Builder()
-            .setRequestedScopes(
-                listOf(
-                    Scope(SCOPE_DRIVE_APPDATA),
-                    Scope("email"),
-                    Scope("profile"),
-                ),
-            )
+            .setRequestedScopes(listOf(Scope(SCOPE_DRIVE_APPDATA)))
             .build()
         val client = Identity.getAuthorizationClient(context)
         var result = client.authorize(request).await()
@@ -122,13 +151,21 @@ internal class AndroidGoogleDriveSync(
         return result.accessToken
     }
 
+    /**
+     * The token only carries the Drive scope, so the standard userinfo endpoint
+     * is unreachable. We try `Drive.about(fields=user)` instead, which returns
+     * `{"user":{"emailAddress":..., "displayName":...}}` for any token with
+     * any Drive scope — including `drive.appdata`.
+     */
     private suspend fun fetchUserEmail(token: String): String? {
-        val response = http.get(USERINFO_URL) {
+        val response = http.get(DRIVE_ABOUT_URL) {
             header(HttpHeaders.Authorization, "Bearer $token")
+            url { parameters.append("fields", "user(emailAddress)") }
         }
         if (!response.status.isSuccess()) return null
         return json.parseToJsonElement(response.bodyAsText())
-            .jsonObject["email"]?.jsonPrimitive?.content
+            .jsonObject["user"]?.jsonObject
+            ?.get("emailAddress")?.jsonPrimitive?.content
     }
 
     override suspend fun disconnect() {
@@ -226,8 +263,9 @@ internal class AndroidGoogleDriveSync(
     private fun nowEpochSec(): Long = System.currentTimeMillis() / 1000
 
     companion object {
+        private const val TAG = "DriveSync"
         private const val SCOPE_DRIVE_APPDATA = "https://www.googleapis.com/auth/drive.appdata"
-        private const val USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
+        private const val DRIVE_ABOUT_URL = "https://www.googleapis.com/drive/v3/about"
         private const val BACKUP_FILE_NAME = "scheduleit-backup.json"
         private const val DEFAULT_TOKEN_TTL_SEC = 50L * 60L // ~50 min, refresh just before 1h expiry
     }

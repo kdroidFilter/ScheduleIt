@@ -85,7 +85,7 @@ kotlin {
                 implementation(libs.play.services.auth)
                 implementation(libs.kotlinx.coroutines.play.services)
                 implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.cio)
+                implementation(libs.ktor.client.okhttp)
                 implementation(libs.kotlinx.serializationJson)
             }
         }

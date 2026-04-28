@@ -79,6 +79,7 @@ kotlinx-serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serializat
 filekit-dialogsCompose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 nucleus-nativeHttpKtor = { module = "io.github.kdroidfilter:nucleus.native-http-ktor", version.ref = "nucleus" }
 nucleus-nativeHttp = { module = "io.github.kdroidfilter:nucleus.native-http", version.ref = "nucleus" }
 nucleus-updaterRuntime = { module = "io.github.kdroidfilter:nucleus.updater-runtime", version.ref = "nucleus" }
