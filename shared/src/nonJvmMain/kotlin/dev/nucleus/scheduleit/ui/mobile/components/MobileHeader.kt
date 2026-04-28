@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,10 +25,19 @@ import dev.nucleus.scheduleit.AppInfo
 import dev.nucleus.scheduleit.ui.mobile.theme.MobileTheme
 import org.jetbrains.compose.resources.stringResource
 import scheduleit.shared.generated.resources.Res
+import scheduleit.shared.generated.resources.action_install_update
 import scheduleit.shared.generated.resources.action_open_about
 import scheduleit.shared.generated.resources.action_open_github
 import scheduleit.shared.generated.resources.action_open_settings
 import scheduleit.shared.generated.resources.app_name
+
+/**
+ * Optional install-update callback surfaced in [MobileHeader]. Hosts that wire
+ * up an updater (currently only Android) provide this; iOS leaves it null.
+ * Mirrors the Linux desktop title-bar download icon — visible only when an
+ * update is ready to install.
+ */
+val LocalMobileInstallUpdate = staticCompositionLocalOf<(() -> Unit)?> { null }
 
 /**
  * Top bar with logo + title and three trailing icon buttons:
@@ -48,6 +58,7 @@ fun MobileHeader(
     val colors = MobileTheme.colors
     val typography = MobileTheme.typography
     val uriHandler = LocalUriHandler.current
+    val installUpdate = LocalMobileInstallUpdate.current
 
     Row(
         modifier = modifier
@@ -73,6 +84,14 @@ fun MobileHeader(
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            if (installUpdate != null) {
+                IconBtn(
+                    onClick = installUpdate,
+                    contentDescription = stringResource(Res.string.action_install_update),
+                ) {
+                    IconDownload(modifier = Modifier.size(18.dp), color = colors.accent)
+                }
+            }
             IconBtn(
                 onClick = { uriHandler.openUri(AppInfo.PROJECT_URL) },
                 contentDescription = stringResource(Res.string.action_open_github),

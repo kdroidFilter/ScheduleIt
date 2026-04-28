@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import com.composables.icons.lucide.Download
 import com.composables.icons.lucide.Github
 import com.composables.icons.lucide.Info
 import com.composables.icons.lucide.Lucide
@@ -121,6 +122,11 @@ fun IconGitHub(modifier: Modifier = Modifier, color: Color) {
 @Composable
 fun IconInfo(modifier: Modifier = Modifier, color: Color) {
     LucideTinted(modifier = modifier, color = color, vector = Lucide.Info)
+}
+
+@Composable
+fun IconDownload(modifier: Modifier = Modifier, color: Color) {
+    LucideTinted(modifier = modifier, color = color, vector = Lucide.Download)
 }
 
 @Composable

@@ -70,6 +70,7 @@ export const translations = {
       windows: 'Windows',
       mac: 'macOS',
       linux: 'Linux',
+      android: 'Android',
       other: 'Other',
     },
     privacy: {
@@ -170,6 +171,7 @@ export const translations = {
       windows: 'Windows',
       mac: 'macOS',
       linux: 'Linux',
+      android: 'Android',
       other: 'Autre',
     },
     privacy: {
@@ -270,6 +272,7 @@ export const translations = {
       windows: 'Windows',
       mac: 'macOS',
       linux: 'Linux',
+      android: 'Android',
       other: 'אחר',
     },
     privacy: {
