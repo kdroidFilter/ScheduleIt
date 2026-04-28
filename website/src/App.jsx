@@ -7,7 +7,7 @@ import { OS_ICON_PATHS } from './osIcons.js'
 import { translations, detectLang, applyLangAttrs } from './i18n.js'
 
 const REPO = 'kdroidFilter/ScheduleIt'
-const API_URL = `https://api.github.com/repos/${REPO}/releases/latest`
+const API_URL = `https://api.github.com/repos/${REPO}/releases?per_page=10`
 const BASE = import.meta.env.BASE_URL
 const V = `?v=${__BUILD_ID__}`
 const asset = (path) => `${BASE}${path}${V}`
@@ -15,6 +15,8 @@ const asset = (path) => `${BASE}${path}${V}`
 function detectOS() {
   if (typeof navigator === 'undefined') return 'unknown'
   const ua = navigator.userAgent.toLowerCase()
+  // Android UA also contains "linux" — check it first.
+  if (ua.includes('android')) return 'android'
   if (ua.includes('win')) return 'windows'
   if (ua.includes('mac')) return 'mac'
   if (ua.includes('linux')) return 'linux'
@@ -43,9 +45,11 @@ function classify(name) {
   if (n.endsWith('.appx') || n.endsWith('.msixbundle')) return null
   if (n.endsWith('.yml') || n.endsWith('.yaml') || n.endsWith('.blockmap')) return null
   if (n.endsWith('.zip')) return null
+  if (n.endsWith('.aab')) return null // Play Store bundle, not user-installable
   if (n.endsWith('.exe')) return 'windows'
   if (n.endsWith('.dmg') || n.endsWith('.pkg')) return 'mac'
   if (n.endsWith('.deb') || n.endsWith('.rpm') || n.endsWith('.appimage')) return 'linux'
+  if (n.endsWith('.apk')) return 'android'
   return 'other'
 }
 
@@ -76,6 +80,7 @@ function osLabel(os) {
   if (os === 'mac') return 'macOS'
   if (os === 'windows') return 'Windows'
   if (os === 'linux') return 'Linux'
+  if (os === 'android') return 'Android'
   return 'Other'
 }
 
@@ -97,13 +102,45 @@ function pickPrimary(assets, os, arch) {
     const match = candidates.find((a) => classifyArch(a.name) === arch)
     if (match) return match
   }
-  // Prefer .dmg for mac, .exe for win, .appimage for linux as universal default
-  const prefer = { mac: '.dmg', windows: '.exe', linux: '.appimage' }[os]
+  // Prefer the canonical user-installable extension per OS.
+  const prefer = { mac: '.dmg', windows: '.exe', linux: '.appimage', android: '.apk' }[os]
   if (prefer) {
     const match = candidates.find((a) => a.name.toLowerCase().endsWith(prefer))
     if (match) return match
   }
   return candidates[0]
+}
+
+// Aggregate assets across the most recent releases. Dedupe by (os, arch, ext)
+// so we only keep the most recent build for each distinct combo — desktop
+// builds lag behind Android-only releases, but we still want one entry each.
+function assetSignature(name) {
+  const ext = name.slice(name.lastIndexOf('.')).toLowerCase()
+  const lower = name.toLowerCase()
+  let arch = 'any'
+  if (lower.includes('arm64') || lower.includes('aarch64')) arch = 'arm64'
+  else if (lower.includes('amd64') || lower.includes('x64') || lower.includes('x86_64')) arch = 'x64'
+  return `${ext}|${arch}`
+}
+
+function aggregateReleases(releases) {
+  if (!Array.isArray(releases) || !releases.length) return null
+  const seen = new Map()
+  for (const r of releases) {
+    if (r.draft || r.prerelease) continue
+    for (const a of r.assets || []) {
+      const sig = assetSignature(a.name)
+      if (!seen.has(sig)) {
+        seen.set(sig, { ...a, release_tag: r.tag_name, release_url: r.html_url })
+      }
+    }
+  }
+  const top = releases.find((r) => !r.draft && !r.prerelease) || releases[0]
+  return {
+    tag_name: top.tag_name,
+    html_url: top.html_url,
+    assets: Array.from(seen.values()),
+  }
 }
 
 export default function App() {
@@ -136,7 +173,7 @@ export default function App() {
         if (!r.ok) throw new Error(`GitHub API ${r.status}`)
         return r.json()
       })
-      .then(setRelease)
+      .then((data) => setRelease(aggregateReleases(data)))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [])
@@ -157,7 +194,7 @@ export default function App() {
     [release, detectedOS, arch]
   )
 
-  const otherOses = ['mac', 'windows', 'linux', 'other'].filter(
+  const otherOses = ['mac', 'windows', 'linux', 'android', 'other'].filter(
     (os) => os !== detectedOS && grouped[os]?.length
   )
 
