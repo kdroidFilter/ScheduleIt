@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import Background from './Background.jsx'
 import LangSwitcher from './LangSwitcher.jsx'
+import SupportLink from './SupportLink.jsx'
+import Footer from './Footer.jsx'
 import { translations, detectLang, applyLangAttrs } from './i18n.js'
 
 const BASE = import.meta.env.BASE_URL
@@ -24,6 +26,7 @@ export default function Privacy() {
   return (
     <>
       <Background />
+      <SupportLink lang={lang} />
       <LangSwitcher lang={lang} setLang={setLang} />
       <div className="page">
         <header className="hero">
@@ -43,9 +46,11 @@ export default function Privacy() {
           ))}
         </article>
 
-        <footer className="footer">
+        <div className="back-link">
           <a href={BASE}>{t.footer.back}</a>
-        </footer>
+        </div>
+
+        <Footer lang={lang} />
       </div>
     </>
   )

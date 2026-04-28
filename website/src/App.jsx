@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import Background from './Background.jsx'
 import LangSwitcher from './LangSwitcher.jsx'
+import SupportLink from './SupportLink.jsx'
+import Footer from './Footer.jsx'
 import { OS_ICON_PATHS } from './osIcons.js'
+import { FEATURE_ICONS } from './featureIcons.js'
 import { translations, detectLang, applyLangAttrs } from './i18n.js'
 
 const REPO = 'kdroidFilter/ScheduleIt'
@@ -151,6 +154,7 @@ export default function App() {
   return (
     <>
       <Background />
+      <SupportLink lang={lang} />
       <LangSwitcher lang={lang} setLang={setLang} />
       <div className="page">
 
@@ -187,9 +191,15 @@ export default function App() {
         <h2>{t.features.title}</h2>
         <p className="features-lede">{t.features.lede}</p>
         <div className="feature-grid">
-          {t.features.items.map((f) => (
+          {t.features.items.map((f, i) => (
             <article key={f.title} className="feature-card">
-              <div className="feature-icon">{f.icon}</div>
+              <div className="feature-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  {FEATURE_ICONS[i].map((d, j) => (
+                    <path key={j} d={d} />
+                  ))}
+                </svg>
+              </div>
               <h3>{f.title}</h3>
               <p>{f.body}</p>
             </article>
@@ -235,13 +245,7 @@ export default function App() {
         )}
       </section>
 
-      <footer className="footer">
-        <a href={`https://github.com/${REPO}`} target="_blank" rel="noreferrer">
-          {t.footer.source}
-        </a>
-        <span className="footer-sep" aria-hidden="true">·</span>
-        <a href={`${BASE}privacy.html`}>{t.footer.privacy}</a>
-      </footer>
+      <Footer lang={lang} />
       </div>
     </>
   )
