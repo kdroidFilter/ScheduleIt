@@ -29,15 +29,15 @@ jobs:
           - name: Linux (x64)
             os: ubuntu-latest
             tasks: packageGraalvmDeb
-            artifact: linux-x64
+            release-name: Linux-x64
           - name: Linux (arm64)
             os: ubuntu-24.04-arm
             tasks: packageGraalvmDeb
-            artifact: linux-arm64
+            release-name: Linux-arm64
           - name: Windows (x64)
             os: windows-latest
             tasks: packageGraalvmNsis
-            artifact: windows-x64
+            release-name: Windows-x64
 
     steps:
       - name: Checkout
@@ -84,7 +84,7 @@ jobs:
       - name: Upload installers
         uses: actions/upload-artifact@v4
         with:
-          name: scheduleit-${{ matrix.artifact }}
+          name: release-assets-${{ matrix.release-name }}
           path: |
             desktopApp/build/compose/binaries/**/*.deb
             desktopApp/build/compose/binaries/**/*.dmg
@@ -135,22 +135,25 @@ jobs:
           setup-gradle: "true"
           setup-node: "false"
 
-      - name: Build DMG (JVM + Leyden AOT cache + ProGuard)
+      # DMG = initial install ; ZIP = silent auto-update payload (required by Nucleus updater).
+      - name: Build DMG + ZIP (JVM + Leyden AOT cache + ProGuard)
         shell: bash
         env:
           GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.GOOGLE_DRIVE_CLIENT_ID }}
           GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.GOOGLE_DRIVE_CLIENT_SECRET }}
         run: |
-          ./gradlew :desktopApp:packageReleaseDmg \
+          ./gradlew :desktopApp:packageReleaseDmg :desktopApp:packageReleaseZip \
             -PappVersion=${{ steps.version.outputs.version }} \
             -PenableAotCache=true \
             --no-daemon --stacktrace
 
-      - name: Upload DMG
+      - name: Upload DMG + ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: scheduleit-macos-${{ matrix.arch }}
-          path: desktopApp/build/compose/binaries/**/*.dmg
+          name: release-assets-macOS-${{ matrix.arch }}
+          path: |
+            desktopApp/build/compose/binaries/**/*.dmg
+            desktopApp/build/compose/binaries/**/*.zip
           if-no-files-found: error
 
   # AppX/MSIX builds — JBR 25 + Project Leyden AOT cache. Built on x64 and arm64
@@ -207,7 +210,7 @@ jobs:
       - name: Upload AppX
         uses: actions/upload-artifact@v4
         with:
-          name: scheduleit-windows-appx-${{ matrix.arch }}
+          name: release-assets-Windows-appx-${{ matrix.arch }}
           path: desktopApp/build/compose/binaries/**/*.appx
           if-no-files-found: error
 
@@ -223,13 +226,13 @@ jobs:
       - name: Download AppX (x64)
         uses: actions/download-artifact@v4
         with:
-          name: scheduleit-windows-appx-x64
+          name: release-assets-Windows-appx-x64
           path: artifacts/windows-x64
 
       - name: Download AppX (arm64)
         uses: actions/download-artifact@v4
         with:
-          name: scheduleit-windows-appx-arm64
+          name: release-assets-Windows-appx-arm64
           path: artifacts/windows-arm64
 
       - name: Build MSIX bundle
@@ -242,7 +245,7 @@ jobs:
       - name: Upload MSIX bundle
         uses: actions/upload-artifact@v4
         with:
-          name: scheduleit-windows-bundle
+          name: release-assets-Windows-bundle
           path: artifacts/windows-bundle/**/*.msixbundle
           if-no-files-found: error
 
@@ -253,16 +256,40 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          merge-multiple: true
+          pattern: release-assets-*
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Determine version and channel
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          case "$VERSION" in
+            *-alpha*) echo "CHANNEL=alpha"  >> "$GITHUB_ENV"; echo "RELEASE_TYPE=prerelease" >> "$GITHUB_ENV" ;;
+            *-beta*)  echo "CHANNEL=beta"   >> "$GITHUB_ENV"; echo "RELEASE_TYPE=prerelease" >> "$GITHUB_ENV" ;;
+            *)        echo "CHANNEL=latest" >> "$GITHUB_ENV"; echo "RELEASE_TYPE=release"    >> "$GITHUB_ENV" ;;
+          esac
+
+      - name: Generate update YML files
+        uses: kdroidFilter/Nucleus/.github/actions/generate-update-yml@main
         with:
-          files: artifacts/**/*
-          generate_release_notes: true
-          fail_on_unmatched_files: true
+          artifacts-path: artifacts
+          version: ${{ env.VERSION }}
+          channel: ${{ env.CHANNEL }}
+
+      - name: Publish release
+        uses: kdroidFilter/Nucleus/.github/actions/publish-release@main
+        with:
+          artifacts-path: artifacts
+          tag: ${{ env.TAG }}
+          release-type: ${{ env.RELEASE_TYPE }}
