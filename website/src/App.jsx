@@ -4,6 +4,8 @@ import Background from './Background.jsx'
 const REPO = 'kdroidFilter/ScheduleIt'
 const API_URL = `https://api.github.com/repos/${REPO}/releases/latest`
 const BASE = import.meta.env.BASE_URL
+const V = `?v=${__BUILD_ID__}`
+const asset = (path) => `${BASE}${path}${V}`
 
 function detectOS() {
   if (typeof navigator === 'undefined') return 'unknown'
@@ -46,8 +48,8 @@ const OS_META = {
 }
 
 const GALLERY = [
-  { src: `${BASE}screens/edit-event.jpg`, caption: 'Edit events with title, time, color and notes' },
-  { src: `${BASE}screens/settings.jpg`, caption: 'Tune visible hours and per-day schedules' },
+  { src: asset('screens/edit-event.jpg'), caption: 'Edit events with title, time, color and notes' },
+  { src: asset('screens/settings.jpg'), caption: 'Tune visible hours and per-day schedules' },
 ]
 
 const FEATURES = [
@@ -123,7 +125,7 @@ export default function App() {
       <div className="page">
 
       <header className="hero">
-        <img src={`${BASE}icon.png`} alt="ScheduleIt logo" className="logo" />
+        <img src={asset('icon.png')} alt="ScheduleIt logo" className="logo" />
         <h1>ScheduleIt</h1>
         <p className="tagline">Plan your week at a glance — fast, native, cross-platform.</p>
         {release && (
@@ -136,7 +138,7 @@ export default function App() {
 
       <section className="showcase">
         <img
-          src={`${BASE}screens/light.jpg`}
+          src={asset('screens/light.jpg')}
           alt="ScheduleIt weekly overview"
           className="hero-shot"
         />
