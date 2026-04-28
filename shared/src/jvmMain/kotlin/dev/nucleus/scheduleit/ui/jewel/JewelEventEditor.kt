@@ -7,14 +7,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -93,89 +94,96 @@ fun JewelEventEditor(
         Box(modifier = Modifier.fillMaxSize().background(JewelTheme.globalColors.panelBackground)) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            if (editor.templateIsShared) {
-                ScopeSelector(
-                    dayLabel = editor.day.fullName(),
-                    scope = editor.scope,
-                    onScopeChange = { onIntent(ScheduleIntent.SetEditorScope(it)) },
-                )
-            }
-
-            Text(stringResource(Res.string.event_field_title), color = JewelTheme.globalColors.text.info)
-            TitleTextField(
-                value = draft.title,
-                editorKey = editor.draft.id to editor.mode,
-                onValueChange = { onIntent(ScheduleIntent.UpdateDraft(draft.copy(title = it))) },
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp, androidx.compose.ui.Alignment.CenterHorizontally),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {
-                JewelTimePicker(
-                    label = stringResource(Res.string.event_field_start),
-                    valueMinute = draft.startMinute,
-                    rangeStart = bounds.lowerMinute,
-                    rangeEnd = draft.endMinute - ScheduleViewModel.SLOT_MINUTES,
-                    stepMinutes = ScheduleViewModel.SLOT_MINUTES,
-                    onChange = { v ->
-                        onIntent(ScheduleIntent.UpdateDraft(draft.copy(startMinute = v)))
-                    },
-                    onBlocked = { atUpper ->
-                        val reason = if (atUpper) ErrorKey.InvalidRange else bounds.lowerReason
-                        onIntent(ScheduleIntent.ReportBlocked(reason))
-                    },
-                )
-                JewelTimePicker(
-                    label = stringResource(Res.string.event_field_end),
-                    valueMinute = draft.endMinute,
-                    rangeStart = draft.startMinute + ScheduleViewModel.SLOT_MINUTES,
-                    rangeEnd = bounds.upperMinute,
-                    stepMinutes = ScheduleViewModel.SLOT_MINUTES,
-                    onChange = { v ->
-                        onIntent(ScheduleIntent.UpdateDraft(draft.copy(endMinute = v)))
-                    },
-                    onBlocked = { atUpper ->
-                        val reason = if (atUpper) bounds.upperReason else ErrorKey.InvalidRange
-                        onIntent(ScheduleIntent.ReportBlocked(reason))
-                    },
-                )
-            }
-
-            Text(stringResource(Res.string.event_field_color), color = JewelTheme.globalColors.text.info)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, androidx.compose.ui.Alignment.CenterHorizontally),
-            ) {
-                EVENT_COLORS.forEach { color ->
-                    val selected = color == draft.color
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(CircleShape)
-                            .background(Color(color.toInt()))
-                            .border(
-                                width = if (selected) 3.dp else 1.dp,
-                                color = if (selected) JewelTheme.globalColors.outlines.focused else Color.Transparent,
-                                shape = CircleShape,
-                            )
-                            .clickable { onIntent(ScheduleIntent.UpdateDraft(draft.copy(color = color))) },
+                if (editor.templateIsShared) {
+                    ScopeSelector(
+                        dayLabel = editor.day.fullName(),
+                        scope = editor.scope,
+                        onScopeChange = { onIntent(ScheduleIntent.SetEditorScope(it)) },
                     )
                 }
+
+                Text(stringResource(Res.string.event_field_title), color = JewelTheme.globalColors.text.info)
+                TitleTextField(
+                    value = draft.title,
+                    editorKey = editor.draft.id to editor.mode,
+                    onValueChange = { onIntent(ScheduleIntent.UpdateDraft(draft.copy(title = it))) },
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp, androidx.compose.ui.Alignment.CenterHorizontally),
+                ) {
+                    JewelTimePicker(
+                        label = stringResource(Res.string.event_field_start),
+                        valueMinute = draft.startMinute,
+                        rangeStart = bounds.lowerMinute,
+                        rangeEnd = draft.endMinute - ScheduleViewModel.SLOT_MINUTES,
+                        stepMinutes = ScheduleViewModel.SLOT_MINUTES,
+                        onChange = { v ->
+                            onIntent(ScheduleIntent.UpdateDraft(draft.copy(startMinute = v)))
+                        },
+                        onBlocked = { atUpper ->
+                            val reason = if (atUpper) ErrorKey.InvalidRange else bounds.lowerReason
+                            onIntent(ScheduleIntent.ReportBlocked(reason))
+                        },
+                    )
+                    JewelTimePicker(
+                        label = stringResource(Res.string.event_field_end),
+                        valueMinute = draft.endMinute,
+                        rangeStart = draft.startMinute + ScheduleViewModel.SLOT_MINUTES,
+                        rangeEnd = bounds.upperMinute,
+                        stepMinutes = ScheduleViewModel.SLOT_MINUTES,
+                        onChange = { v ->
+                            onIntent(ScheduleIntent.UpdateDraft(draft.copy(endMinute = v)))
+                        },
+                        onBlocked = { atUpper ->
+                            val reason = if (atUpper) bounds.upperReason else ErrorKey.InvalidRange
+                            onIntent(ScheduleIntent.ReportBlocked(reason))
+                        },
+                    )
+                }
+
+                Text(stringResource(Res.string.event_field_color), color = JewelTheme.globalColors.text.info)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, androidx.compose.ui.Alignment.CenterHorizontally),
+                ) {
+                    EVENT_COLORS.forEach { color ->
+                        val selected = color == draft.color
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(Color(color.toInt()))
+                                .border(
+                                    width = if (selected) 3.dp else 1.dp,
+                                    color = if (selected) JewelTheme.globalColors.outlines.focused else Color.Transparent,
+                                    shape = CircleShape,
+                                )
+                                .clickable { onIntent(ScheduleIntent.UpdateDraft(draft.copy(color = color))) },
+                        )
+                    }
+                }
+
+                Text(stringResource(Res.string.event_field_notes), color = JewelTheme.globalColors.text.info)
+                NotesTextArea(
+                    value = draft.notes,
+                    editorKey = editor.draft.id to editor.mode,
+                    onValueChange = { onIntent(ScheduleIntent.UpdateDraft(draft.copy(notes = it))) },
+                )
             }
 
-            Text(stringResource(Res.string.event_field_notes), color = JewelTheme.globalColors.text.info)
-            NotesTextArea(
-                value = draft.notes,
-                editorKey = editor.draft.id to editor.mode,
-                onValueChange = { onIntent(ScheduleIntent.UpdateDraft(draft.copy(notes = it))) },
-            )
-
-            Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = androidx.compose.ui.Alignment.End),
