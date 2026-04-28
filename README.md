@@ -1,4 +1,4 @@
-# ScheduleIt
+# ScheduleIt - Class Timetable
 
 A Kotlin Multiplatform app for designing your **recurring weekly schedule** — one template per weekday, color-coded events, notes, and notifications. Targets **Android, iOS, and Desktop (JVM)** with a shared Compose Multiplatform UI.
 
