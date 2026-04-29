@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
@@ -45,39 +48,41 @@ fun JewelTimePicker(
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(label, color = JewelTheme.globalColors.text.info)
-        Row(
-            modifier = Modifier
-                .clip(shape)
-                .background(JewelTheme.globalColors.panelBackground)
-                .border(1.dp, JewelTheme.globalColors.borders.normal, shape)
-                .padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            StepperColumn(
-                value = hour,
-                onUp = {
-                    val target = (valueMinute + 60).coerceAtMost(rangeEnd)
-                    if (target != valueMinute) onChange(target) else onBlocked?.invoke(true)
-                },
-                onDown = {
-                    val target = (valueMinute - 60).coerceAtLeast(rangeStart)
-                    if (target != valueMinute) onChange(target) else onBlocked?.invoke(false)
-                },
-            )
-            Spacer(Modifier.width(6.dp))
-            Text(":", fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.width(6.dp))
-            StepperColumn(
-                value = minute,
-                onUp = {
-                    val target = (valueMinute + stepMinutes).coerceAtMost(rangeEnd)
-                    if (target != valueMinute) onChange(target) else onBlocked?.invoke(true)
-                },
-                onDown = {
-                    val target = (valueMinute - stepMinutes).coerceAtLeast(rangeStart)
-                    if (target != valueMinute) onChange(target) else onBlocked?.invoke(false)
-                },
-            )
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(
+                modifier = Modifier
+                    .clip(shape)
+                    .background(JewelTheme.globalColors.panelBackground)
+                    .border(1.dp, JewelTheme.globalColors.borders.normal, shape)
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                StepperColumn(
+                    value = hour,
+                    onUp = {
+                        val target = (valueMinute + 60).coerceAtMost(rangeEnd)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(true)
+                    },
+                    onDown = {
+                        val target = (valueMinute - 60).coerceAtLeast(rangeStart)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(false)
+                    },
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(":", fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.width(6.dp))
+                StepperColumn(
+                    value = minute,
+                    onUp = {
+                        val target = (valueMinute + stepMinutes).coerceAtMost(rangeEnd)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(true)
+                    },
+                    onDown = {
+                        val target = (valueMinute - stepMinutes).coerceAtLeast(rangeStart)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(false)
+                    },
+                )
+            }
         }
     }
 }
@@ -93,27 +98,29 @@ fun JewelHourPicker(
     val shape = RoundedCornerShape(10.dp)
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(label, color = JewelTheme.globalColors.text.info)
-        Row(
-            modifier = Modifier
-                .clip(shape)
-                .background(JewelTheme.globalColors.panelBackground)
-                .border(1.dp, JewelTheme.globalColors.borders.normal, shape)
-                .padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            StepperColumn(
-                value = valueHour,
-                onUp = {
-                    val target = (valueHour + 1).coerceAtMost(range.last)
-                    if (target != valueHour) onChange(target)
-                },
-                onDown = {
-                    val target = (valueHour - 1).coerceAtLeast(range.first)
-                    if (target != valueHour) onChange(target)
-                },
-            )
-            Spacer(Modifier.width(6.dp))
-            Text("00", color = JewelTheme.globalColors.text.info)
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(
+                modifier = Modifier
+                    .clip(shape)
+                    .background(JewelTheme.globalColors.panelBackground)
+                    .border(1.dp, JewelTheme.globalColors.borders.normal, shape)
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                StepperColumn(
+                    value = valueHour,
+                    onUp = {
+                        val target = (valueHour + 1).coerceAtMost(range.last)
+                        if (target != valueHour) onChange(target)
+                    },
+                    onDown = {
+                        val target = (valueHour - 1).coerceAtLeast(range.first)
+                        if (target != valueHour) onChange(target)
+                    },
+                )
+                Spacer(Modifier.width(6.dp))
+                Text("00", color = JewelTheme.globalColors.text.info)
+            }
         }
     }
 }
