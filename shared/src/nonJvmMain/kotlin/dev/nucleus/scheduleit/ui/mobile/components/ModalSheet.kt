@@ -40,6 +40,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.nucleus.scheduleit.ui.mobile.theme.MobileTheme
+import org.jetbrains.compose.resources.stringResource
+import scheduleit.shared.generated.resources.Res
+import scheduleit.shared.generated.resources.action_close
 
 /**
  * Bottom sheet with native-like slide-up entrance and slide-down exit.
@@ -136,7 +139,7 @@ fun ModalSheet(
                             fontWeight = FontWeight.Bold,
                         ),
                     )
-                    IconBtn(onClick = onDismiss, contentDescription = "Close") {
+                    IconBtn(onClick = onDismiss, contentDescription = stringResource(Res.string.action_close)) {
                         IconClose(
                             modifier = Modifier
                                 .padding(2.dp)

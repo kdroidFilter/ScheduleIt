@@ -55,6 +55,7 @@
     <string name="event_dialog_new_title">אירוע חדש</string>
     <string name="event_dialog_edit_title">עריכת אירוע</string>
     <string name="event_field_title">כותרת</string>
+    <string name="event_field_time">שעה</string>
     <string name="event_field_start">התחלה</string>
     <string name="event_field_end">סיום</string>
     <string name="event_field_color">צבע</string>

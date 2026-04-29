@@ -55,6 +55,7 @@
     <string name="event_dialog_new_title">New event</string>
     <string name="event_dialog_edit_title">Edit event</string>
     <string name="event_field_title">Title</string>
+    <string name="event_field_time">Time</string>
     <string name="event_field_start">Start</string>
     <string name="event_field_end">End</string>
     <string name="event_field_color">Color</string>
