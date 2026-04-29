@@ -66,6 +66,8 @@
     <string name="event_scope_all_days">Tous les jours liés</string>
     <string name="action_hide_for_day">Masquer pour %1$s</string>
 
+    <string name="day_summary">%1$d événements · %2$s – %3$s</string>
+
     <string name="empty_schedule_hint">Aucun jour visible. Ouvrez les paramètres pour activer des jours.</string>
     <string name="error_invalid_range">La fin doit être postérieure au début.</string>
     <string name="error_outside_window">L&#8217;événement doit tenir dans la plage horaire visible.</string>

@@ -43,6 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.action_add_event
 import scheduleit.shared.generated.resources.action_paste_event
+import scheduleit.shared.generated.resources.day_summary
 
 /**
  * Phone-portrait layout — header + 7-day strip + single day grid + FAB.
@@ -161,7 +162,12 @@ private fun DayTitle(
         Spacer(Modifier.height(2.dp))
         val pad = { v: Int -> v.toString().padStart(2, '0') }
         BasicText(
-            text = "$eventCount events · ${pad(startHour)}:00 – ${pad(endHour)}:00",
+            text = stringResource(
+                Res.string.day_summary,
+                eventCount,
+                "${pad(startHour)}:00",
+                "${pad(endHour)}:00",
+            ),
             style = TextStyle(
                 color = colors.textSec,
                 fontSize = typography.label,
