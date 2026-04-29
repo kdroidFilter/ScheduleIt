@@ -154,6 +154,61 @@ tasks.matching { it.name == "compileKotlinJvm" }.configureEach {
     dependsOn(generateDriveOAuthConfig)
 }
 
+// Hebrew uses the legacy ISO 639-1 code "iw" on Android < 4.2 and "he" from 4.2+.
+// Mirror values-he into a temporary values-iw at build time and remove it once
+// Compose has consumed it, so the source tree stays clean.
+abstract class DuplicateHebrewStringsTask : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val sourceFile = project.file("src/commonMain/composeResources/values-he/strings.xml")
+
+    @get:OutputFile
+    val targetFile = project.file("src/commonMain/composeResources/values-iw/strings.xml")
+
+    init {
+        onlyIf { sourceFile.exists() }
+    }
+
+    @TaskAction
+    fun duplicateStrings() {
+        targetFile.parentFile.mkdirs()
+        sourceFile.copyTo(targetFile, overwrite = true)
+    }
+}
+
+abstract class CleanupValuesIwDirectoryTask : DefaultTask() {
+    private val valuesIwDir = project.file("src/commonMain/composeResources/values-iw")
+
+    @TaskAction
+    fun cleanupDirectory() {
+        if (valuesIwDir.exists()) {
+            valuesIwDir.deleteRecursively()
+        }
+    }
+}
+
+tasks.register<DuplicateHebrewStringsTask>("duplicateHebrewStrings") {
+    description = "Duplicates Hebrew strings from values-he to values-iw for legacy Android compatibility"
+    group = "build"
+}
+
+tasks.register<CleanupValuesIwDirectoryTask>("cleanupValuesIwDirectory") {
+    description = "Deletes the temporary values-iw directory once Compose resources have been prepared"
+    group = "build"
+}
+
+// All Compose tasks that read from commonMain must see values-iw and trigger cleanup afterwards.
+val composeCommonMainResourceTasks = setOf(
+    "prepareComposeResourcesTaskForCommonMain",
+    "convertXmlValueResourcesForCommonMain",
+    "copyNonXmlValueResourcesForCommonMain",
+)
+
+tasks.matching { it.name in composeCommonMainResourceTasks }.configureEach {
+    dependsOn("duplicateHebrewStrings")
+    finalizedBy("cleanupValuesIwDirectory")
+}
+
 compose.resources {
     publicResClass = true
 }
