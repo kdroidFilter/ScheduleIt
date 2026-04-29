@@ -55,6 +55,7 @@
     <string name="event_dialog_new_title">Nouvel événement</string>
     <string name="event_dialog_edit_title">Modifier l&#8217;événement</string>
     <string name="event_field_title">Titre</string>
+    <string name="event_field_time">Heure</string>
     <string name="event_field_start">Début</string>
     <string name="event_field_end">Fin</string>
     <string name="event_field_color">Couleur</string>

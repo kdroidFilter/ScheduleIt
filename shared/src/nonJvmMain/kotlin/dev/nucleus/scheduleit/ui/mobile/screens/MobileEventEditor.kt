@@ -53,6 +53,7 @@ import scheduleit.shared.generated.resources.event_field_color
 import scheduleit.shared.generated.resources.event_field_end
 import scheduleit.shared.generated.resources.event_field_notes
 import scheduleit.shared.generated.resources.event_field_start
+import scheduleit.shared.generated.resources.event_field_time
 import scheduleit.shared.generated.resources.event_field_title
 import scheduleit.shared.generated.resources.event_scope_all_days
 import scheduleit.shared.generated.resources.event_scope_label
@@ -111,7 +112,7 @@ fun MobileEventEditor(
                 )
             }
 
-            SectionHeading(text = "Time")
+            SectionHeading(text = stringResource(Res.string.event_field_time))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
