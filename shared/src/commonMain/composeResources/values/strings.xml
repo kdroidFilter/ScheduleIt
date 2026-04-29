@@ -66,6 +66,8 @@
     <string name="event_scope_all_days">All linked days</string>
     <string name="action_hide_for_day">Hide for %1$s</string>
 
+    <string name="day_summary">%1$d events · %2$s – %3$s</string>
+
     <string name="empty_schedule_hint">No visible day. Open settings to enable days.</string>
     <string name="error_invalid_range">End must be after start.</string>
     <string name="error_outside_window">Event must fit in the visible hour range.</string>

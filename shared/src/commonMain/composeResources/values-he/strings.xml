@@ -66,6 +66,8 @@
     <string name="event_scope_all_days">כל הימים המקושרים</string>
     <string name="action_hide_for_day">הסתר עבור %1$s</string>
 
+    <string name="day_summary">%1$d אירועים · %2$s – %3$s</string>
+
     <string name="empty_schedule_hint">אין יום גלוי. פתח את ההגדרות כדי להפעיל ימים.</string>
     <string name="error_invalid_range">הסיום חייב להיות אחרי ההתחלה.</string>
     <string name="error_outside_window">האירוע חייב להיכנס לטווח השעות הגלוי.</string>
