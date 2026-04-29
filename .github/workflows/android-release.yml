@@ -128,6 +128,6 @@ jobs:
           # `--clobber` overwrites any existing assets with the same name so the
           # workflow stays idempotent on re-runs.
           if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" --title "$TAG" --notes "Android release $TAG"
+            gh release create "$TAG" --title "$TAG" --notes ""
           fi
           gh release upload "$TAG" artifacts/* --clobber
