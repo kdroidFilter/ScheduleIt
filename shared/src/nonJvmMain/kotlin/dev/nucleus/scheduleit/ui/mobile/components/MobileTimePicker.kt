@@ -12,11 +12,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.nucleus.scheduleit.ui.mobile.theme.MobileTheme
@@ -59,40 +62,42 @@ fun MobileTimePicker(
                 letterSpacing = 0.6.sp,
             ),
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            StepperColumn(
-                value = hour,
-                onUp = {
-                    val target = (valueMinute + 60).coerceAtMost(rangeEnd)
-                    if (target != valueMinute) onChange(target) else onBlocked?.invoke(true)
-                },
-                onDown = {
-                    val target = (valueMinute - 60).coerceAtLeast(rangeStart)
-                    if (target != valueMinute) onChange(target) else onBlocked?.invoke(false)
-                },
-            )
-            BasicText(
-                text = ":",
-                style = TextStyle(
-                    color = colors.text,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                ),
-            )
-            StepperColumn(
-                value = minute,
-                onUp = {
-                    val target = (valueMinute + stepMinutes).coerceAtMost(rangeEnd)
-                    if (target != valueMinute) onChange(target) else onBlocked?.invoke(true)
-                },
-                onDown = {
-                    val target = (valueMinute - stepMinutes).coerceAtLeast(rangeStart)
-                    if (target != valueMinute) onChange(target) else onBlocked?.invoke(false)
-                },
-            )
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                StepperColumn(
+                    value = hour,
+                    onUp = {
+                        val target = (valueMinute + 60).coerceAtMost(rangeEnd)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(true)
+                    },
+                    onDown = {
+                        val target = (valueMinute - 60).coerceAtLeast(rangeStart)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(false)
+                    },
+                )
+                BasicText(
+                    text = ":",
+                    style = TextStyle(
+                        color = colors.text,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                )
+                StepperColumn(
+                    value = minute,
+                    onUp = {
+                        val target = (valueMinute + stepMinutes).coerceAtMost(rangeEnd)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(true)
+                    },
+                    onDown = {
+                        val target = (valueMinute - stepMinutes).coerceAtLeast(rangeStart)
+                        if (target != valueMinute) onChange(target) else onBlocked?.invoke(false)
+                    },
+                )
+            }
         }
     }
 }
@@ -125,29 +130,31 @@ fun MobileHourPicker(
                 letterSpacing = 0.6.sp,
             ),
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            StepperColumn(
-                value = valueHour,
-                onUp = {
-                    val target = (valueHour + 1).coerceAtMost(range.last)
-                    if (target != valueHour) onChange(target)
-                },
-                onDown = {
-                    val target = (valueHour - 1).coerceAtLeast(range.first)
-                    if (target != valueHour) onChange(target)
-                },
-            )
-            BasicText(
-                text = ":00",
-                style = TextStyle(
-                    color = colors.textSec,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                ),
-            )
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                StepperColumn(
+                    value = valueHour,
+                    onUp = {
+                        val target = (valueHour + 1).coerceAtMost(range.last)
+                        if (target != valueHour) onChange(target)
+                    },
+                    onDown = {
+                        val target = (valueHour - 1).coerceAtLeast(range.first)
+                        if (target != valueHour) onChange(target)
+                    },
+                )
+                BasicText(
+                    text = ":00",
+                    style = TextStyle(
+                        color = colors.textSec,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                )
+            }
         }
     }
 }
