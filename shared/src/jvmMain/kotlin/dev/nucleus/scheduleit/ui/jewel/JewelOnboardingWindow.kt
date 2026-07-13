@@ -54,9 +54,10 @@ import dev.nucleus.scheduleit.ui.common.localizedWeekOrder
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import io.github.kdroidfilter.nucleus.window.DecoratedWindowScope
-import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedWindow
-import io.github.kdroidfilter.nucleus.window.jewel.JewelTitleBar
+import dev.nucleusframework.application.NucleusApplicationScope
+import dev.nucleusframework.window.DecoratedWindowScope
+import dev.nucleusframework.window.jewel.JewelDecoratedWindow
+import dev.nucleusframework.window.jewel.JewelTitleBar
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.CheckboxRow
@@ -108,7 +109,7 @@ private val PALETTE = listOf(
  * this window or the main app window based on the persisted onboarding flag.
  */
 @Composable
-fun JewelOnboardingWindow(viewModelFactory: MetroViewModelFactory) {
+fun NucleusApplicationScope.JewelOnboardingWindow(viewModelFactory: MetroViewModelFactory) {
     val title = stringResource(Res.string.app_name)
     // Closing the window via its X is treated as a skip — we stash the request
     // and let the inner content dispatch CompleteOnboarding once it has a VM.

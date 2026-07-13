@@ -16,21 +16,20 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.nucleus.scheduleit.di.createDesktopAppGraph
 import dev.nucleus.scheduleit.ui.JewelAboutWindow
 import dev.nucleus.scheduleit.ui.jewel.JewelOnboardingWindow
+import dev.nucleus.scheduleit.ui.jewel.LocalNucleusApplicationScope
 import dev.nucleus.scheduleit.ui.jewel.ScheduleItTitleBar
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
-import io.github.kdroidfilter.nucleus.aot.runtime.AotRuntime
-import io.github.kdroidfilter.nucleus.core.runtime.Platform
-import io.github.kdroidfilter.nucleus.core.runtime.SingleInstanceManager
-import io.github.kdroidfilter.nucleus.darkmodedetector.isSystemInDarkMode
-import io.github.kdroidfilter.nucleus.notification.windows.WindowsNotificationCenter
-import io.github.kdroidfilter.nucleus.scheduler.DesktopBootReceiver
-import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedWindow
-import io.github.kdroidfilter.nucleus.graalvm.GraalVmInitializer
+import dev.nucleusframework.application.NucleusBackend
+import dev.nucleusframework.application.nucleusApplication
+import dev.nucleusframework.core.runtime.Platform
+import dev.nucleusframework.darkmodedetector.isSystemInDarkMode
+import dev.nucleusframework.notification.windows.WindowsNotificationCenter
+import dev.nucleusframework.scheduler.DesktopBootReceiver
+import dev.nucleusframework.window.jewel.JewelDecoratedWindow
 import java.awt.Desktop
 import java.awt.GraphicsEnvironment
 import java.net.URI
@@ -46,7 +45,6 @@ import org.jetbrains.jewel.intui.standalone.theme.default
 import org.jetbrains.jewel.intui.standalone.theme.lightThemeDefinition
 import org.jetbrains.jewel.ui.ComponentStyling
 
-private const val AOT_TRAINING_DURATION_MS = 45_000L
 private const val PROJECT_URL = "https://github.com/kdroidFilter/ScheduleIt"
 private val DEFAULT_WINDOW_SIZE = DpSize(1280.dp, 820.dp)
 private val MINIMUM_WINDOW_SIZE = DpSize(1100.dp, 720.dp)
@@ -60,33 +58,17 @@ private fun shouldStartMaximized(): Boolean {
 }
 
 fun main(args: Array<String>) {
-    runCatching { GraalVmInitializer.initialize() }
-    runCatching { WindowsNotificationCenter.initialize() }
+    // Scheduler invocations run headless (no Tao window) and need notifications up front.
     if (DesktopBootReceiver.isSchedulerInvocation(args)) {
+        runCatching { WindowsNotificationCenter.initialize() }
         DesktopBootReceiver.handle(args = args, registry = ScheduleItTaskRegistry.registry)
         exitProcess(0)
     }
-    if (AotRuntime.isTraining()) {
-        Thread({
-            Thread.sleep(AOT_TRAINING_DURATION_MS)
-            exitProcess(0)
-        }, "aot-training-timer").apply { isDaemon = false }.start()
-    }
 
-    application {
-        var restoreRequested by remember { mutableStateOf(false) }
-
-        val isSingle = remember {
-            SingleInstanceManager.isSingleInstance(
-                onRestoreFileCreated = {},
-                onRestoreRequest = { restoreRequested = true },
-            )
-        }
-        if (!isSingle) {
-            exitApplication()
-            return@application
-        }
-
+    nucleusApplication(args, backend = NucleusBackend.Tao) {
+        // GraalVM init, single-instance locking and AutoLaunch/AUMID priming
+        // are handled by the bootstrap.
+        val nucleusScope = this
         val graph = remember { createDesktopAppGraph() }
         val notificationScope = remember {
             CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -96,9 +78,7 @@ fun main(args: Array<String>) {
         LaunchedEffect(notificationScope) {
             runCatching { notificationScope.startInAppNotificationLoop(graph.repository) }
             runCatching { notificationScope.startSchedulerSync(graph.repository) }
-            if (!AotRuntime.isTraining()) {
-                runCatching { appUpdater.start(notificationScope) }
-            }
+            runCatching { appUpdater.start(notificationScope) }
         }
         DisposableEffect(notificationScope) {
             onDispose { notificationScope.cancel() }
@@ -147,15 +127,11 @@ fun main(args: Array<String>) {
                     title = "ScheduleIt",
                     minimumSize = MINIMUM_WINDOW_SIZE,
                 ) {
-                    LaunchedEffect(restoreRequested) {
-                        if (restoreRequested) {
-                            window.toFront()
-                            window.requestFocus()
-                            restoreRequested = false
-                        }
-                    }
                     var showAbout by remember { mutableStateOf(false) }
-                    CompositionLocalProvider(LocalMetroViewModelFactory provides graph.viewModelFactory) {
+                    CompositionLocalProvider(
+                        LocalMetroViewModelFactory provides graph.viewModelFactory,
+                        LocalNucleusApplicationScope provides nucleusScope,
+                    ) {
                         ScheduleItMenuBar(onQuit = quit)
                         ScheduleItTitleBar(
                             onOpenGithub = {

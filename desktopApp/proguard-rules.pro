@@ -98,32 +98,31 @@
 # =============================================================================
 
 # decorated-window JNI (macOS + cross-platform)
--keep class io.github.kdroidfilter.nucleus.window.utils.macos.NativeMacBridge {
+-keep class dev.nucleusframework.window.utils.macos.NativeMacBridge {
     native <methods>;
 }
--keep class io.github.kdroidfilter.nucleus.window.** { *; }
+-keep class dev.nucleusframework.window.** { *; }
 
 # darkmode-detector JNI (macOS / Linux / Windows)
--keep class io.github.kdroidfilter.nucleus.darkmodedetector.mac.NativeDarkModeBridge {
+-keep class dev.nucleusframework.darkmodedetector.mac.NativeDarkModeBridge {
     native <methods>;
     static void onThemeChanged(boolean);
 }
--keep class io.github.kdroidfilter.nucleus.darkmodedetector.linux.NativeLinuxBridge {
+-keep class dev.nucleusframework.darkmodedetector.linux.NativeLinuxBridge {
     native <methods>;
     static void onThemeChanged(boolean);
 }
--keep class io.github.kdroidfilter.nucleus.darkmodedetector.windows.NativeWindowsBridge {
+-keep class dev.nucleusframework.darkmodedetector.windows.NativeWindowsBridge {
     native <methods>;
 }
--keep class io.github.kdroidfilter.nucleus.darkmodedetector.** { *; }
+-keep class dev.nucleusframework.darkmodedetector.** { *; }
 
 # Nucleus modules used by ScheduleIt (notifications, scheduler, menu-macos, runtimes)
--keep class io.github.kdroidfilter.nucleus.notification.** { *; }
--keep class io.github.kdroidfilter.nucleus.scheduler.** { *; }
--keep class io.github.kdroidfilter.nucleus.menu.macos.** { *; }
--keep class io.github.kdroidfilter.nucleus.core.runtime.** { *; }
--keep class io.github.kdroidfilter.nucleus.aot.runtime.** { *; }
--keep class io.github.kdroidfilter.nucleus.graalvm.** { *; }
+-keep class dev.nucleusframework.notification.** { *; }
+-keep class dev.nucleusframework.scheduler.** { *; }
+-keep class dev.nucleusframework.menu.macos.** { *; }
+-keep class dev.nucleusframework.core.runtime.** { *; }
+-keep class dev.nucleusframework.graalvm.** { *; }
 
 # Metro DI — keep generated graphs / factories (often referenced reflectively)
 -keep class dev.zacsweers.metrox.** { *; }
@@ -144,9 +143,9 @@
 -keep class io.ktor.client.engine.cio.** { *; }
 
 # Nucleus native HTTP / native trust store (JNI + SSL).
--keep class io.github.kdroidfilter.nucleus.nativehttp.** { *; }
--keepclassmembers class io.github.kdroidfilter.nucleus.nativehttp.** { *; }
--dontwarn io.github.kdroidfilter.nucleus.nativehttp.**
+-keep class dev.nucleusframework.nativehttp.** { *; }
+-keepclassmembers class dev.nucleusframework.nativehttp.** { *; }
+-dontwarn dev.nucleusframework.nativehttp.**
 
 # atomicfu / SLF4J pulled in transitively by Ktor — silence warnings.
 -dontwarn kotlinx.atomicfu.**

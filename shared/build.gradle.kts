@@ -11,6 +11,10 @@ plugins {
 }
 
 kotlin {
+    // Nucleus 2.x JVM artifacts require a JVM 25 runtime; compile the jvm target
+    // against a JDK 25 toolchain. The Android target keeps its own JVM_11 bytecode.
+    jvmToolchain(25)
+
     androidLibrary {
         namespace = "dev.nucleus.scheduleit.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -104,6 +108,7 @@ kotlin {
                 implementation(libs.sqldelight.sqliteDriver)
                 implementation(libs.jewel.intUiStandalone)
                 implementation(libs.intellij.icons)
+                implementation(libs.nucleus.application)
                 implementation(libs.nucleus.decoratedWindowCore)
                 implementation(libs.nucleus.decoratedWindowJewel)
                 implementation(libs.ktor.client.core)

@@ -1,6 +1,6 @@
 package dev.nucleus.scheduleit.data.drive
 
-import io.github.kdroidfilter.nucleus.nativehttp.ktor.installNativeSsl
+import dev.nucleusframework.nativehttp.ktor.installNativeSsl
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import java.net.URLEncoder

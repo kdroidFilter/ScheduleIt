@@ -7,8 +7,8 @@ import dev.nucleus.scheduleit.domain.AppDayOfWeek
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import io.github.kdroidfilter.nucleus.menu.macos.NativeKeyShortcut
-import io.github.kdroidfilter.nucleus.menu.macos.NativeMenuBar
+import dev.nucleusframework.menu.macos.NativeKeyShortcut
+import dev.nucleusframework.menu.macos.NativeMenuBar
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlinx.datetime.TimeZone

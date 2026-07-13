@@ -1,10 +1,10 @@
 package dev.nucleus.scheduleit
 
-import io.github.kdroidfilter.nucleus.nativehttp.NativeHttpClient
-import io.github.kdroidfilter.nucleus.updater.NucleusUpdater
-import io.github.kdroidfilter.nucleus.updater.UpdateInfo
-import io.github.kdroidfilter.nucleus.updater.UpdateResult
-import io.github.kdroidfilter.nucleus.updater.provider.GitHubProvider
+import dev.nucleusframework.nativehttp.NativeHttpClient
+import dev.nucleusframework.updater.NucleusUpdater
+import dev.nucleusframework.updater.UpdateInfo
+import dev.nucleusframework.updater.UpdateResult
+import dev.nucleusframework.updater.provider.GitHubProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

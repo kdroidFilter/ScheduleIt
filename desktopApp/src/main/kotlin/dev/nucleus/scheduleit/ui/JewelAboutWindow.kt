@@ -13,9 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.rememberDialogState
-import io.github.kdroidfilter.nucleus.core.runtime.NucleusApp
-import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedDialog
-import io.github.kdroidfilter.nucleus.window.jewel.JewelDialogTitleBar
+import dev.nucleus.scheduleit.ui.jewel.LocalNucleusApplicationScope
+import dev.nucleusframework.core.runtime.NucleusApp
+import dev.nucleusframework.window.jewel.JewelDecoratedDialog
+import dev.nucleusframework.window.jewel.JewelDialogTitleBar
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text
@@ -32,7 +33,7 @@ private const val LICENSE_NAME: String = "GPLv3"
 fun JewelAboutWindow(onCloseRequest: () -> Unit) {
     val dialogState = rememberDialogState(size = DpSize(380.dp, 240.dp))
     val title = stringResource(Res.string.about_title)
-    JewelDecoratedDialog(
+    LocalNucleusApplicationScope.current.JewelDecoratedDialog(
         onCloseRequest = onCloseRequest,
         state = dialogState,
         title = title,

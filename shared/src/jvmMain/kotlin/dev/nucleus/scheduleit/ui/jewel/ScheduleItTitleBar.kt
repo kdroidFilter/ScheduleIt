@@ -10,9 +10,9 @@ import androidx.compose.ui.unit.dp
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import io.github.kdroidfilter.nucleus.core.runtime.Platform
-import io.github.kdroidfilter.nucleus.window.DecoratedWindowScope
-import io.github.kdroidfilter.nucleus.window.jewel.JewelTitleBar
+import dev.nucleusframework.core.runtime.Platform
+import dev.nucleusframework.window.DecoratedWindowScope
+import dev.nucleusframework.window.jewel.JewelTitleBar
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.jewel.ui.component.Icon
 import org.jetbrains.jewel.ui.component.IconButton
