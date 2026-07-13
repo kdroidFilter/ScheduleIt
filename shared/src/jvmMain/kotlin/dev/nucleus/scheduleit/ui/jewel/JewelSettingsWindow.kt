@@ -30,8 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.rememberDialogState
-import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedDialog
-import io.github.kdroidfilter.nucleus.window.jewel.JewelDialogTitleBar
+import dev.nucleusframework.window.jewel.JewelDecoratedDialog
+import dev.nucleusframework.window.jewel.JewelDialogTitleBar
 import dev.nucleus.scheduleit.data.drive.GoogleDriveStatus
 import dev.nucleus.scheduleit.domain.AppDayOfWeek
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleIntent
@@ -111,7 +111,7 @@ fun JewelSettingsWindow(
 ) {
     val windowState = rememberDialogState(size = DpSize(540.dp, 680.dp))
     val title = stringResource(Res.string.settings_title)
-    JewelDecoratedDialog(
+    LocalNucleusApplicationScope.current.JewelDecoratedDialog(
         onCloseRequest = { onIntent(ScheduleIntent.CloseSettings) },
         state = windowState,
         title = title,
@@ -267,7 +267,7 @@ private fun RestoreConfirmDialog(
 ) {
     val dialogState = rememberDialogState(size = DpSize(420.dp, 200.dp))
     val title = stringResource(Res.string.restore_confirm_title)
-    JewelDecoratedDialog(
+    LocalNucleusApplicationScope.current.JewelDecoratedDialog(
         onCloseRequest = onCancel,
         state = dialogState,
         title = title,
@@ -339,7 +339,7 @@ private fun ResetConfirmDialog(
 ) {
     val dialogState = rememberDialogState(size = DpSize(420.dp, 200.dp))
     val title = stringResource(Res.string.reset_confirm_title)
-    JewelDecoratedDialog(
+    LocalNucleusApplicationScope.current.JewelDecoratedDialog(
         onCloseRequest = onCancel,
         state = dialogState,
         title = title,

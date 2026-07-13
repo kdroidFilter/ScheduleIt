@@ -1,7 +1,7 @@
 package dev.nucleus.scheduleit
 
-import io.github.kdroidfilter.nucleus.scheduler.TaskId
-import io.github.kdroidfilter.nucleus.scheduler.TaskRegistry
+import dev.nucleusframework.scheduler.TaskId
+import dev.nucleusframework.scheduler.TaskRegistry
 
 object ScheduleItTaskRegistry {
     val EventNotificationsId = TaskId("event-notifications")

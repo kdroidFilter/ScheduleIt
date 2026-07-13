@@ -6,8 +6,8 @@ import dev.nucleus.scheduleit.domain.EffectiveEvent
 import dev.nucleus.scheduleit.domain.effectiveEventsFor
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
 import dev.nucleus.scheduleit.ui.common.formatTime
-import io.github.kdroidfilter.nucleus.notification.common.NotificationManager
-import io.github.kdroidfilter.nucleus.notification.common.notification
+import dev.nucleusframework.notification.common.NotificationManager
+import dev.nucleusframework.notification.common.notification
 import org.jetbrains.compose.resources.getString
 import scheduleit.shared.generated.resources.Res
 import scheduleit.shared.generated.resources.notification_default_title

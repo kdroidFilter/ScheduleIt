@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.rememberDialogState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import io.github.kdroidfilter.nucleus.window.jewel.JewelDecoratedDialog
-import io.github.kdroidfilter.nucleus.window.jewel.JewelDialogTitleBar
+import dev.nucleusframework.window.jewel.JewelDecoratedDialog
+import dev.nucleusframework.window.jewel.JewelDialogTitleBar
 import dev.nucleus.scheduleit.domain.EffectiveEvent
 import dev.nucleus.scheduleit.domain.ScheduleSettings
 import dev.nucleus.scheduleit.presentation.schedule.ErrorKey
@@ -87,7 +87,7 @@ fun JewelEventEditor(
         if (editor.mode == EventEditorState.Mode.Create) Res.string.event_dialog_new_title
         else Res.string.event_dialog_edit_title,
     )
-    JewelDecoratedDialog(
+    LocalNucleusApplicationScope.current.JewelDecoratedDialog(
         onCloseRequest = { onIntent(ScheduleIntent.DismissEditor) },
         state = state,
         title = dialogTitle,

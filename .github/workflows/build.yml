@@ -1,4 +1,4 @@
-name: Build (GraalVM Native Image + JBR/Leyden AppX/DMG)
+name: Build (GraalVM Native Image + JBR AppX)
 
 on:
   push:
@@ -16,8 +16,8 @@ concurrency:
 
 jobs:
   # GraalVM Native Image builds — Linux .deb, Windows .exe (NSIS).
-  # GraalVM does not target Windows ARM64 → AppX/MSIX uses JBR/Leyden.
-  # macOS GraalVM builds are flaky (codegen/toolchain issues) → macOS uses JBR/Leyden too.
+  # macOS GraalVM native image (.dmg/.zip) is built by the build-mac job below.
+  # GraalVM does not target Windows ARM64 → AppX/MSIX uses JBR.
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -92,22 +92,20 @@ jobs:
             desktopApp/build/compose/binaries/**/*.msi
           if-no-files-found: error
 
-  # macOS .dmg — JBR 25 + Project Leyden AOT cache (GraalVM is unreliable on macOS).
+  # macOS .dmg/.zip — GraalVM Native Image.
   # Runner labels per Nucleus CI guidance: macos-latest (arm64), macos-15-intel (amd64).
   build-mac:
     name: macOS DMG (${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: macos-latest
             arch: arm64
-            jbr-download-url: "https://github.com/kdroidFilter/JetBrainsRuntime/releases/download/v25.0.2b329.66-rtl/jdk-macos-aarch64.tar.gz"
           - os: macos-15-intel
             arch: amd64
-            jbr-download-url: "https://github.com/kdroidFilter/JetBrainsRuntime/releases/download/v25.0.2b329.66-rtl/jdk-macos-x64.tar.gz"
 
     steps:
       - name: Checkout
@@ -125,26 +123,25 @@ jobs:
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Setup Nucleus (JBR)
+      - name: Setup Nucleus (GraalVM)
         uses: kdroidFilter/Nucleus/.github/actions/setup-nucleus@main
         with:
-          graalvm: "false"
-          jbr-version: "25.0.2b329.66"
-          jbr-download-url: ${{ matrix.jbr-download-url }}
-          packaging-tools: "false"
+          graalvm: "true"
+          graalvm-java-version: "25"
+          packaging-tools: "true"
           setup-gradle: "true"
           setup-node: "false"
 
       # DMG = initial install ; ZIP = silent auto-update payload (required by Nucleus updater).
-      - name: Build DMG + ZIP (JVM + Leyden AOT cache + ProGuard)
+      - name: Build DMG + ZIP (GraalVM Native Image)
         shell: bash
         env:
           GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.GOOGLE_DRIVE_CLIENT_ID }}
           GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.GOOGLE_DRIVE_CLIENT_SECRET }}
         run: |
-          ./gradlew :desktopApp:packageReleaseDmg :desktopApp:packageReleaseZip \
+          ./gradlew :desktopApp:packageGraalvmDmg :desktopApp:packageGraalvmZip \
             -PappVersion=${{ steps.version.outputs.version }} \
-            -PenableAotCache=true \
+            -PnativeMarch=compatibility \
             --no-daemon --stacktrace
 
       - name: Upload DMG + ZIP
@@ -156,8 +153,8 @@ jobs:
             desktopApp/build/compose/binaries/**/*.zip
           if-no-files-found: error
 
-  # AppX/MSIX builds — JBR 25 + Project Leyden AOT cache. Built on x64 and arm64
-  # so a single .msixbundle covers both architectures for the Microsoft Store.
+  # AppX/MSIX builds — JBR 25 (GraalVM does not target Windows ARM64). Built on
+  # x64 and arm64 so a single .msixbundle covers both for the Microsoft Store.
   build-appx:
     name: AppX (${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
@@ -196,7 +193,7 @@ jobs:
           setup-gradle: "true"
           setup-node: "false"
 
-      - name: Build AppX (JVM + Leyden AOT cache + ProGuard)
+      - name: Build AppX (JVM + ProGuard)
         shell: bash
         env:
           GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.GOOGLE_DRIVE_CLIENT_ID }}
@@ -204,7 +201,6 @@ jobs:
         run: |
           ./gradlew :desktopApp:packageReleaseAppX \
             -PappVersion=${{ steps.version.outputs.version }} \
-            -PenableAotCache=true \
             --no-daemon --stacktrace
 
       - name: Upload AppX

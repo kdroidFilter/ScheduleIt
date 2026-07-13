@@ -2,8 +2,8 @@ package dev.nucleus.scheduleit
 
 import dev.nucleus.scheduleit.data.ScheduleRepository
 import dev.nucleus.scheduleit.presentation.schedule.ScheduleViewModel
-import io.github.kdroidfilter.nucleus.scheduler.DesktopTaskScheduler
-import io.github.kdroidfilter.nucleus.scheduler.TaskRequest
+import dev.nucleusframework.scheduler.DesktopTaskScheduler
+import dev.nucleusframework.scheduler.TaskRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged

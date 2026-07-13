@@ -1,7 +1,7 @@
-import io.github.kdroidfilter.nucleus.desktop.application.dsl.CompressionLevel
-import io.github.kdroidfilter.nucleus.desktop.application.dsl.ReleaseChannel
-import io.github.kdroidfilter.nucleus.desktop.application.dsl.ReleaseType
-import io.github.kdroidfilter.nucleus.desktop.application.dsl.TargetFormat
+import dev.nucleusframework.desktop.application.dsl.CompressionLevel
+import dev.nucleusframework.desktop.application.dsl.ReleaseChannel
+import dev.nucleusframework.desktop.application.dsl.ReleaseType
+import dev.nucleusframework.desktop.application.dsl.TargetFormat
 import org.gradle.jvm.toolchain.JvmVendorSpec
 
 plugins {
@@ -13,17 +13,13 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(25)
 }
 
 val appVersion: String = (findProperty("appVersion") as String?)
     ?.removePrefix("v")
     ?.takeIf { it.isNotBlank() }
     ?: "1.0.0"
-
-// Project Leyden AOT cache (JVM mode only). Enabled on demand via -PenableAotCache=true
-// to avoid running a training launch during GraalVM native-image builds.
-val aotCacheEnabled: Boolean = (findProperty("enableAotCache") as String?)?.toBoolean() ?: false
 
 dependencies {
     implementation(projects.shared)
@@ -32,9 +28,10 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.metrox.viewmodelCompose)
     implementation(libs.jewel.intUiStandalone)
+    implementation(libs.nucleus.application)
     implementation(libs.nucleus.darkmodeDetector)
     implementation(libs.nucleus.decoratedWindowCore)
-    implementation(libs.nucleus.decoratedWindowJni)
+    implementation(libs.nucleus.decoratedWindowTao)
     implementation(libs.nucleus.decoratedWindowJewel)
     implementation(libs.nucleus.scheduler)
     implementation(libs.nucleus.notificationCommon)
@@ -43,7 +40,6 @@ dependencies {
     implementation(libs.nucleus.notificationLinux)
     implementation(libs.nucleus.coreRuntime)
     implementation(libs.nucleus.graalvmRuntime)
-    implementation(libs.nucleus.aotRuntime)
     implementation(libs.nucleus.menuMacos)
     implementation(libs.nucleus.updaterRuntime)
     implementation(libs.nucleus.nativeHttp)
@@ -75,7 +71,6 @@ nucleus.application {
         )
         cleanupNativeLibs = true
         compressionLevel = CompressionLevel.Maximum
-        enableAotCache = aotCacheEnabled
         // Disambiguate per-arch artifact filenames so the auto-updater can
         // pick the right installer/ZIP from latest-*.yml (and so multi-arch
         // assets don't overwrite each other in the GitHub Release).
