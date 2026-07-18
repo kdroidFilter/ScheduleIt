@@ -70,7 +70,7 @@ nucleus.application {
             TargetFormat.AppX,
         )
         cleanupNativeLibs = true
-        compressionLevel = CompressionLevel.Maximum
+        compressionLevel = CompressionLevel.Ultra
         // Disambiguate per-arch artifact filenames so the auto-updater can
         // pick the right installer/ZIP from latest-*.yml (and so multi-arch
         // assets don't overwrite each other in the GitHub Release).
