@@ -1,8 +1,8 @@
 import dev.nucleusframework.desktop.application.dsl.CompressionLevel
+import dev.nucleusframework.desktop.application.dsl.NativeImageOptimization
 import dev.nucleusframework.desktop.application.dsl.ReleaseChannel
 import dev.nucleusframework.desktop.application.dsl.ReleaseType
 import dev.nucleusframework.desktop.application.dsl.TargetFormat
-import org.gradle.jvm.toolchain.JvmVendorSpec
 
 plugins {
     kotlin("jvm")
@@ -144,15 +144,6 @@ nucleus.application {
         isEnabled = true
         imageName = "scheduleit"
         javaLanguageVersion = 25
-        jvmVendor = JvmVendorSpec.BELLSOFT
-        // "compatibility" by default to produce binaries that run on older CPUs and to
-        // dodge GraalVM AVX-512 codegen bugs (VMOVDQU64 ZMM) on hosted runners.
-        march = (findProperty("nativeMarch") as String?) ?: "compatibility"
-        buildArgs.addAll(
-            "-H:+AddAllCharsets",
-            "-Djava.awt.headless=false",
-            "-Os",
-            "-H:-IncludeMethodData",
-        )
+        optimization = NativeImageOptimization.SIZE
     }
 }
