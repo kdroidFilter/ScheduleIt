@@ -465,7 +465,7 @@ class ScheduleViewModel(
             val json = snapshot.toBackup().encodeToString()
             val file = FileKit.openFileSaver(
                 suggestedName = "scheduleit-backup",
-                extension = BACKUP_EXTENSION,
+                defaultExtension = BACKUP_EXTENSION,
             )
             file?.writeString(json)
         }
