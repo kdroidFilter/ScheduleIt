@@ -51,7 +51,7 @@ nucleus.application {
     buildTypes {
         release {
             proguard {
-                version = "7.9.1"
+                version = "7.8.1"
                 isEnabled = true
                 optimize = true
                 configurationFiles.from(project.file("proguard-rules.pro"))
